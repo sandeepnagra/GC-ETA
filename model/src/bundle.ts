@@ -1,6 +1,6 @@
 /** Bundle access and calendar helpers. */
 
-import type { Bundle, Cell, Chart, Column, RawCell, Track } from "./types.js";
+import type { Bundle, Cell, CellKind, Chart, Column, RawCell, Track } from "./types.js";
 
 const MS_PER_DAY = 86_400_000;
 
@@ -75,4 +75,35 @@ export function lastKnownIndex(cells: Cell[]): number {
 
 export function monthAt(bundle: Bundle, index: number): string {
   return absoluteToMonth(monthToAbsolute(bundle.start_month) + index);
+}
+
+/** Points for a history chart: month plus cutoff, skipping gaps. */
+export interface HistoryPoint {
+  month: string;
+  /** Days since epoch, or null for Current / Unavailable / missing. */
+  day: number | null;
+  kind: CellKind;
+}
+
+export function historyPoints(
+  bundle: Bundle,
+  chart: Chart,
+  category: string,
+  column: Column,
+  months = 120,
+): HistoryPoint[] {
+  const cells = getSeries(bundle, chart, "employment", category, column);
+  if (!cells) return [];
+  const from = Math.max(0, cells.length - months);
+  const out: HistoryPoint[] = [];
+  for (let i = from; i < cells.length; i += 1) {
+    const cell = cells[i]!;
+    if (cell.kind === "missing") continue;
+    out.push({
+      month: monthAt(bundle, i),
+      day: cell.kind === "date" ? cell.day! : null,
+      kind: cell.kind,
+    });
+  }
+  return out;
 }

@@ -5,6 +5,7 @@ import { assessCase, caseTimeline } from "@gc-eta/model";
 import { bundle, events, prettyMonth } from "./src/data";
 import { CaseScreen } from "./src/screens/CaseScreen";
 import { ExplainScreen } from "./src/screens/ExplainScreen";
+import { MethodologyScreen } from "./src/screens/MethodologyScreen";
 import { NewsScreen } from "./src/screens/NewsScreen";
 import { ResultsScreen } from "./src/screens/ResultsScreen";
 import { resolveTheme, type ThemeMode } from "./src/theme";
@@ -51,6 +52,8 @@ export default function App() {
           onNews={() => setScreen("news")}
           newsCount={timeline.filter((i) => i.direct).length}
         />
+      ) : screen === "methodology" ? (
+        <MethodologyScreen theme={theme} onBack={() => setScreen("explain")} />
       ) : screen === "news" ? (
         <NewsScreen theme={theme} items={timeline} onBack={() => setScreen("results")} />
       ) : (
@@ -59,6 +62,7 @@ export default function App() {
           mode={mode}
           onMode={setMode}
           onBack={() => setScreen("results")}
+          onMethodology={() => setScreen("methodology")}
           dataAsOf={prettyMonth(bundle.end_month)}
         />
       )}

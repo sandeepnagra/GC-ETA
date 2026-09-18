@@ -3,7 +3,9 @@
 import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import type { CaseAssessment } from "@gc-eta/model";
-import { dayToIso } from "@gc-eta/model";
+import { dayToIso, historyPoints } from "@gc-eta/model";
+import { bundle } from "../data";
+import { HistoryChart } from "../components/HistoryChart";
 
 import { prettyMonth } from "../data";
 import { outlookStyle, type Theme } from "../theme";
@@ -80,6 +82,15 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
             {reason}
           </Text>
         ))}
+      </Card>
+
+      <Card theme={theme}>
+        <Row theme={theme} title="Ten years of movement" trailing={`${draft.category.replace(/_/g, " ")} · ${draft.column}`} />
+        <HistoryChart
+          theme={theme}
+          points={historyPoints(bundle, "final_action", draft.category, draft.column)}
+          priorityDate={draft.priorityDate}
+        />
       </Card>
 
       <Card theme={theme}>

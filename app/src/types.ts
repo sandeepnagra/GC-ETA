@@ -8,4 +8,4 @@ export interface CaseDraft {
   path: ProcessingPath;
 }
 
-export type Screen = "case" | "results" | "explain" | "news";
+export type Screen = "case" | "results" | "explain" | "news" | "methodology";

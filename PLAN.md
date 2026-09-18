@@ -495,8 +495,24 @@ and each year's advance is normalised by that year's limit, the low end of every
 range is too optimistic. Do not ship a P10 to users before that is done, or the
 app will imply a possibility the current regime does not support.
 
-**Phase 1 status.** Model, event layer and app shell are built and green: 27
-model tests pass and the app typechecks. The app follows the phone's theme with
+**Phase 1 status (updated 2026-09-18).** Five screens now: case input, estimate,
+what-changed timeline, plain-language explainer, and data-and-accuracy. 37 model
+tests pass and the app typechecks. The estimate screen carries a ten-year
+history chart that draws Unavailable months as visible breaks rather than
+interpolating across them, which is the visual form of the same rule the model
+follows by treating a freeze as a real zero.
+
+**Per-category bulletin sections are built** (finding 30). 194 sections across
+122 months. The risk score now quotes the Visa Office rather than inferring:
+EB-2 China reads 87 of 100 citing this month's actual warning, while EB-2 India
+still reads "advance" because a warning about becoming unavailable is suppressed
+once the category already is.
+
+Still open in Phase 1: the flash-card carousel (cards render as a stack), the
+custom typefaces, and on-device verification. Nothing has been seen running on a
+simulator; verification is typecheck and unit tests only.
+
+ The app follows the phone's theme with
 a System/Light/Dark override, ships a data snapshot so first launch works
 offline, and calls one `assessCase` function rather than reassembling the model
 itself.

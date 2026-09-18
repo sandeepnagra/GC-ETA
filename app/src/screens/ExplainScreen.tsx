@@ -16,6 +16,7 @@ interface Props {
   mode: ThemeMode;
   onMode: (mode: ThemeMode) => void;
   onBack: () => void;
+  onMethodology: () => void;
   dataAsOf: string;
 }
 
@@ -34,7 +35,7 @@ const STEPS = [
   },
 ];
 
-export function ExplainScreen({ theme, mode, onMode, onBack, dataAsOf }: Props) {
+export function ExplainScreen({ theme, mode, onMode, onBack, onMethodology, dataAsOf }: Props) {
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: theme.bg }}
@@ -83,6 +84,24 @@ export function ExplainScreen({ theme, mode, onMode, onBack, dataAsOf }: Props) 
           and the most likely point inside it, and we widen the window when the data is thin.
         </Text>
       </View>
+
+      <Pressable
+        accessibilityRole="button"
+        onPress={onMethodology}
+        style={{
+          flexDirection: "row", alignItems: "center", gap: 12, minHeight: 44,
+          backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1,
+          borderRadius: 16, padding: 16,
+        }}
+      >
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 15, fontWeight: "600", color: theme.text }}>Data and accuracy</Text>
+          <Text style={{ fontSize: 13, lineHeight: 18, color: theme.secondary }}>
+            Which files this uses, how fresh they are, and where the estimate is weak
+          </Text>
+        </View>
+        <Text style={{ fontSize: 20, color: theme.secondary }}>›</Text>
+      </Pressable>
 
       <View style={{ backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 10 }}>
         <Text style={{ fontSize: 12, fontWeight: "600", letterSpacing: 0.3, textTransform: "uppercase", color: theme.secondary }}>

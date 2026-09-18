@@ -15,12 +15,13 @@ import { View } from "react-native";
 import type { Change } from "@gc-eta/model";
 
 import { Text } from "./Text";
+import { CARD_MIN_HEIGHT } from "./Card";
 import { ArrowDownIcon, ArrowUpIcon } from "./Icons";
 import type { Theme } from "../theme";
 
 export function ChangesCard({ theme, changes }: { theme: Theme; changes: Change[] }) {
   return (
-    <View style={{ backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 12 }}>
+    <View style={{ minHeight: CARD_MIN_HEIGHT, backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 12 }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" }}>
         <Text style={{ fontSize: 12, fontWeight: "600", letterSpacing: 0.3, textTransform: "uppercase", color: theme.secondary }}>
           What would change this
@@ -34,7 +35,7 @@ export function ChangesCard({ theme, changes }: { theme: Theme; changes: Change[
         </Text>
       ) : (
         <View style={{ gap: 8 }}>
-          {changes.map((change) => {
+          {changes.slice(0, 3).map((change) => {
             const sooner = change.direction === "sooner";
             return (
               <View
@@ -68,8 +69,10 @@ export function ChangesCard({ theme, changes }: { theme: Theme; changes: Change[
       )}
 
       <Text style={{ fontSize: 11, lineHeight: 15, color: theme.secondary }}>
-        These are what to watch, not predictions. Nothing here carries odds, because
-        nothing in the data supports any.
+        {changes.length > 3
+          ? `${changes.length - 3} more in the full note. `
+          : ""}
+        What to watch, not predictions.
       </Text>
     </View>
   );

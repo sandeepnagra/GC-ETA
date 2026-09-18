@@ -17,7 +17,9 @@
  * three. Nothing is hidden behind an anonymous marker.
  *
  * It never clips, and it does not pad. The track follows the height of the page
- * you are on. A first attempt sized it to the tallest card, which is simpler
+ * you are on. At default text size every card now reaches the same minimum
+ * height, so the track holds still and this does nothing; at accessibility
+ * sizes the cards grow by different amounts and it earns its keep again. A first attempt sized it to the tallest card, which is simpler
  * and looked broken on a device: the people-ahead card is three times the
  * height of the drivers card, so every other page sat above seven hundred
  * points of blank and the dots were pushed off screen entirely.

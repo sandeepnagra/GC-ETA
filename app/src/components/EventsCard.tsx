@@ -16,6 +16,7 @@ import { Pressable, View } from "react-native";
 import type { CaseAssessment } from "@gc-eta/model";
 
 import { Text } from "./Text";
+import { CARD_MIN_HEIGHT } from "./Card";
 import { CapitolIcon, CheckIcon, PauseIcon } from "./Icons";
 import type { Theme } from "../theme";
 import { kindColours, statusLook, type EventKind } from "../eventStatus";
@@ -45,10 +46,10 @@ export function EventsCard({
   onAll?: () => void;
 }) {
   // Blocking and active first; the registry already sorts that way.
-  const shown = events.slice(0, 3);
+  const shown = events.slice(0, 2);
 
   return (
-    <View style={{ backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 12 }}>
+    <View style={{ minHeight: CARD_MIN_HEIGHT, backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 12 }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" }}>
         <Text style={{ fontSize: 12, fontWeight: "600", letterSpacing: 0.3, textTransform: "uppercase", color: theme.secondary }}>
           Disruptions for you
@@ -93,7 +94,10 @@ export function EventsCard({
                   <Text style={{ fontSize: 14, fontWeight: "600", lineHeight: 18, color: theme.text }}>
                     {item.event.title}
                   </Text>
-                  <Text style={{ fontSize: 12, lineHeight: 16, color: theme.secondary }}>
+                  <Text
+                    numberOfLines={3}
+                    style={{ fontSize: 12, lineHeight: 16, color: theme.secondary }}
+                  >
                     {word} · {item.why}
                   </Text>
                 </View>
@@ -102,6 +106,12 @@ export function EventsCard({
           })}
         </View>
       )}
+      {events.length > shown.length ? (
+        <Text style={{ fontSize: 11, lineHeight: 15, color: theme.secondary }}>
+          {events.length - shown.length} more tracked, including ones that do not touch
+          your case.
+        </Text>
+      ) : null}
     </View>
   );
 }

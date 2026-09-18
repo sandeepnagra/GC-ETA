@@ -14,6 +14,7 @@ import { View } from "react-native";
 import type { Season } from "@gc-eta/model";
 
 import { Text } from "./Text";
+import { CARD_MIN_HEIGHT } from "./Card";
 import type { Theme } from "../theme";
 
 const MAX_BAR = 42;
@@ -22,7 +23,7 @@ const MIN_BAR = 5;
 export function SeasonCard({ theme, season }: { theme: Theme; season: Season }) {
   if (!season.usable) {
     return (
-      <View style={{ backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 8 }}>
+      <View style={{ minHeight: CARD_MIN_HEIGHT, backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 8 }}>
         <Text style={{ fontSize: 12, fontWeight: "600", letterSpacing: 0.3, textTransform: "uppercase", color: theme.secondary }}>
           A typical year
         </Text>
@@ -39,7 +40,7 @@ export function SeasonCard({ theme, season }: { theme: Theme; season: Season }) 
   const summerFreezes = season.months.slice(9).reduce((sum, m) => sum + m.unavailable, 0);
 
   return (
-    <View style={{ backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 12 }}>
+    <View style={{ minHeight: CARD_MIN_HEIGHT, backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 12 }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" }}>
         <Text style={{ fontSize: 12, fontWeight: "600", letterSpacing: 0.3, textTransform: "uppercase", color: theme.secondary }}>
           A typical year

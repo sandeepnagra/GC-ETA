@@ -16,6 +16,7 @@ import { View } from "react-native";
 import type { SupplyPicture } from "@gc-eta/model";
 
 import { Text } from "./Text";
+import { CARD_MIN_HEIGHT } from "./Card";
 import { categoryLabel, columnLabel } from "../data";
 import type { Theme } from "../theme";
 
@@ -69,7 +70,7 @@ export function SupplyCard({
   const { limit, base, spillover, fiscalYear } = picture;
   if (!limit || spillover === null || !fiscalYear) {
     return (
-      <View style={{ backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 8 }}>
+      <View style={{ minHeight: CARD_MIN_HEIGHT, backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 8 }}>
         <Text style={{ fontSize: 12, fontWeight: "600", letterSpacing: 0.3, textTransform: "uppercase", color: theme.secondary }}>
           Where the numbers come from
         </Text>
@@ -81,7 +82,7 @@ export function SupplyCard({
   }
 
   return (
-    <View style={{ backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 12 }}>
+    <View style={{ minHeight: CARD_MIN_HEIGHT, backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 12 }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" }}>
         <Text style={{ fontSize: 12, fontWeight: "600", letterSpacing: 0.3, textTransform: "uppercase", color: theme.secondary }}>
           FY{fiscalYear} supply

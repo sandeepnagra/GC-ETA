@@ -18,6 +18,7 @@ import { View } from "react-native";
 import type { CaseAssessment } from "@gc-eta/model";
 
 import { Text } from "./Text";
+import { CARD_MIN_HEIGHT } from "./Card";
 import { CheckIcon } from "./Icons";
 import { prettyDate, prettyMonth } from "../data";
 import type { Theme } from "../theme";
@@ -77,7 +78,7 @@ export function StageCard({
   ];
 
   return (
-    <View style={{ backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 12 }}>
+    <View style={{ minHeight: CARD_MIN_HEIGHT, backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 12 }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" }}>
         <Text style={{ fontSize: 12, fontWeight: "600", letterSpacing: 0.3, textTransform: "uppercase", color: theme.secondary }}>
           Your I-485

@@ -9,6 +9,7 @@ import { categoryLabel, columnLabel, prettyDate, shortDate } from "../data";
 import { HistoryChart } from "../components/HistoryChart";
 import { CardCarousel, type CarouselItem } from "../components/CardCarousel";
 import { DetailSheet, type CardDetail } from "../components/DetailSheet";
+import { CARD_MIN_HEIGHT } from "../components/Card";
 import { BackIcon, CardWatermark, HelpIcon } from "../components/Icons";
 import { EstimateTimeline } from "../components/EstimateTimeline";
 import { QueueCard } from "../components/QueueCard";
@@ -401,7 +402,7 @@ function Tile({ theme, label, value, tone }: { theme: Theme; label: string; valu
 
 function Card({ theme, children }: { theme: Theme; children: React.ReactNode }) {
   return (
-    <View style={{ backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 8 }}>
+    <View style={{ minHeight: CARD_MIN_HEIGHT, backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 8 }}>
       {children}
     </View>
   );

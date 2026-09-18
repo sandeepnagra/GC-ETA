@@ -18,6 +18,7 @@ import type { Comparison, SwitchSuggestion } from "@gc-eta/model";
 import { monthToAbsolute } from "@gc-eta/model";
 
 import { Text } from "./Text";
+import { CARD_MIN_HEIGHT } from "./Card";
 import { ChevronRight } from "./Icons";
 import { categoryLabel, columnLabel } from "../data";
 import type { Theme } from "../theme";
@@ -72,7 +73,7 @@ export function CompareCard({
   const drawable = marks.some((m) => m.low || m.mid);
 
   return (
-    <View style={{ backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 10 }}>
+    <View style={{ minHeight: CARD_MIN_HEIGHT, backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 10 }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" }}>
         <Text style={{ fontSize: 12, fontWeight: "600", letterSpacing: 0.3, textTransform: "uppercase", color: theme.secondary }}>
           EB-2 or EB-3?

@@ -14,6 +14,7 @@ import { BackIcon, CardWatermark, HelpIcon } from "../components/Icons";
 import { EstimateTimeline } from "../components/EstimateTimeline";
 import { QueueCard } from "../components/QueueCard";
 import { StageCard } from "../components/StageCard";
+import { ConfidenceCard } from "../components/ConfidenceCard";
 import { EventsCard } from "../components/EventsCard";
 import { ChangesCard } from "../components/ChangesCard";
 import { CompareCard } from "../components/CompareCard";
@@ -98,6 +99,25 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
     key: "outlook",
     title: "Outlook",
     node: <OutlookCard theme={theme} outlook={outlook} />,
+  });
+
+  cards.push({
+    key: "confidence",
+    title: "How sure",
+    node: <ConfidenceCard theme={theme} assessment={assessment} />,
+    detail: {
+      title: "How sure is this",
+      paragraphs: [
+        "The dial counts simulations. The model replays ten years of this category's published movement four thousand times, drawing multi-month blocks at random so a good year and a bad year stay intact rather than being averaged into a single smooth pace, and each run continues until the cutoff reaches your date or twenty-five years pass. The number on the dial is how many runs reached it.",
+        "A small share does not mean the estimate is wrong. It means most simulated futures did not get there inside twenty-five years, which for a deeply backlogged category is the honest answer and is why the headline reads as a bound rather than a date.",
+        "The lines below the dial are about the method rather than your case, and are the same for everyone. They come from replaying the model against the published archive: standing at a past month, making an estimate using only what was known then, and checking it against what actually happened.",
+        "The weakest result is the one worth knowing. Over three to six months this model is no more accurate than assuming the cutoff does not move at all, and its odds of a date becoming current within two years scored no better than always saying fifty percent. The long-range range is where it earns its keep; the short-range precision is not there.",
+      ],
+      caveat:
+        "Every simulation draws on the past ten years. A change in the law, or an unusually large spillover year, is outside anything it has seen.",
+      sources:
+        "Department of State Visa Bulletin archive. Backtest of 393 cases from quarterly origins between October 2016 and September 2023.",
+    },
   });
 
   // Only when it will actually draw something. QueueCard renders nothing for a

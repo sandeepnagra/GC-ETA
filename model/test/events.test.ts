@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 
 import { applicableEvents, staleEvents } from "../src/events.js";
 import { assessCase } from "../src/assess.js";
+import { caseTimeline } from "../src/news.js";
 import type { Bundle, EventsFile } from "../src/types.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -144,5 +145,55 @@ test("only pauses, bans and adjudication standards can block", () => {
         .includes(item.event.type),
       `${item.event.id} of type ${item.event.type} should not block`,
     );
+  }
+});
+
+test("the timeline is ordered newest first and always includes the bulletin", () => {
+  const items = caseTimeline(bundle, events, {
+    birthCountry: "IN", column: "IN", category: "EB2",
+    priorityDate: "2015-03-10", path: "adjustment",
+  }, TODAY);
+  assert.ok(items.length > 1);
+  for (let i = 1; i < items.length; i += 1) {
+    assert.ok(items[i - 1]!.date >= items[i]!.date, "newest first");
+  }
+  assert.ok(items.some((i) => i.id.startsWith("bulletin-")));
+});
+
+test("timeline items say what they mean for this reader, not just what happened", () => {
+  const consular = caseTimeline(bundle, events, {
+    birthCountry: "IN", column: "IN", category: "EB2",
+    priorityDate: "2015-03-10", path: "consular",
+  }, TODAY);
+  const pause = consular.find((i) => i.id === "dos-worldwide-iv-interview-pause-2026");
+  assert.ok(pause);
+  assert.equal(pause!.direct, true);
+  assert.equal(pause!.tone, "adverse");
+
+  const adjusting = caseTimeline(bundle, events, {
+    birthCountry: "IN", column: "IN", category: "EB2",
+    priorityDate: "2015-03-10", path: "adjustment",
+  }, TODAY);
+  const samePause = adjusting.find((i) => i.id === "dos-worldwide-iv-interview-pause-2026");
+  assert.equal(samePause!.direct, false, "the same event reads differently by route");
+  assert.match(samePause!.meaning, /behind you/);
+});
+
+test("a court defeat for a restriction reads as favourable", () => {
+  const items = caseTimeline(bundle, events, {
+    birthCountry: "IN", column: "IN", category: "EB2",
+    priorityDate: "2015-03-10", path: "consular",
+  }, TODAY, 30);
+  const vacated = items.find((i) => i.id === "dos-iv-pause-75-countries-2026");
+  assert.equal(vacated!.tone, "favourable");
+});
+
+test("every timeline item carries a confidence flag", () => {
+  const items = caseTimeline(bundle, events, {
+    birthCountry: "NG", column: "ROW", category: "EB2",
+    priorityDate: "2021-01-01", path: "consular",
+  }, TODAY, 30);
+  for (const item of items) {
+    assert.ok(["verified", "secondary"].includes(item.confidence), item.id);
   }
 });

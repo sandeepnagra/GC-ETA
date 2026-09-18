@@ -6,3 +6,5 @@ export { applicableEvents, staleEvents } from "./events.js";
 export type { ApplicableEvent, Relevance } from "./events.js";
 export { assessCase } from "./assess.js";
 export type { CaseAssessment } from "./assess.js";
+export { caseTimeline } from "./news.js";
+export type { NewsItem } from "./news.js";

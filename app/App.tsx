@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from "react";
 import { SafeAreaView, StatusBar, useColorScheme } from "react-native";
-import { assessCase } from "@gc-eta/model";
+import { assessCase, caseTimeline } from "@gc-eta/model";
 
 import { bundle, events, prettyMonth } from "./src/data";
 import { CaseScreen } from "./src/screens/CaseScreen";
 import { ExplainScreen } from "./src/screens/ExplainScreen";
+import { NewsScreen } from "./src/screens/NewsScreen";
 import { ResultsScreen } from "./src/screens/ResultsScreen";
 import { resolveTheme, type ThemeMode } from "./src/theme";
 import type { CaseDraft, Screen } from "./src/types";
@@ -30,6 +31,10 @@ export default function App() {
     () => assessCase(bundle, events, { ...draft }, today),
     [draft, today],
   );
+  const timeline = useMemo(
+    () => caseTimeline(bundle, events, { ...draft }, today),
+    [draft, today],
+  );
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
@@ -43,7 +48,11 @@ export default function App() {
           assessment={assessment}
           onBack={() => setScreen("case")}
           onExplain={() => setScreen("explain")}
+          onNews={() => setScreen("news")}
+          newsCount={timeline.filter((i) => i.direct).length}
         />
+      ) : screen === "news" ? (
+        <NewsScreen theme={theme} items={timeline} onBack={() => setScreen("results")} />
       ) : (
         <ExplainScreen
           theme={theme}

@@ -561,6 +561,70 @@ This raises the priority of the queue model and of the PERM density work in
 finding 32: they are not refinements, they are what makes the headline number
 defensible for the users who most need it.
 
+### News feeds: detection yes, projection input no (2026-09-18)
+
+Asked whether an immigration news feed could both inform the pipeline and adjust
+the projections. Split answer, and the second half is a deliberate no.
+
+**Detection: built.** `watch_feeds.py` polls four official feeds, matches a
+watchlist, and proposes candidates for human triage with an empty modelling
+effect. Feeds confirmed live: USCIS newsroom, Federal Register for DHS and for
+State, and State Department travel alerts. Useful discovery: **travel.state.gov
+serves RSS without the bot filter that blocks its HTML**, so the feed is
+reachable directly even though the bulletin ingest needs the mirror.
+
+Only official sources are polled. Law-firm and aggregator content is excluded on
+purpose: much of it is bulletin *prediction*, and ingesting it would mean
+learning other people's guesses as though they were measurements.
+
+**Projection input: refused, for five reasons.**
+
+1. It would import opinion as data, for the reason above.
+2. It would double count. A real policy change already reaches the model through
+   the cutoffs and the inventory; adjusting from the news as well counts it
+   twice.
+3. It is not fittable. There are about 200 monthly observations in total and 132
+   with a filing chart. A news-derived feature cannot be estimated on that
+   without overfitting, and §10 already requires beating a month-of-fiscal-year
+   baseline first.
+4. It breaks the rule in §8.1 that exists precisely because turning a court
+   order into a multiplier is a judgement about population, path and direction.
+5. It fails silently. A feed goes stale or noisy and projections drift with
+   nobody noticing.
+
+**What the build itself demonstrated.** The first matcher scored "perm" as a
+substring and surfaced a drawbridge regulation. Tightened to word boundaries,
+single weak terms still surfaced every country travel advisory including
+Antarctica. With a minimum score the feed returns **zero candidates today**,
+which is correct. Signal is rare and noise is the default, which is the argument
+against wiring it to arithmetic, made concrete.
+
+**The better signal remains unbuilt**: the bulletin's own per-category sections
+(finding 30). That is official, category-specific forward guidance, already
+inside pages the pipeline fetches. Build it before any feed touches the model.
+
+### In-app news: a curated timeline, not a headline river (2026-09-18)
+
+Shipped as `caseTimeline` plus a "What changed" screen. Built from the event
+registry rather than a raw feed, for three reasons.
+
+- **Relevance.** The State feed is largely travel advisories; putting
+  "Antarctica, Level 2" beside an EB-2 India estimate teaches people to ignore
+  the surface. Registry entries carry country, category and path, so each item
+  is filtered to the reader.
+- **Accuracy.** Republishing commentary inside an app where people decide
+  whether to change jobs or leave the country lends it authority it has not
+  earned. Every item shows its confidence, and anything not confirmed against a
+  primary source says so on its face.
+- **Usefulness.** A headline does not answer the only question the reader has.
+  Because entries carry a modelling effect, each item states what it means for
+  this case, and the same event reads differently by route: the worldwide
+  interview pause is marked as acting on a consular case and as moving the
+  numbers behind an adjustment case.
+
+Privacy holds by construction: the pipeline curates, the app reads the same
+published file as everyone else, and no request is keyed to the user's case.
+
 **Phase 2 — queue model (3–4 weeks).** Level B from inventory + waiting list + I-140 data, spillover forecaster from family issuance data, backtest harness, EB-2 vs EB-3 comparison, "current to approved" add-on.
 
 **Phase 3 — scenarios (later).** Level C Monte Carlo, probability-by-year view, optional topic-based push notifications (requires storing anonymous device tokens; decide then whether that breaks the no-data promise), localization (Hindi, Chinese, Spanish, Tagalog).

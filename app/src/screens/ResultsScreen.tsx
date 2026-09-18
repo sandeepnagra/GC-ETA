@@ -15,9 +15,11 @@ interface Props {
   assessment: CaseAssessment;
   onBack: () => void;
   onExplain: () => void;
+  onNews: () => void;
+  newsCount: number;
 }
 
-export function ResultsScreen({ theme, draft, assessment, onBack, onExplain }: Props) {
+export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, newsCount }: Props) {
   const { finalAction, filing, risk } = assessment;
   const outlook = outlookStyle(risk.outlook, theme);
   const blockers = assessment.events.filter((e) => e.relevance === "blocks");
@@ -113,6 +115,26 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain }: P
           ))}
         </Card>
       ) : null}
+
+      <Pressable
+        accessibilityRole="button"
+        onPress={onNews}
+        style={{
+          flexDirection: "row", alignItems: "center", gap: 12,
+          backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1,
+          borderRadius: 16, padding: 16, minHeight: 44,
+        }}
+      >
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 15, fontWeight: "600", color: theme.text }}>What changed</Text>
+          <Text style={{ fontSize: 13, lineHeight: 18, color: theme.secondary }}>
+            {newsCount > 0
+              ? `${newsCount} change${newsCount === 1 ? "" : "s"} acting on your case`
+              : "Nothing currently acting on your case directly"}
+          </Text>
+        </View>
+        <Text style={{ fontSize: 20, color: theme.secondary }}>›</Text>
+      </Pressable>
 
       {assessment.warnings.map((warning) => (
         <View key={warning} style={{ backgroundColor: theme.accentFill, borderRadius: 14, padding: 14 }}>

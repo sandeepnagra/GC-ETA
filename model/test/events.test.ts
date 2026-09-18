@@ -106,7 +106,7 @@ test("no tracked event is stale as of the review date", () => {
   assert.equal(staleEvents(events, TODAY).length, 0);
 });
 
-test("assessCase returns both charts, a risk read and events", () => {
+test("assessCase returns both charts, the near-term outlook and events", () => {
   const result = assessCase(bundle, events, {
     birthCountry: "IN", column: "IN", category: "EB2",
     priorityDate: "2015-03-10", path: "adjustment",
@@ -114,7 +114,8 @@ test("assessCase returns both charts, a risk read and events", () => {
   assert.equal(result.asOfMonth, "2026-09");
   assert.equal(result.finalAction.status, "not_current");
   assert.ok(result.filing.status.length > 0);
-  assert.ok(result.risk.score >= 0);
+  assert.ok(result.outlook.summary.length > 0);
+  assert.equal(result.outlook.windowDays, 90);
   assert.ok(result.events.length > 0);
   // A March 2015 India EB-2 date sits above the density floor, so the queue is
   // countable and the count must be a real number of people, not a placeholder.

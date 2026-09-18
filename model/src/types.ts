@@ -90,8 +90,6 @@ export interface EstimateInput {
   iterations?: number;
 }
 
-export type Outlook = "advance" | "hold" | "retrogress";
-
 export interface Estimate {
   status:
     | "current"
@@ -121,13 +119,6 @@ export interface Estimate {
   confidence: "low" | "medium" | "high";
   /** Plain-language drivers, most important first. */
   drivers: string[];
-}
-
-export interface RiskAssessment {
-  /** 0 to 100. Higher means more likely to retrogress or go unavailable. */
-  score: number;
-  outlook: Outlook;
-  reasons: string[];
 }
 
 

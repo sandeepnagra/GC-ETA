@@ -1050,7 +1050,9 @@ than the compiler directly.
 Ordered by what changes what a user is told, not by how interesting it is to
 build. Everything above the line is worth doing before any new modelling.
 
-**1. Decide what the "Next 3 to 6 months" card is allowed to claim.**
+**1. ~~Decide what the "Next 3 to 6 months" card is allowed to claim.~~ DONE.**
+Rebuilt as a schedule of what is actually coming rather than a forecast. See
+"The outlook card, rebuilt as a schedule" below. The original text follows.
 The card ships a six-month outlook that the backtest measured as no more
 accurate than assuming the cutoff does not move, and a two-year probability that
 scored no better than a coin flip (Brier 0.259 against 0.25). The reasoning it
@@ -1060,7 +1062,7 @@ direction only, or replace the model with the seasonal baseline that at least
 ties at twelve months. This is a live claim being made to users today, which is
 why it sits first.
 
-**2. Flash-card carousel.** A Phase 1 commitment, still a plain stack. The
+**2. ~~Flash-card carousel.~~ DONE.** Built and verified on a device. The original text follows: A Phase 1 commitment, still a plain stack. The
 results screen has grown a card since, so the case for paging through them
 rather than scrolling a column is stronger than when it was first designed.
 
@@ -1109,6 +1111,80 @@ Immigrant Visa Applicants exists and breaks employment down finely enough to
 apportion by priority date, and how many usable filing-chart opening events
 exist per category and country since 2016, which sets whether the
 materialisation rate can be estimated at all.
+
+### The outlook card, rebuilt as a schedule (2026-09-18)
+
+The card was never meant to be a forecast. Its purpose, as the project owner
+put it, is to say whether any major policy shift or new law is due to take
+effect in the next 30 to 90 days, and to say plainly that nothing is coming when
+nothing is. It had drifted into a statistical forecast, which is what the
+backtest then measured as worthless.
+
+What it used to do: blend seasonality, a per-pair retrogression base rate, the
+filing-to-final-action gap and recent direction into a score out of 100, and
+label it Advance, Hold or Retrogress. The backtest measured that class of
+reading as no more accurate than assuming the cutoff does not move at six
+months, with a two-year probability no better than always saying fifty percent.
+
+What it does now. Three sources, all with a published origin:
+
+1. **Laws, rules, court orders and category deadlines** from the event registry,
+   but only where the event STARTS or ENDS inside the window. An event already
+   in force and continuing is the status quo, it has its own card, and repeating
+   it as something "coming" would be wrong twice.
+2. **The Visa Office's own written guidance** for that category in the current
+   bulletin. Undated by nature, so no effective date is shown: it is an
+   intention, not a rule with a commencement date.
+3. **The 1 October reset**, the one date that is certain, and only when the
+   category is not already Current.
+
+When all three are empty the card says so: *"Nothing is scheduled in the next 3
+months that should change how your dates move. No rule change, court order or
+category deadline takes effect in that window, and the 2026-09 bulletin says
+nothing specific about this category."* That is an answer, not an empty state.
+
+**Base rates are deliberately gone.** That a category moved backwards in nine
+percent of past months is true, and it is not a statement about the next ninety
+days, so it does not belong on a card about the next ninety days.
+
+Two behaviours were preserved or found while rebuilding:
+
+- The suppression rule survives. EB-2 India is Unavailable and the September
+  2026 EB-2 section warns the category may become unavailable. Listing that
+  would tell someone something might happen to them that already has.
+- A leak was found and fixed. `sectionsFor` read the newest bulletin in the
+  bundle regardless of the date being asked about, so a question about January
+  could read a warning printed the following September. It now takes the newest
+  bulletin published on or before the date.
+
+`assessRisk` and `RiskAssessment` are deleted rather than left unused.
+
+### The flash-card carousel (2026-09-18)
+
+The Phase 1 commitment, finally built. The tension in the original brief was
+real: make a dense screen less overwhelming without eliminating or hiding any
+information, while a carousel by definition shows one card at a time.
+
+Three things resolve it. The answer never moves, because the estimate, the two
+chart tiles and the action buttons stay outside the carousel and only supporting
+detail goes in. The carousel states its own extent, with a "3 of 6" label naming
+the current card, so the reader knows what else is there rather than finding it
+by accident. And arrows sit beside the dots, because a horizontal swipe inside a
+vertically scrolling screen is easy to miss and awkward for anyone with limited
+dexterity.
+
+**Two bugs that only a device showed.** The first version sized the track to the
+tallest card. That is the obvious approach and it looked broken: the
+people-ahead card is around three times the height of the drivers card, so every
+other page sat above several hundred points of blank and the dots were pushed
+off screen entirely. The second version tracked the current page's height but
+kept it in its own state, set from inside a `setHeights` updater. React may call
+an updater more than once and it must not have side effects, so the track
+silently kept the tallest height it had ever seen, which is precisely the bug
+the change was meant to fix. The height is now derived during render from the
+scroll offset and the measured heights, taking the taller of the two pages
+currently straddled, so it never clips mid-swipe and leaves no gap once the
+gesture settles.
 
 ## 10. Validation
 

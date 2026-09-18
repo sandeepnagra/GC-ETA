@@ -1,7 +1,8 @@
 export * from "./types.js";
 export * from "./bundle.js";
 export { estimate, extractSteps, simulateFirstPassage, scaleStepsToRegime, scaleStepsToDensity } from "./levelA.js";
-export { assessRisk, sectionsFor } from "./risk.js";
+export { nearTermOutlook, sectionsFor, DEFAULT_WINDOW_DAYS } from "./outlook.js";
+export type { Outlook, ScheduledChange, ChangeSource, Direction } from "./outlook.js";
 export { applicableEvents, staleEvents } from "./events.js";
 export type { ApplicableEvent, Relevance } from "./events.js";
 export { assessCase } from "./assess.js";

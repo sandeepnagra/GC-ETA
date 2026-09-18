@@ -10,13 +10,12 @@ import { getSeries, lastKnownIndex } from "./bundle.js";
 import { applicableEvents, staleEvents, type ApplicableEvent } from "./events.js";
 import { estimate } from "./levelA.js";
 import { estimateQueue, type QueueEstimate } from "./levelB.js";
-import { assessRisk } from "./risk.js";
+import { nearTermOutlook, type Outlook } from "./outlook.js";
 import type {
   Bundle,
   CaseInput,
   Estimate,
   EventsFile,
-  RiskAssessment,
 } from "./types.js";
 
 export interface CaseAssessment {
@@ -24,7 +23,16 @@ export interface CaseAssessment {
   /** Which chart USCIS designated is published separately; see PLAN.md 2.4. */
   finalAction: Estimate;
   filing: Estimate;
-  risk: RiskAssessment;
+  /**
+   * What is actually scheduled to change in the next few months.
+   *
+   * Replaces a score out of 100 that blended seasonality, a retrogression base
+   * rate and recent direction. The backtest measured that kind of reading as no
+   * better than assuming no movement at six months, so it is gone. This reports
+   * rules, deadlines and the Visa Office's own written guidance, and says so
+   * plainly when there is nothing.
+   */
+  outlook: Outlook;
   /**
    * How many people hold an earlier priority date, from the labour
    * certification record. Present only when the record actually covers the
@@ -61,7 +69,7 @@ export function assessCase(
 ): CaseAssessment {
   const finalAction = estimate(bundle, input, "final_action");
   const filing = estimate(bundle, input, "dates_for_filing");
-  const risk = assessRisk(bundle, input.category, input.column);
+  const outlook = nearTermOutlook(bundle, events, input, onDate);
   const applicable = applicableEvents(events, {
     birthCountry: input.birthCountry,
     category: input.category,
@@ -113,5 +121,5 @@ export function assessCase(
     );
   }
 
-  return { asOfMonth: bundle.end_month, finalAction, filing, risk, queue, events: applicable, warnings };
+  return { asOfMonth: bundle.end_month, finalAction, filing, outlook, queue, events: applicable, warnings };
 }

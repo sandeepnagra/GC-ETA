@@ -6,9 +6,10 @@ import type { CaseAssessment } from "@gc-eta/model";
 import { dayToIso, historyPoints } from "@gc-eta/model";
 import { bundle, categoryLabel, columnLabel, prettyDate } from "../data";
 import { HistoryChart } from "../components/HistoryChart";
+import { CardCarousel, type CarouselItem } from "../components/CardCarousel";
 
 import { prettyMonth } from "../data";
-import { outlookStyle, type Theme } from "../theme";
+import { directionStyle, type Theme } from "../theme";
 import type { CaseDraft } from "../types";
 
 interface Props {
@@ -22,10 +23,94 @@ interface Props {
 }
 
 export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, newsCount }: Props) {
-  const { finalAction, filing, risk } = assessment;
-  const outlook = outlookStyle(risk.outlook, theme);
+  const { finalAction, filing, outlook } = assessment;
   const blockers = assessment.events.filter((e) => e.relevance === "blocks");
   const context = assessment.events.filter((e) => e.relevance === "context");
+
+  // The supporting detail, one card per page. The estimate itself and the two
+  // chart tiles stay outside the carousel: the answer should never be a swipe
+  // away. Cards with nothing to say are left out rather than shown empty, so
+  // the "3 of 6" count always reflects what is really there.
+  const cards: CarouselItem[] = [
+    {
+      key: "outlook",
+      title: "What is scheduled",
+      node: <OutlookCard theme={theme} outlook={outlook} />,
+    },
+    {
+      key: "queue",
+      title: "People ahead of you",
+      node: <QueueCard theme={theme} assessment={assessment} draft={draft} />,
+    },
+    {
+      key: "history",
+      title: "Ten years of movement",
+      node: (
+        <Card theme={theme}>
+          <Row theme={theme} title="Ten years of movement" trailing={columnLabel(draft.column)} />
+          <HistoryChart
+            theme={theme}
+            points={historyPoints(bundle, "final_action", draft.category, draft.column)}
+            priorityDate={draft.priorityDate}
+          />
+        </Card>
+      ),
+    },
+    {
+      key: "drivers",
+      title: "What drives this",
+      node: (
+        <Card theme={theme}>
+          <Row theme={theme} title="What drives this" />
+          {finalAction.drivers.map((driver) => (
+            <Text key={driver} style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
+              · {driver}
+            </Text>
+          ))}
+        </Card>
+      ),
+    },
+  ];
+
+  if (blockers.length > 0) {
+    cards.push({
+      key: "blockers",
+      title: "Affects you directly",
+      node: (
+        <Card theme={theme}>
+          <Row theme={theme} title="Affects you directly" trailing={String(blockers.length)} />
+          {blockers.map((item) => (
+            <View key={item.event.id} style={{ gap: 2 }}>
+              <Text style={{ fontSize: 15, fontWeight: "600", color: theme.text }}>
+                {item.event.title}
+                {item.upcoming ? ` (from ${prettyDate(item.event.start!)})` : ""}
+              </Text>
+              <Text style={{ fontSize: 13, lineHeight: 18, color: theme.secondary }}>
+                {item.event.summary}
+              </Text>
+            </View>
+          ))}
+        </Card>
+      ),
+    });
+  }
+
+  if (context.length > 0) {
+    cards.push({
+      key: "context",
+      title: "Numbers behind you",
+      node: (
+        <Card theme={theme}>
+          <Row theme={theme} title="Moving the numbers behind you" trailing={String(context.length)} />
+          {context.slice(0, 4).map((item) => (
+            <Text key={item.event.id} style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
+              · {item.event.title}
+            </Text>
+          ))}
+        </Card>
+      ),
+    });
+  }
 
   return (
     <ScrollView
@@ -70,64 +155,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
         <Tile theme={theme} label="Filing chart" value={cutoffText(filing)} tone={theme.text} />
       </View>
 
-      {/* Outlook. Colour is never the only signal: glyph and label carry it too. */}
-      <Card theme={theme}>
-        <Row theme={theme} title="Next 3 to 6 months" trailing={`${risk.score} / 100`} />
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <Text style={{ fontSize: 18, color: outlook.color }}>{outlook.glyph}</Text>
-          <Text style={{ fontSize: 20, fontWeight: "700", color: outlook.color }}>{outlook.label}</Text>
-        </View>
-        {risk.reasons.map((reason) => (
-          <Text key={reason} style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
-            {reason}
-          </Text>
-        ))}
-      </Card>
-
-      <QueueCard theme={theme} assessment={assessment} draft={draft} />
-
-      <Card theme={theme}>
-        <Row theme={theme} title="Ten years of movement" trailing={columnLabel(draft.column)} />
-        <HistoryChart
-          theme={theme}
-          points={historyPoints(bundle, "final_action", draft.category, draft.column)}
-          priorityDate={draft.priorityDate}
-        />
-      </Card>
-
-      <Card theme={theme}>
-        <Row theme={theme} title="What drives this" />
-        {finalAction.drivers.map((driver) => (
-          <Text key={driver} style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
-            · {driver}
-          </Text>
-        ))}
-      </Card>
-
-      {blockers.length > 0 ? (
-        <Card theme={theme}>
-          <Row theme={theme} title="Affects you directly" trailing={String(blockers.length)} />
-          {blockers.map((item) => (
-            <View key={item.event.id} style={{ gap: 2 }}>
-              <Text style={{ fontSize: 15, fontWeight: "600", color: theme.text }}>
-                {item.event.title}{item.upcoming ? " (from " + item.event.start + ")" : ""}
-              </Text>
-              <Text style={{ fontSize: 13, lineHeight: 18, color: theme.secondary }}>{item.event.summary}</Text>
-            </View>
-          ))}
-        </Card>
-      ) : null}
-
-      {context.length > 0 ? (
-        <Card theme={theme}>
-          <Row theme={theme} title="Moving the numbers behind you" trailing={String(context.length)} />
-          {context.slice(0, 4).map((item) => (
-            <Text key={item.event.id} style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
-              · {item.event.title}
-            </Text>
-          ))}
-        </Card>
-      ) : null}
+      <CardCarousel theme={theme} items={cards} />
 
       <Pressable
         accessibilityRole="button"
@@ -322,4 +350,48 @@ function supplyLine(q: CaseAssessment["queue"]): string {
     return `No issuance history is recorded for this category, so the only guide is the guaranteed per-country minimum of roughly ${n(s.low)} a year. The bulletin cutoff moves to manage how many people file rather than to track that number.`;
   }
   return `Across ${s.years} recorded years this country and category received about ${n(s.mid)} visa numbers in a typical year, ranging from ${n(s.low)} in a poor one to ${n(s.high)} in a good one. The cutoff moves to manage how many people file rather than to record those numbers, so the two can diverge for years at a time.`;
+}
+
+/**
+ * What is scheduled to change, rather than a guess at what will.
+ *
+ * This replaced a score out of 100 built from seasonality, a retrogression base
+ * rate and recent direction. The backtest measured that reading as no better
+ * than assuming the cutoff does not move, so it is gone. What is left is only
+ * things with a source: a rule with a commencement date, a category deadline, a
+ * court order, or the Visa Office saying in writing what it intends.
+ *
+ * An empty list is the most common result and is treated as an answer, not as
+ * an empty state. Telling someone that nothing is coming is useful.
+ */
+function OutlookCard({ theme, outlook }: { theme: Theme; outlook: CaseAssessment["outlook"] }) {
+  const months = Math.round(outlook.windowDays / 30);
+  return (
+    <Card theme={theme}>
+      <Row
+        theme={theme}
+        title={`Next ${months} months`}
+        trailing={outlook.changes.length === 0 ? "nothing scheduled" : `${outlook.changes.length} scheduled`}
+      />
+      <Text style={{ fontSize: 15, lineHeight: 21, color: theme.text }}>{outlook.summary}</Text>
+      {outlook.changes.map((change) => {
+        const style = directionStyle(change.direction, theme);
+        return (
+          <View key={change.id} style={{ gap: 2, marginTop: 8 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+              <Text style={{ fontSize: 13, color: style.color }}>{style.glyph}</Text>
+              <Text style={{ fontSize: 15, fontWeight: "600", color: theme.text, flex: 1 }}>
+                {change.title}
+              </Text>
+            </View>
+            <Text style={{ fontSize: 13, lineHeight: 18, color: theme.secondary }}>
+              {change.effective ? `${prettyDate(change.effective)} · ` : ""}
+              {style.label}
+            </Text>
+            <Text style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>{change.detail}</Text>
+          </View>
+        );
+      })}
+    </Card>
+  );
 }

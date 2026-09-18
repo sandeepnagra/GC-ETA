@@ -39,7 +39,7 @@ const assessment = assessCase(
   today,
 );
 const result = assessment.finalAction;
-const risk = assessment.risk;
+const outlook = assessment.outlook;
 
 const cutoff =
   result.currentCutoff.kind === "date"
@@ -59,8 +59,11 @@ if (result.beyondHorizon) {
   console.log(`  most likely : ${result.p50}`);
 }
 console.log(`  confidence  : ${result.confidence}`);
-console.log(`\n  outlook     : ${risk.outlook} (risk ${risk.score}/100)`);
-for (const reason of risk.reasons) console.log(`     - ${reason}`);
+console.log(`\n  next ${Math.round(outlook.windowDays / 30)} months: ${outlook.summary}`);
+for (const change of outlook.changes) {
+  const when = change.effective ?? "no date published";
+  console.log(`     - [${change.direction}] ${change.title}  (${when})`);
+}
 console.log(`\n  drivers:`);
 for (const driver of result.drivers) console.log(`     - ${driver}`);
 

@@ -13,7 +13,8 @@ import {
   monthToAbsolute,
 } from "../src/bundle.js";
 import { estimate, extractSteps, scaleStepsToRegime } from "../src/levelA.js";
-import { assessRisk, sectionsFor } from "../src/risk.js";
+import { nearTermOutlook, sectionsFor } from "../src/outlook.js";
+import type { EventsFile } from "../src/types.js";
 import type { Bundle } from "../src/types.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -153,33 +154,94 @@ test("an unknown category degrades rather than throwing", () => {
   assert.equal(result.status, "insufficient_data");
 });
 
-test("risk scores are bounded and carry reasons", () => {
+const NO_EVENTS: EventsFile = {
+  schema_version: 1,
+  last_reviewed: "2026-09-18",
+  country_lists: {},
+  events: [],
+};
+
+function caseFor(column: "IN" | "CN" | "ROW" | "MX" | "PH", category = "EB2") {
+  return {
+    birthCountry: column,
+    column,
+    category,
+    priorityDate: "2015-03-10",
+    path: "adjustment" as const,
+  };
+}
+
+test("the outlook lists scheduled changes and never a score", () => {
   for (const column of ["IN", "CN", "ROW", "MX", "PH"] as const) {
-    const risk = assessRisk(bundle, "EB2", column);
-    assert.ok(risk.score >= 0 && risk.score <= 100, `${column} score in range`);
-    assert.ok(risk.reasons.length > 0, `${column} explains itself`);
+    const outlook = nearTermOutlook(bundle, NO_EVENTS, caseFor(column), "2026-09-18");
+    assert.ok(outlook.summary.length > 0, `${column} says something`);
+    for (const change of outlook.changes) {
+      assert.ok(["law_or_policy", "visa_office", "annual_reset"].includes(change.source));
+      assert.ok(["helps", "hurts", "unclear"].includes(change.direction));
+    }
+    // The card must not smuggle a base rate back in. That a category moved
+    // backwards in some share of past months is true and is not a statement
+    // about the next ninety days.
+    const text = outlook.summary + outlook.changes.map((c) => c.title + c.detail).join(" ");
+    assert.ok(!/% of published months/.test(text), `${column} quotes no base rate`);
   }
 });
 
-test("an already-Unavailable category reads as advance, because October resets", () => {
-  // EB-2 India is Unavailable in the September 2026 bulletin. It cannot
-  // retrogress further, and the new fiscal year is the next event, which is
-  // what the results screen tells the user.
-  const risk = assessRisk(bundle, "EB2", "IN");
-  assert.equal(risk.outlook, "advance");
+test("an Unavailable category's next scheduled event is the new fiscal year", () => {
+  // EB-2 India is Unavailable in the September 2026 bulletin, so 1 October is
+  // both inside the window and the only thing that can move it.
+  const outlook = nearTermOutlook(bundle, NO_EVENTS, caseFor("IN"), "2026-09-18");
+  const reset = outlook.changes.find((c) => c.source === "annual_reset");
+  assert.ok(reset, "the reset is listed");
+  assert.equal(reset!.effective, "2026-10-01");
+  assert.equal(reset!.direction, "helps");
+  assert.ok(reset!.detail.includes("closed for the rest of this year"));
+});
+
+test("the fiscal year reset drops out once it is more than a window away", () => {
+  const outlook = nearTermOutlook(bundle, NO_EVENTS, caseFor("IN"), "2026-01-15");
   assert.ok(
-    risk.reasons.some((r) => r.includes("already Unavailable")),
-    "the reason names the current state",
+    !outlook.changes.some((c) => c.source === "annual_reset"),
+    "October is nine months off, so it is not a near-term change",
   );
 });
 
-test("a Current worldwide category still reads as at risk late in the fiscal year", () => {
-  // The September 2026 bulletin itself warned that EB-2 may retrogress or go
-  // unavailable before 30 September, so flagging this is correct rather than
-  // alarmist. Rest of World rows have retrogressed at year end before.
-  const risk = assessRisk(bundle, "EB2", "ROW");
-  assert.notEqual(risk.outlook, "advance");
-  assert.ok(risk.reasons.some((r) => r.includes("July to September")));
+test("a dated rule inside the window is listed, and outside it is not", () => {
+  const events: EventsFile = {
+    ...NO_EVENTS,
+    events: [
+      {
+        id: "test-rule",
+        type: "adjudication_pause",
+        title: "A rule that pauses adjudication",
+        summary: "Takes effect soon.",
+        countries: "all",
+        affects: ["adjustment"],
+        categories: "all",
+        start: "2026-10-15",
+        end: null,
+        status: "scheduled",
+        modeling: {},
+        confidence: "verified",
+        verified_against: "test",
+        last_checked: "2026-09-18",
+      },
+    ],
+  };
+  const near = nearTermOutlook(bundle, events, caseFor("IN"), "2026-09-18");
+  assert.ok(near.changes.some((c) => c.id === "test-rule"), "a rule 27 days out is listed");
+
+  const far = nearTermOutlook(bundle, events, caseFor("IN"), "2026-01-15");
+  assert.ok(!far.changes.some((c) => c.id === "test-rule"), "nine months out it is not");
+});
+
+test("with nothing scheduled, the card says so rather than inventing an outlook", () => {
+  // Mexico EB-2 in January: no per-category section, no events, and October is
+  // far away. The honest answer is that nothing is coming.
+  const outlook = nearTermOutlook(bundle, NO_EVENTS, caseFor("MX"), "2026-01-15");
+  assert.equal(outlook.changes.length, 0);
+  assert.ok(outlook.summary.startsWith("Nothing is scheduled"));
+  assert.ok(outlook.summary.includes("No rule change, court order or category deadline"));
 });
 
 test("probability of becoming current is reported alongside the range", () => {
@@ -232,25 +294,27 @@ test("sections match a category worldwide or a specific column, not both loosely
   }
 });
 
-test("a bulletin warning raises risk and is quoted back to the user", () => {
-  const china = assessRisk(bundle, "EB2", "CN");
-  assert.equal(china.outlook, "retrogress");
-  assert.ok(
-    china.reasons.some((r) => r.includes("bulletin warns")),
-    "the Visa Office's own words carry the reason",
-  );
+test("a bulletin warning becomes a listed change, attributed to the Visa Office", () => {
+  const outlook = nearTermOutlook(bundle, NO_EVENTS, caseFor("CN"), "2026-09-18");
+  const warning = outlook.changes.find((c) => c.source === "visa_office" && c.direction === "hurts");
+  assert.ok(warning, "the warning is listed");
+  assert.ok(warning!.title.includes("Visa Office"), "and is attributed, not stated as fact");
+  // Guidance is an intention rather than a rule with a commencement date.
+  assert.equal(warning!.effective, null);
 });
 
-test("a warning about unavailability is suppressed once it has already happened", () => {
+test("a warning about closure is suppressed once the category has already closed", () => {
   // EB-2 India is Unavailable in September 2026 and the EB-2 section warns the
-  // category may become unavailable. Counting that against India would be
-  // double counting a thing that has already occurred.
-  const india = assessRisk(bundle, "EB2", "IN");
+  // category may become unavailable. Listing that would tell someone something
+  // might happen to them that has already happened.
+  const outlook = nearTermOutlook(bundle, NO_EVENTS, caseFor("IN"), "2026-09-18");
   assert.ok(
-    !india.reasons.some((r) => r.includes("bulletin warns")),
-    "no warning is applied to a category already Unavailable",
+    !outlook.changes.some((c) => c.source === "visa_office" && c.direction === "hurts"),
+    "no closure warning for a category already closed",
   );
-  assert.equal(india.outlook, "advance");
+  // China is not Unavailable, so the same section does apply to it.
+  const china = nearTermOutlook(bundle, NO_EVENTS, caseFor("CN"), "2026-09-18");
+  assert.ok(china.changes.some((c) => c.source === "visa_office" && c.direction === "hurts"));
 });
 
 test("months without per-category guidance carry no sections", () => {

@@ -84,11 +84,18 @@ export function useTheme(mode: ThemeMode): Theme {
  * indistinguishable for roughly 8% of men, and dark mode does not excuse it.
  * Every caller renders the glyph and the label as well as the colour.
  */
-export function outlookStyle(
-  outlook: "advance" | "hold" | "retrogress",
+/**
+ * Styling for a scheduled change, by which way it should push the dates.
+ *
+ * Colour is never the only signal. Every state carries a glyph and a word as
+ * well, so the card reads correctly in greyscale and to anyone who cannot
+ * separate the accent green from the warning red. Finding 43.
+ */
+export function directionStyle(
+  direction: "helps" | "hurts" | "unclear",
   theme: Theme,
 ): { color: string; glyph: string; label: string } {
-  if (outlook === "advance") return { color: theme.accent, glyph: "▲", label: "Advance" };
-  if (outlook === "retrogress") return { color: theme.negative, glyph: "▼", label: "Retrogress" };
-  return { color: theme.caution, glyph: "■", label: "Hold" };
+  if (direction === "helps") return { color: theme.accent, glyph: "▲", label: "Should help" };
+  if (direction === "hurts") return { color: theme.negative, glyph: "▼", label: "Could slow it" };
+  return { color: theme.caution, glyph: "■", label: "Unclear effect" };
 }

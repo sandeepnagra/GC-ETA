@@ -508,22 +508,16 @@ EB-2 China reads 87 of 100 citing this month's actual warning, while EB-2 India
 still reads "advance" because a warning about becoming unavailable is suppressed
 once the category already is.
 
-Still open in Phase 1: the flash-card carousel (cards render as a stack), the
-custom typefaces, and on-device verification. Nothing has been seen running on a
-simulator; verification is typecheck and unit tests only.
+**Phase 1 status corrected (2026-09-18, end of day).** The paragraphs above were
+written before the app had ever run. What they list as outstanding is now mostly
+done: the history chart ships, the data-and-accuracy screen ships, and the app
+has been verified on an iPhone 17 Pro simulator repeatedly, which caught several
+things that typechecks and unit tests could not. 56 model tests pass.
 
- The app follows the phone's theme with
-a System/Light/Dark override, ships a data snapshot so first launch works
-offline, and calls one `assessCase` function rather than reassembling the model
-itself.
-
-Not yet done in Phase 1: the Disruptions and data-and-accuracy screens, the
-flash-card carousel (the results screen currently renders the cards as a plain
-stack), the history chart, and the custom typefaces. The mockup uses Fraunces
-and IBM Plex Sans; the app currently uses system fonts, so it is legible and on
-palette but not yet on brand. Loading those needs `expo-font` and the font
-files. Visual verification also still needs a simulator; nothing here has been
-seen running on a device.
+Genuinely still open in Phase 1: the flash-card carousel, which renders as a
+plain stack, and the custom typefaces. The mockup uses Fraunces and IBM Plex
+Sans; the app uses system fonts, so it is legible and on palette but not on
+brand. Loading them needs `expo-font` and the font files.
 
 ### Regime normalisation, and what it exposed (2026-09-17)
 
@@ -1050,6 +1044,71 @@ card said "No issuance history is recorded for this category" while the model,
 the tests and the type checker all passed. It was visible only on screen.
 `RUNNING.md` already documented the sync; the lesson is to use the script rather
 than the compiler directly.
+
+### Ordered backlog (set 2026-09-18)
+
+Ordered by what changes what a user is told, not by how interesting it is to
+build. Everything above the line is worth doing before any new modelling.
+
+**1. Decide what the "Next 3 to 6 months" card is allowed to claim.**
+The card ships a six-month outlook that the backtest measured as no more
+accurate than assuming the cutoff does not move, and a two-year probability that
+scored no better than a coin flip (Brier 0.259 against 0.25). The reasoning it
+prints is genuinely useful because it quotes the Visa Office's own warnings. The
+forecast around it is not. Options: keep the reasons and drop the score, show
+direction only, or replace the model with the seasonal baseline that at least
+ties at twelve months. This is a live claim being made to users today, which is
+why it sits first.
+
+**2. Flash-card carousel.** A Phase 1 commitment, still a plain stack. The
+results screen has grown a card since, so the case for paging through them
+rather than scrolling a column is stronger than when it was first designed.
+
+**3. EB-2 versus EB-3, descriptive only.** Now genuinely computable for the
+first time: per-category density gives the queue on each side and Table V gives
+what each actually receives. Finding 44 governs the presentation, and it is
+strict. No recommendation, no single-number delta, no implied advice about
+downgrading, because the app cannot see the legal costs or the employer's
+willingness. Show both queues and both issuance histories side by side and let
+the reader draw the conclusion.
+
+**4. Custom typefaces.** Fraunces and IBM Plex Sans via `expo-font`. Purely
+cosmetic, but it is the last thing between the app and the approved design.
+
+**5. The "current to approved" add-on and the filed-I-485 path.** §6.5. The
+optional "have you already filed" question is collected and currently changes
+very little. Once a date is current the remaining wait is USCIS processing, not
+the bulletin, and that is a different and better-documented distribution.
+
+---
+
+**6. Spillover forecaster from DHS OHSS quarterly data.** Deliberately demoted.
+It would sharpen an estimate of how many numbers fall across to an
+oversubscribed country, which is precisely the divisor the Table V work showed
+should not be dividing anything yet. Its real value now is explanatory rather
+than predictive: it answers "why might this move next year", which the
+per-category sections already partly do.
+
+**7. Level C: Monte Carlo over scenarios, and a probability-by-year view.**
+Phase 3. Worth building only after item 1 is settled, because it multiplies
+whatever probability skill the model has, and the measured skill is currently
+zero.
+
+**8. Notifications and localization.** Phase 3. Push notifications need device
+tokens, which has to be weighed against the no-account, no-data promise in §7.1.
+Hindi, Chinese, Spanish and Tagalog.
+
+**Dropped, with reason.** The inventory XLSX parser, a Phase 0 leftover. §4.1
+established that the published file has no India EB-2 or EB-3 rows for the
+priority dates that matter, so the parser would be real work for a file that
+cannot answer the question it was meant to answer.
+
+**Still unanswered from the Phase 0 gate,** both cheap and both worth closing
+before item 6: whether a November 2025 edition of the DOS Annual Report of
+Immigrant Visa Applicants exists and breaks employment down finely enough to
+apportion by priority date, and how many usable filing-chart opening events
+exist per category and country since 2016, which sets whether the
+materialisation rate can be estimated at all.
 
 ## 10. Validation
 

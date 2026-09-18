@@ -51,3 +51,7 @@ pipeline/raw/
 
 # Parsed archive output is large and fully reproducible from pipeline/
 data/bulletins.json
+
+# Expo / app
+app/assets/data/
+.expo/

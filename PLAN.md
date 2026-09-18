@@ -495,6 +495,20 @@ and each year's advance is normalised by that year's limit, the low end of every
 range is too optimistic. Do not ship a P10 to users before that is done, or the
 app will imply a possibility the current regime does not support.
 
+**Phase 1 status.** Model, event layer and app shell are built and green: 27
+model tests pass and the app typechecks. The app follows the phone's theme with
+a System/Light/Dark override, ships a data snapshot so first launch works
+offline, and calls one `assessCase` function rather than reassembling the model
+itself.
+
+Not yet done in Phase 1: the Disruptions and data-and-accuracy screens, the
+flash-card carousel (the results screen currently renders the cards as a plain
+stack), the history chart, and the custom typefaces. The mockup uses Fraunces
+and IBM Plex Sans; the app currently uses system fonts, so it is legible and on
+palette but not yet on brand. Loading those needs `expo-font` and the font
+files. Visual verification also still needs a simulator; nothing here has been
+seen running on a device.
+
 **Phase 2 — queue model (3–4 weeks).** Level B from inventory + waiting list + I-140 data, spillover forecaster from family issuance data, backtest harness, EB-2 vs EB-3 comparison, "current to approved" add-on.
 
 **Phase 3 — scenarios (later).** Level C Monte Carlo, probability-by-year view, optional topic-based push notifications (requires storing anonymous device tokens; decide then whether that breaks the no-data promise), localization (Hindi, Chinese, Spanish, Tagalog).

@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "GC ETA",
+    "slug": "gc-eta",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "scheme": "gceta",
+    "splash": { "backgroundColor": "#F3EFE6" },
+    "ios": { "supportsTablet": false, "bundleIdentifier": "com.gceta.app" },
+    "android": { "package": "com.gceta.app" },
+    "assetBundlePatterns": ["**/*"]
+  }
+}

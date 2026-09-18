@@ -289,26 +289,37 @@ function QueueCard({
         {(q.principalsAhead ?? 0).toLocaleString("en-US")} certified labour
         certifications with priority dates between {from} and your own.{aside}
       </Text>
+      <Text style={{ fontSize: 13, lineHeight: 19, color: theme.secondary }}>
+        This counts labour certification cases only. People applying through a
+        national interest waiver or an extraordinary ability petition never file one,
+        so they are ahead of you too and are not in this number.
+      </Text>
       <View style={{ height: 1, backgroundColor: theme.border, marginVertical: 4 }} />
       <Text style={{ fontSize: 13, lineHeight: 19, color: theme.secondary }}>
-        Divided by the visa numbers your country usually receives, that queue implies
-        somewhere between {formatYears(w.low)} and {formatYears(w.high)}. The spread is
-        that wide because how many unused visas fall across from other countries each
-        year is not published anywhere. Treat the date above as the estimate and this
-        as a sanity check on it.
+        {supplyLine(q)}
       </Text>
     </Card>
   );
 }
 
-function formatYears(years: number): string {
-  if (years < 1) {
-    const months = Math.max(1, Math.round(years * 12));
-    return `${months} month${months === 1 ? "" : "s"}`;
+/**
+ * What the country actually receives, stated rather than divided into a date.
+ *
+ * This card used to end with "that queue implies somewhere between X and Y
+ * years". It does not any more, and the reason is measured rather than
+ * cautionary. Dividing the count by a supply figure assumes the cutoff moves as
+ * numbers are consumed. Across every year where both the queue and the issuance
+ * can be observed, the numbers issued per person the cutoff passed ran from
+ * 0.36 to 19.3. The Visa Office moves a cutoff to manage how many people file,
+ * not to record how many were admitted, so no divisor reconciles the two. The
+ * count and the issuance are both facts. The quotient was not.
+ */
+function supplyLine(q: CaseAssessment["queue"]): string {
+  const s = q.annualSupply;
+  if (!s) return "";
+  const n = (v: number) => Math.round(v).toLocaleString("en-US");
+  if (s.basis === "statutory") {
+    return `No issuance history is recorded for this category, so the only guide is the guaranteed per-country minimum of roughly ${n(s.low)} a year. The bulletin cutoff moves to manage how many people file rather than to track that number.`;
   }
-  if (years >= 40) return "several decades";
-  const rounded = years < 10 ? Math.round(years * 10) / 10 : Math.round(years);
-  // "1.0 years" reads like a machine wrote it.
-  const text = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
-  return `${text} year${rounded === 1 ? "" : "s"}`;
+  return `Across ${s.years} recorded years this country and category received about ${n(s.mid)} visa numbers in a typical year, ranging from ${n(s.low)} in a poor one to ${n(s.high)} in a good one. The cutoff moves to manage how many people file rather than to record those numbers, so the two can diverge for years at a time.`;
 }

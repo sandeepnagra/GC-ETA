@@ -58,10 +58,13 @@ console.log(`   Brier, current ≤24mo: ${Number.isFinite(passage.brier24) ? pas
 console.log(`   "beyond horizon"    : ${passage.beyondHorizonTotal} calls, ${pct(passage.beyondHorizonCorrect)} still not current`);
 console.log();
 
-console.log("3. QUEUE COUNT (Level B): people ahead divided by numbers available.");
-console.log("   Band width is printed next to coverage on purpose. Supply is");
-console.log("   uncalibrated, so the band is wide, and a wide band covers the");
-console.log("   truth without knowing anything. Coverage alone would mislead.\n");
+console.log("3. QUEUE COUNT (Level B) SCORED AGAINST CUTOFF MOVEMENT.");
+console.log("   Read this as a diagnostic, not as the model's accuracy. It asks");
+console.log("   whether the queue predicts when the BULLETIN moves, and the");
+console.log("   bulletin moves to manage how many people file, not to record how");
+console.log("   many were admitted. Across observable years the numbers issued");
+console.log("   per person the cutoff passed ran from 0.36 to 19.3, so a low");
+console.log("   score here is expected and is not evidence the count is wrong.\n");
 
 const INDIA = PAIRS.filter((p) => p.column === "IN");
 const REST = PAIRS.filter((p) => p.column !== "IN");
@@ -82,10 +85,11 @@ for (const [label, set] of [["India", INDIA], ["other columns", REST]] as const)
   console.log(`     median error of mid     : ${yrs(q.medianErrorYears)}\n`);
 }
 
-console.log("4. HEAD TO HEAD: same cases, both models.");
-console.log("   The separate scores above are not comparable, because Level B");
-console.log("   only answers where it can see the queue, which is an easier");
-console.log("   set. This restricts both to exactly the cases both answer.\n");
+console.log("4. HEAD TO HEAD ON CUTOFF MOVEMENT: same cases, both models.");
+console.log("   Level A is fitted to how the cutoff has moved, so it should win");
+console.log("   here and does. That is a statement about what each model is for,");
+console.log("   not a ranking: only Level A predicts a date, and only Level B");
+console.log("   counts who is waiting.\n");
 const h = backtestHeadToHead(bundle, PAIRS, origins, [1, 2, 3], 500);
 console.log(`   samples: ${h.samples}  (${h.censored} still not current)\n`);
 console.log(`   ${"model".padEnd(10)}${"coverage".padStart(10)}${"band".padStart(12)}${"median err".padStart(13)}`);

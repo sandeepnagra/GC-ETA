@@ -25,9 +25,14 @@ const LIMITATIONS = [
       "The date comes from how fast the cutoff has moved in the past. The count of people ahead of you comes from a million certified labour certifications, which is a direct measurement rather than a projection. They can disagree, and when they do, both are shown rather than averaged into one number.",
   },
   {
-    title: "How many visas your country gets is not published",
+    title: "The count is not turned into a waiting time",
     body:
-      "The law guarantees each country a floor of about seven percent of a category, but a heavily oversubscribed country routinely receives several times that when other countries leave numbers unused. How much more is not published by priority date, so the years implied by the queue are given as a wide range rather than a figure.",
+      "It would be easy to divide the people ahead of you by the visas your country receives each year and print a number of years. We measured whether that works. Across every year where both the queue and the visas issued can be observed, the visas issued per person the cutoff passed ranged from 0.4 to 19. The cutoff moves to manage how many people file, not to record how many were admitted, so no single divisor reconciles the two. Both figures are shown, and the division is not.",
+  },
+  {
+    title: "The count only sees labour certification cases",
+    body:
+      "Applicants using a national interest waiver or an extraordinary ability petition never file a labour certification, so they hold priority dates that no public record places in the queue. They are ahead of you too. For Indian EB-2 in particular the waiver route is a large and growing share, so the count understates.",
   },
   {
     title: "The queue cannot be seen before 2013",

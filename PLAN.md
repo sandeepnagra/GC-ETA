@@ -957,6 +957,100 @@ coverage runs 2013 to May 2023**, bounded below by files that publish no receipt
 date and above by files that publish no applicant country. Neither bound moves
 with more searching. The upper one would move if DOL republished the field.
 
+### Table V issuance, and why the wait range came off the screen (2026-09-18)
+
+Ingested thirteen years of Department of State Table V Part 2, the visa numbers
+actually issued per country and employment category, including adjustments of
+status and dependents. It was meant to replace the invented spillover multiplier
+of 3 in Level B's supply figure. It did, and then it showed that the division
+that multiplier fed should not be on screen at all.
+
+#### A single multiplier was never going to work
+
+India, FY2024, against the same 3,219 per-country floor:
+
+| category | issued | times the floor |
+|---|---|---|
+| EB-1 | 8,809 | 2.7 |
+| EB-2 | 3,916 | 1.2 |
+
+Same country, same year, same floor. Spillover is not a property of a country.
+It depends on whether the rest of the world is Current in that specific
+category, which decides whether unused numbers exist to fall across. So supply
+is now read as a distribution per country and category.
+
+**Median, not mean, and the gap is not cosmetic.** India's thirteen EB-2 years
+run from 2,599 to 59,431. The mean is 13,845; the median is 4,301. FY2021 and
+FY2022 combined a record 281,507 limit with unused family numbers falling into
+the employment pool. A mean would have quietly promised every applicant a repeat
+of the best two years on record.
+
+#### The measurement made the model score worse, and that is the finding
+
+Replacing the guess with the measurement moved the head-to-head the wrong way:
+
+| | with the invented 3x | with measured issuance |
+|---|---|---|
+| interval coverage | 82% | 32% |
+| median error | 0.49 yr | 1.44 yr |
+
+The instinct is to conclude the measurement is wrong. It is not. Checking the
+relationship directly settles it. For every year where both the queue and the
+issuance can be observed, the visa numbers issued per principal the cutoff
+passed:
+
+| | range | spread |
+|---|---|---|
+| all observable windows | 0.36 to 19.30 | 53x |
+| excluding the Philippines | 0.36 to 2.07 | 6x |
+
+Restricting to windows that sit entirely above the density floor made it wider,
+not tighter, which rules out the thin pre-2013 data as the explanation.
+
+**There is no divisor because the two quantities are not connected the way the
+model assumed.** The Visa Office moves a cutoff to manage how many people file,
+not to record how many were admitted. China EB-2 in FY2019 is the clearest case:
+the cutoff jumped four years, from January 2013 to January 2017, on 3,369
+numbers issued. That is a window being opened to generate demand, not 3,369
+people consuming four years of queue. Level A is fitted to exactly that
+behaviour. Level B, by construction, cannot be.
+
+The Philippines shows a second, independent failure of the proxy. Its EB-3 queue
+is heavily nurses, who are precertified under Schedule A and file no ordinary
+labour certification at all, so the count sees almost none of them and the ratio
+reaches 19.
+
+#### So the app shows both numbers and stops dividing them
+
+The results card keeps the count and drops the implied wait. In its place it
+states what the country actually receives, which is now a measured fact rather
+than a modelled one:
+
+> Across 13 recorded years this country and category received about 4,301 visa
+> numbers in a typical year, ranging from 3,916 in a poor one to 19,726 in a
+> good one. The cutoff moves to manage how many people file rather than to
+> record those numbers, so the two can diverge for years at a time.
+
+Two grounded numbers on screen, no quotient. The card also now says what the
+count cannot see: national interest waiver and extraordinary ability cases never
+file a labour certification, and for Indian EB-2 that is a large and growing
+share, so the count understates.
+
+`backtestQueue` and `backtestHeadToHead` stay in the command line output as
+diagnostics, relabelled to say they score **cutoff movement**. Level A winning
+there is a statement about what each model is for, not a ranking. Only Level A
+predicts a date, and only Level B counts who is waiting.
+
+#### One process note
+
+The app reads `app/assets/data/app-bundle.json`, a copy refreshed by
+`npm run sync-data`, which `npm run typecheck` runs first. Calling `tsc` directly
+skips it. Doing so left the app reading a bundle with no issuance in it, and the
+card said "No issuance history is recorded for this category" while the model,
+the tests and the type checker all passed. It was visible only on screen.
+`RUNNING.md` already documented the sync; the lesson is to use the script rather
+than the compiler directly.
+
 ## 10. Validation
 
 - **Backtest 1, short-range movement:** for every month from October 2021 to now, run the model using only data published before that month and predict FAD 6 and 12 months ahead. Report mean absolute error in months against a persistence baseline (assume no movement) and a naive trend baseline.

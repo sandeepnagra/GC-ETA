@@ -19,10 +19,12 @@ interface Props {
   onBack: () => void;
   onExplain: () => void;
   onNews: () => void;
+  /** Absent when the category has no comparable alternative. */
+  onCompare?: () => void;
   newsCount: number;
 }
 
-export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, newsCount }: Props) {
+export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, onCompare, newsCount }: Props) {
   const { finalAction, filing, outlook } = assessment;
   const blockers = assessment.events.filter((e) => e.relevance === "blocks");
   const context = assessment.events.filter((e) => e.relevance === "context");
@@ -156,6 +158,28 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
       </View>
 
       <CardCarousel theme={theme} items={cards} />
+
+      {onCompare ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onCompare}
+          style={{
+            flexDirection: "row", alignItems: "center", gap: 12,
+            backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1,
+            borderRadius: 16, padding: 16, minHeight: 44,
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 15, fontWeight: "600", color: theme.text }}>
+              Compare EB-2 and EB-3
+            </Text>
+            <Text style={{ fontSize: 13, lineHeight: 18, color: theme.secondary }}>
+              Both categories side by side for your date
+            </Text>
+          </View>
+          <Text style={{ fontSize: 17, color: theme.secondary }}>›</Text>
+        </Pressable>
+      ) : null}
 
       <Pressable
         accessibilityRole="button"

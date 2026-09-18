@@ -1066,7 +1066,9 @@ why it sits first.
 results screen has grown a card since, so the case for paging through them
 rather than scrolling a column is stronger than when it was first designed.
 
-**3. EB-2 versus EB-3, descriptive only.** Now genuinely computable for the
+**3. ~~EB-2 versus EB-3, descriptive only.~~ DONE.** Built as a full side-by-side
+comparison screen; see "EB-2 against EB-3" below for what the constraint does
+and does not restrict. The original text follows. Now genuinely computable for the
 first time: per-category density gives the queue on each side and Table V gives
 what each actually receives. Finding 44 governs the presentation, and it is
 strict. No recommendation, no single-number delta, no implied advice about
@@ -1185,6 +1187,67 @@ the change was meant to fix. The height is now derived during render from the
 scroll offset and the measured heights, taking the taller of the two pages
 currently straddled, so it never clips mid-swipe and leaves no gap once the
 gesture settles.
+
+### EB-2 against EB-3, and what "descriptive only" actually restricts (2026-09-18)
+
+The project owner pushed back on finding 44's "descriptive only" constraint, and
+the push was fair: the categories genuinely move differently and the difference
+is often large, so withholding it would be withholding the most decision-relevant
+thing the app knows. The constraint is on the verdict, not the data, and this
+screen shows more than any other in the app.
+
+**What is shown.** Both categories side by side for the user's own country and
+priority date: today's approval date, today's filing date, the estimated date
+for them in each, the people ahead of them in each, and what each actually
+received in a median year. Plus how often the lead has changed hands.
+
+**What is not produced: a saving in years.** Three reasons, and the first is the
+record rather than an argument.
+
+*The gap is not a property of the categories.* India, from the archive:
+
+| month | EB-2 | EB-3 |
+|---|---|---|
+| Oct 2021 | 2011-09 | 2014-01 |
+| Dec 2021 | 2012-05 | 2012-01 |
+| Aug 2022 | 2014-12 | 2012-02 |
+
+EB-3 led by two years and four months, retrogressed two years within two months,
+and was nearly three years behind within a year. Anyone acting on the October
+figure was worse off by the following summer. EB-3 has been ahead in 33% of
+published months for India and 48% for China, with the lead changing hands 11
+and 17 times respectively. A saved-years number describes one month.
+
+*The advice invalidates itself.* When many people move to whichever category
+looks faster, that movement is part of what makes it slower, and a crossover is
+often followed by a retrogression. An ordinary forecast does not change the
+thing it forecasts. This one does, and nothing in the model can see its own
+effect.
+
+*The decision is not the applicant's.* Moving category needs a new I-140 that
+the employer files and pays for and can decline. A saving stated in years
+implies the employer's willingness, the legal cost and the risk while the new
+petition is pending are all zero.
+
+**The India column argues the point better than any of that.** EB-3's approval
+date is January 2014 while EB-2 is Unavailable, the widest gap in the archive,
+and EB-3's estimated date for a March 2015 priority date is still the later of
+the two: October 2029 against July 2028. A headline reducing that to "EB-3 is
+faster" would be true about today's chart and wrong about the question being
+asked. Showing both columns is more informative than any single number derived
+from them, which is the whole argument for the constraint.
+
+**Implementation notes.** Ranking treats Current as ahead of every date and
+Unavailable as behind every date rather than collapsing either into a null,
+because collapsing Unavailable would erase exactly the gap this screen exists
+to show. The comparison is offered only for EB-2 and EB-3: EB-1 needs a
+different petition rather than a re-filing, and EB-4 and EB-5 are not
+alternatives to either, so offering it there would imply a choice that does not
+exist. The model returns the switch month as data rather than prose, because a
+model that formats "2026-06" into a sentence forces the screen to print it that
+way, and the screen is the only place that knows to say "June 2026". A test
+asserts the comparison contains no recommendation wording and no field to hang
+one on, so the design decision is enforced rather than remembered.
 
 ## 10. Validation
 

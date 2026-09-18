@@ -14,3 +14,5 @@ export { densityAt, densityRatio, densityHorizon } from "./density.js";
 export type { DensityLookup } from "./density.js";
 export { estimateQueue, peopleBetween, annualSupply } from "./levelB.js";
 export type { QueueEstimate, QueueBounds } from "./levelB.js";
+export { compareCategories } from "./compare.js";
+export type { Comparison, CategorySide, Crossover } from "./compare.js";

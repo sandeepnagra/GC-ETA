@@ -1,9 +1,10 @@
 import React, { useMemo, useState } from "react";
 import { SafeAreaView, StatusBar, useColorScheme } from "react-native";
-import { assessCase, caseTimeline } from "@gc-eta/model";
+import { assessCase, caseTimeline, compareCategories } from "@gc-eta/model";
 
 import { bundle, events, prettyMonth } from "./src/data";
 import { CaseScreen } from "./src/screens/CaseScreen";
+import { CompareScreen } from "./src/screens/CompareScreen";
 import { ExplainScreen } from "./src/screens/ExplainScreen";
 import { MethodologyScreen } from "./src/screens/MethodologyScreen";
 import { NewsScreen } from "./src/screens/NewsScreen";
@@ -36,6 +37,15 @@ export default function App() {
     () => caseTimeline(bundle, events, { ...draft }, today),
     [draft, today],
   );
+  // Only EB-2 and EB-3 are comparable this way. EB-1 needs a different petition
+  // entirely rather than a re-filing, and EB-4 and EB-5 are not alternatives to
+  // either, so offering the comparison there would imply a choice that is not
+  // available.
+  const comparable = draft.category === "EB2" || draft.category === "EB3";
+  const comparison = useMemo(
+    () => (comparable ? compareCategories(bundle, { ...draft }) : null),
+    [draft, comparable],
+  );
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
@@ -50,7 +60,15 @@ export default function App() {
           onBack={() => setScreen("case")}
           onExplain={() => setScreen("explain")}
           onNews={() => setScreen("news")}
+          onCompare={comparison ? () => setScreen("compare") : undefined}
           newsCount={timeline.filter((i) => i.direct).length}
+        />
+      ) : screen === "compare" && comparison ? (
+        <CompareScreen
+          theme={theme}
+          draft={draft}
+          comparison={comparison}
+          onBack={() => setScreen("results")}
         />
       ) : screen === "methodology" ? (
         <MethodologyScreen theme={theme} onBack={() => setScreen("explain")} />

@@ -81,4 +81,11 @@ Two constraints worth knowing up front:
 
 ## Licence
 
-Not yet chosen.
+[MIT](LICENSE). The code is free to use, modify and redistribute with the
+copyright notice retained.
+
+Two things the licence does not cover. The underlying data comes from US
+government sources and is public domain as a US Government work, but this
+project is not affiliated with or endorsed by any agency. And the estimates are
+unofficial and not legal advice; the MIT warranty disclaimer applies to them in
+the strongest possible terms. Consult an immigration attorney about your case.

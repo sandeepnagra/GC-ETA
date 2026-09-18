@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { SafeAreaView, StatusBar, useColorScheme } from "react-native";
-import { assessCase, caseTimeline, compareCategories } from "@gc-eta/model";
+import { assessCase, caseTimeline, compareCategories, suggestSwitch } from "@gc-eta/model";
 
 import { bundle, events, prettyMonth } from "./src/data";
 import { CaseScreen } from "./src/screens/CaseScreen";
@@ -46,6 +46,10 @@ export default function App() {
     () => (comparable ? compareCategories(bundle, { ...draft }) : null),
     [draft, comparable],
   );
+  const suggestion = useMemo(
+    () => (comparison ? suggestSwitch(comparison, bundle, draft.column, draft.category) : null),
+    [comparison, draft.column, draft.category],
+  );
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
@@ -63,11 +67,12 @@ export default function App() {
           onCompare={comparison ? () => setScreen("compare") : undefined}
           newsCount={timeline.filter((i) => i.direct).length}
         />
-      ) : screen === "compare" && comparison ? (
+      ) : screen === "compare" && comparison && suggestion ? (
         <CompareScreen
           theme={theme}
           draft={draft}
           comparison={comparison}
+          suggestion={suggestion}
           onBack={() => setScreen("results")}
         />
       ) : screen === "methodology" ? (

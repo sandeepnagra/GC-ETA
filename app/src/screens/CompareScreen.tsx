@@ -18,16 +18,17 @@
 
 import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import type { Comparison } from "@gc-eta/model";
+import type { Comparison, SwitchSuggestion } from "@gc-eta/model";
 
 import { categoryLabel, columnLabel, prettyDate, prettyMonth } from "../data";
-import type { Theme } from "../theme";
+import { verdictStyle, type Theme } from "../theme";
 import type { CaseDraft } from "../types";
 
 interface Props {
   theme: Theme;
   draft: CaseDraft;
   comparison: Comparison;
+  suggestion: SwitchSuggestion;
   onBack: () => void;
 }
 
@@ -40,7 +41,7 @@ function cellText(cell: { kind: string; day?: number }): string {
   return "Not published";
 }
 
-export function CompareScreen({ theme, draft, comparison, onBack }: Props) {
+export function CompareScreen({ theme, draft, comparison, suggestion, onBack }: Props) {
   const { sides, crossover, notes, startMonth } = comparison;
   const share =
     crossover.monthsCompared > 0
@@ -104,6 +105,19 @@ export function CompareScreen({ theme, draft, comparison, onBack }: Props) {
             Priority date {prettyDate(draft.priorityDate)}
           </Text>
         </View>
+      </View>
+
+      <SuggestionCard theme={theme} suggestion={suggestion} />
+
+      <View style={{ backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 10 }}>
+        <Text style={{ fontSize: 12, fontWeight: "600", letterSpacing: 0.3, textTransform: "uppercase", color: theme.secondary }}>
+          What it would take, and what can go wrong
+        </Text>
+        {suggestion.caveats.map((caveat) => (
+          <Text key={caveat} style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
+            · {caveat}
+          </Text>
+        ))}
       </View>
 
       <View
@@ -187,27 +201,50 @@ export function CompareScreen({ theme, draft, comparison, onBack }: Props) {
         ))}
       </View>
 
-      <View style={{ backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 8 }}>
-        <Text style={{ fontSize: 12, fontWeight: "600", letterSpacing: 0.3, textTransform: "uppercase", color: theme.secondary }}>
-          Why there is no "switch and save" number here
-        </Text>
-        <Text style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
-          In October 2021 India EB-3 was two years and four months ahead of EB-2. By
-          that December it had moved back two years, and by August 2022 EB-2 was
-          nearly three years ahead of it. Anyone who moved on the October figure was
-          worse off within a year.
-        </Text>
-        <Text style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
-          Two more things no number can carry. When many people move to whichever
-          category looks faster, that is part of what makes it slower, and a crossover
-          is often followed by a retrogression. And the choice is not yours alone: it
-          needs a new petition that your employer files and pays for.
-        </Text>
-        <Text style={{ fontSize: 13, lineHeight: 19, color: theme.secondary }}>
-          Every figure either category has is above. What to do with it depends on
-          things this app cannot see, so it is left to you and your attorney.
+    </ScrollView>
+  );
+}
+
+/**
+ * The verdict, first on the screen because it is what the reader came for.
+ *
+ * It reads the estimated dates rather than today's chart, which is the only
+ * thing that makes it worth showing. In September 2026 India EB-3's approval
+ * date is January 2014 against an Unavailable EB-2, and the card still says
+ * moving would not help, because the estimate for a 2015 priority date runs the
+ * other way. A card built on the chart would say the opposite and be wrong.
+ *
+ * The reasoning sits with the verdict. The costs and the reversal history sit
+ * in their own card below, and are shown for every verdict including the
+ * negative ones, so a "probably not" is as well explained as a "worth asking".
+ */
+function SuggestionCard({ theme, suggestion }: { theme: Theme; suggestion: SwitchSuggestion }) {
+  const style = verdictStyle(suggestion.verdict, theme);
+  return (
+    <View
+      style={{
+        backgroundColor: theme.card,
+        borderColor: suggestion.verdict === "worth_asking" ? style.color : theme.border,
+        borderWidth: suggestion.verdict === "worth_asking" ? 2 : 1,
+        borderRadius: 16,
+        padding: 16,
+        gap: 8,
+      }}
+    >
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+        <Text style={{ fontSize: 15, color: style.color }}>{style.glyph}</Text>
+        <Text style={{ fontSize: 12, fontWeight: "700", letterSpacing: 0.3, textTransform: "uppercase", color: style.color }}>
+          {style.label}
         </Text>
       </View>
-    </ScrollView>
+      <Text style={{ fontSize: 17, fontWeight: "600", lineHeight: 24, color: theme.text }}>
+        {suggestion.headline}
+      </Text>
+      {suggestion.because.map((reason) => (
+        <Text key={reason} style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
+          · {reason}
+        </Text>
+      ))}
+    </View>
   );
 }

@@ -1249,6 +1249,60 @@ way, and the screen is the only place that knows to say "June 2026". A test
 asserts the comparison contains no recommendation wording and no field to hang
 one on, so the design decision is enforced rather than remembered.
 
+### The switch suggestion, and the one thing that makes it safe (2026-09-18)
+
+Finding 44 said no recommendation. The project owner asked for one anyway, with
+the work and the downsides stated alongside it, and that is the right call: the
+app already computes everything the judgement needs, and withholding the
+judgement while showing all its inputs is not caution, it is evasion.
+
+**What makes it defensible is that it reads the estimates, not the chart.** This
+is the whole feature. In September 2026 India EB-3's approval date is January
+2014 while EB-2 is Unavailable, which looks like an enormous EB-3 advantage and
+is what every forum post would tell you. For a March 2015 priority date the
+estimated dates run the other way: July 2028 in EB-2 against October 2029 in
+EB-3. The card therefore tells an India EB-2 applicant that moving would **not**
+help, and says why the chart disagrees: *"EB-3 is further along on today's
+chart, but that is the queue it has already cleared, not the one you are in."*
+
+A suggestion built on today's cutoffs, which is the obvious implementation,
+would send that person the wrong way. That case is the regression test.
+
+**Four verdicts, not two.** `worth_asking` needs the other category to be at
+least twelve months earlier at the midpoint **and** still earlier at the
+pessimistic end of both ranges, so a gain that sits inside two overlapping
+distributions is reported as `too_close` rather than as a gain. `probably_not`
+covers both "you are already current" and "the other side is slower".
+`cannot_tell` is returned when either estimate runs past the horizon, which for
+deeply backlogged India cases is common and is not hidden.
+
+**The reversal statistic is the honest part.** Every crossover in the archive is
+followed for a year:
+
+| | crossovers | lead taken back within a year | new leader retrogressed within a year |
+|---|---|---|---|
+| India | 6 | 3 | 2 |
+| China | 9 | 5 | 2 |
+
+So more often than not, the category that pulls ahead loses the lead again
+inside twelve months. That number is attached to every verdict, including the
+positive ones, which is the difference between a suggestion and a sales pitch.
+
+**Six caveats, shown for every verdict and placed directly under it** rather
+than below the evidence table, because a downside beneath a recommendation and
+a table is a footnote. They name who actually files the petition and pays for
+it, that the labour certification is usually reusable but not always, that the
+priority date carries over and keeping both petitions alive is common so the
+move is not necessarily one-way, the reversal history above, that the advice is
+self-defeating at scale, and that none of this can see the applicant's legal
+costs or timing.
+
+The earlier "why there is no switch and save number" card is gone, replaced by
+the verdict. The comparison still prints no saved-years figure: the verdict is
+a direction with its reasoning, not an arithmetic saving, because the reversal
+table is precisely the evidence that an arithmetic saving would be false
+precision.
+
 ## 10. Validation
 
 - **Backtest 1, short-range movement:** for every month from October 2021 to now, run the model using only data published before that month and predict FAD 6 and 12 months ahead. Report mean absolute error in months against a persistence baseline (assume no movement) and a naive trend baseline.

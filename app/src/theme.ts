@@ -99,3 +99,20 @@ export function directionStyle(
   if (direction === "hurts") return { color: theme.negative, glyph: "▼", label: "Could slow it" };
   return { color: theme.caution, glyph: "■", label: "Unclear effect" };
 }
+
+/**
+ * Styling for a category-switch verdict.
+ *
+ * Four states, each with a glyph and a word as well as a colour, so the card
+ * reads in greyscale and without colour vision. "Probably not" is deliberately
+ * neutral rather than red: it is not a warning, it is an answer.
+ */
+export function verdictStyle(
+  verdict: "worth_asking" | "too_close" | "probably_not" | "cannot_tell",
+  theme: Theme,
+): { color: string; glyph: string; label: string } {
+  if (verdict === "worth_asking") return { color: theme.accent, glyph: "▲", label: "Worth asking about" };
+  if (verdict === "too_close") return { color: theme.caution, glyph: "■", label: "Too close to call" };
+  if (verdict === "probably_not") return { color: theme.secondary, glyph: "●", label: "Probably not" };
+  return { color: theme.secondary, glyph: "?", label: "Not enough to say" };
+}

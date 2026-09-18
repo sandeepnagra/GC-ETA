@@ -84,3 +84,78 @@ test("the note about changing category names who actually files it", () => {
     "the decision is not the applicant's alone, and the app says so",
   );
 });
+
+/* ------------------------------------------------------------ suggestion */
+
+import { suggestSwitch } from "../src/compare.js";
+
+test("the suggestion reads the estimates, not today's chart", () => {
+  // THE REGRESSION TEST FOR THIS WHOLE FEATURE. In September 2026 India EB-3
+  // sits at January 2014 while EB-2 is Unavailable, which looks like an
+  // enormous EB-3 advantage. For a March 2015 priority date the estimates run
+  // the other way. A suggestion built on the chart would send this person the
+  // wrong direction.
+  const comparison = compareCategories(bundle, india);
+  const suggestion = suggestSwitch(comparison, bundle, "IN", "EB2");
+  assert.equal(comparison.crossover.aheadNow, "EB3", "EB-3 does lead the chart");
+  assert.equal(suggestion.verdict, "probably_not");
+  assert.equal(suggestion.target, null);
+  assert.ok(
+    suggestion.because.some((r) => r.includes("today's chart")),
+    "and the contradiction is explained rather than left to confuse",
+  );
+});
+
+test("it does point the other way when the estimates support it", () => {
+  const asEb3: CaseInput = { ...india, category: "EB3" };
+  const suggestion = suggestSwitch(compareCategories(bundle, asEb3), bundle, "IN", "EB3");
+  assert.equal(suggestion.verdict, "worth_asking");
+  assert.equal(suggestion.target, "EB2");
+  assert.ok(suggestion.headline.includes("worth asking"));
+});
+
+test("every verdict carries the cost and the risk, including the negative ones", () => {
+  const cases: Array<[string, CaseInput]> = [
+    ["EB2", india],
+    ["EB3", { ...india, category: "EB3" }],
+    ["EB2", { ...india, birthCountry: "CN", column: "CN", priorityDate: "2022-09-01" }],
+  ];
+  for (const [category, input] of cases) {
+    const suggestion = suggestSwitch(compareCategories(bundle, input), bundle, input.column, category);
+    assert.ok(suggestion.caveats.length >= 4, `${input.column} ${category} states the downsides`);
+    assert.ok(
+      suggestion.caveats.some((c) => c.includes("employer")),
+      "the employer files it, and that is named first",
+    );
+    assert.ok(
+      suggestion.caveats.some((c) => c.includes("attorney")),
+      "and it defers to an attorney rather than standing alone",
+    );
+  }
+});
+
+test("a gain inside the uncertainty is reported as too close, not as a gain", () => {
+  const china: CaseInput = { ...india, birthCountry: "CN", column: "CN", priorityDate: "2022-09-01" };
+  const suggestion = suggestSwitch(compareCategories(bundle, china), bundle, "CN", "EB2");
+  assert.equal(suggestion.verdict, "too_close");
+  assert.ok(suggestion.because.some((r) => r.includes("uncertainty")));
+});
+
+test("reversal history is counted and attached to the caveats", () => {
+  const suggestion = suggestSwitch(compareCategories(bundle, india), bundle, "IN", "EB2");
+  const reversal = suggestion.reversal!;
+  assert.ok(reversal.crossovers >= 4, `India has crossed over repeatedly: ${reversal.crossovers}`);
+  assert.ok(reversal.retakenWithin12Months > 0, "and the lead has been taken straight back");
+  assert.ok(reversal.retakenWithin12Months <= reversal.crossovers);
+  assert.ok(
+    suggestion.caveats.some((c) => c.includes("took it back within a year")),
+    "which the reader is told, in the caveats",
+  );
+});
+
+test("an already-current case is told there is nothing to gain", () => {
+  const current: CaseInput = { ...india, birthCountry: "CN", column: "CN", priorityDate: "2019-01-01" };
+  const suggestion = suggestSwitch(compareCategories(bundle, current), bundle, "CN", "EB2");
+  assert.equal(suggestion.verdict, "probably_not");
+  assert.ok(suggestion.headline.includes("already current"));
+});

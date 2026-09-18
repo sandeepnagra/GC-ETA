@@ -180,3 +180,229 @@ export function compareCategories(
   ];
   return { sides, crossover, startMonth: bundle.start_month, notes };
 }
+
+/* ------------------------------------------------------------ suggestion */
+
+export type SwitchVerdict = "worth_asking" | "too_close" | "probably_not" | "cannot_tell";
+
+export interface Reversal {
+  /** Times the other category took the lead in the archive. */
+  crossovers: number;
+  /** Of those, how often the original category took it back within a year. */
+  retakenWithin12Months: number;
+  /** Of those, how often the new leader itself moved backwards within a year. */
+  retrogressedWithin12Months: number;
+}
+
+export interface SwitchSuggestion {
+  verdict: SwitchVerdict;
+  /** The category being pointed at, when there is one. */
+  target: string | null;
+  headline: string;
+  /** The reasoning, strongest first. */
+  because: string[];
+  /** What it costs and what can go wrong. Never empty, whatever the verdict. */
+  caveats: string[];
+  reversal: Reversal | null;
+}
+
+/**
+ * How often a crossover stuck.
+ *
+ * This is the number that decides whether a lead means anything. India EB-3 has
+ * taken the lead six times; in three of the five cases with a full year of
+ * follow-up, EB-2 took it straight back. China is five of eight. A lead that
+ * reverses more often than not is not a reason to move, and a lead that has
+ * held for two years is a different proposition from one a month old.
+ */
+function reversalHistory(bundle: Bundle, column: Column, base: string, other: string): Reversal {
+  const a = bundle.series[`final_action|employment|${base}|${column}`];
+  const b = bundle.series[`final_action|employment|${other}|${column}`];
+  if (!a || !b) return { crossovers: 0, retakenWithin12Months: 0, retrogressedWithin12Months: 0 };
+
+  let crossovers = 0;
+  let retaken = 0;
+  let retrogressed = 0;
+  let previousLeader: string | null = null;
+
+  const leaderAt = (i: number): string | null => {
+    const ra = rank(decodeCell(a[i] ?? null));
+    const rb = rank(decodeCell(b[i] ?? null));
+    if (ra === null || rb === null) return null;
+    return rb > ra ? other : ra > rb ? base : null;
+  };
+
+  for (let i = 0; i < Math.min(a.length, b.length); i += 1) {
+    const leader = leaderAt(i);
+    if (leader === other && previousLeader === base) {
+      const end = Math.min(i + 12, Math.min(a.length, b.length) - 1);
+      // Only count a crossover we can actually follow for a year.
+      if (end > i) {
+        crossovers += 1;
+        for (let k = i + 1; k <= end; k += 1) {
+          if (leaderAt(k) === base) { retaken += 1; break; }
+        }
+        const atCrossing = rank(decodeCell(b[i] ?? null));
+        const later = rank(decodeCell(b[end] ?? null));
+        if (atCrossing !== null && later !== null && later < atCrossing) retrogressed += 1;
+      }
+    }
+    if (leader) previousLeader = leader;
+  }
+  return { crossovers, retakenWithin12Months: retaken, retrogressedWithin12Months: retrogressed };
+}
+
+function monthsBetween(a: string, b: string): number {
+  return monthToAbsolute(b) - monthToAbsolute(a);
+}
+
+/** The cost and the risk, always stated, whatever the verdict says. */
+function standardCaveats(target: string, reversal: Reversal | null): string[] {
+  const out = [
+    "Your employer has to file a new I-140 in the other category and pay for it. You cannot file it yourself, and they can decline.",
+    "It usually reuses the labour certification you already have rather than starting one over, but whether it can depends on how that certification was written.",
+    "Your priority date carries over. Keeping the existing petition alive as well as the new one is common, so this is not necessarily a one-way door.",
+  ];
+  if (reversal && reversal.crossovers > 0) {
+    out.push(
+      `${target.replace("EB", "EB-")} has taken the lead ${reversal.crossovers} times before. The other category took it back within a year in ${reversal.retakenWithin12Months} of those, and ${target.replace("EB", "EB-")} itself moved backwards within a year in ${reversal.retrogressedWithin12Months}.`,
+    );
+  }
+  out.push(
+    "When a category pulls ahead, people move into it, and that is part of what slows it down again. This estimate cannot see that happening.",
+  );
+  out.push(
+    "This compares dates only. It cannot see your legal costs, your timing, or anything specific to your case, so treat it as one input to a conversation with your attorney.",
+  );
+  return out;
+}
+
+/**
+ * Whether moving to the other category looks like it would help.
+ *
+ * COMPARES THE ESTIMATES, NOT TODAY'S CHART, and the difference is the whole
+ * point. In September 2026 India EB-3's approval date is January 2014 while
+ * EB-2 is Unavailable, which reads as an enormous EB-3 advantage. The estimated
+ * dates for a March 2015 priority date run the other way: July 2028 for EB-2
+ * against October 2029 for EB-3. A suggestion built on the chart would send
+ * that person the wrong way.
+ */
+export function suggestSwitch(
+  comparison: Comparison,
+  bundle: Bundle,
+  column: Column,
+  yourCategory: string,
+): SwitchSuggestion {
+  const mine = comparison.sides.find((s) => s.category === yourCategory);
+  const other = comparison.sides.find((s) => s.category !== yourCategory);
+  if (!mine || !other) {
+    return {
+      verdict: "cannot_tell",
+      target: null,
+      headline: "There is no comparable category to weigh this against.",
+      because: [],
+      caveats: standardCaveats(yourCategory, null),
+      reversal: null,
+    };
+  }
+
+  const reversal = reversalHistory(bundle, column, yourCategory, other.category);
+  const label = other.category.replace("EB", "EB-");
+  const caveats = standardCaveats(other.category, reversal);
+
+  if (mine.estimate.status === "current") {
+    return {
+      verdict: "probably_not",
+      target: null,
+      headline: "Your date is already current, so there is nothing to gain by moving.",
+      because: ["A different category cannot make an available number arrive sooner."],
+      caveats,
+      reversal,
+    };
+  }
+  if (!mine.estimate.p50 || !other.estimate.p50 || mine.estimate.beyondHorizon || other.estimate.beyondHorizon) {
+    return {
+      verdict: "cannot_tell",
+      target: null,
+      headline: `There is not enough to compare ${yourCategory.replace("EB", "EB-")} and ${label} on.`,
+      because: [
+        "At least one of the two has no dated estimate, usually because the wait runs past where the record can say anything useful.",
+      ],
+      caveats,
+      reversal,
+    };
+  }
+
+  const gainMonths = monthsBetween(other.estimate.p50, mine.estimate.p50);
+  const because: string[] = [];
+
+  // Today's chart is what people look at, so say explicitly when it disagrees.
+  if (comparison.crossover.aheadNow === other.category && gainMonths <= 0) {
+    because.push(
+      `${label} is further along on today's chart, but that is the queue it has already cleared, not the one you are in. On your priority date the estimate runs the other way.`,
+    );
+  }
+
+  if (gainMonths <= 0) {
+    because.push(
+      `Estimated ${Math.abs(gainMonths)} months later in ${label} than where you are, at the midpoint.`,
+    );
+    return {
+      verdict: "probably_not",
+      target: null,
+      headline: `Moving to ${label} does not look like it would help you.`,
+      because,
+      caveats,
+      reversal,
+    };
+  }
+
+  // A gain inside the noise of two wide ranges is not a gain. Requiring the
+  // pessimistic end to improve too is what separates a real difference from
+  // two overlapping guesses.
+  const pessimisticGain =
+    mine.estimate.p90 && other.estimate.p90
+      ? monthsBetween(other.estimate.p90, mine.estimate.p90)
+      : 0;
+
+  if (gainMonths < 12 || pessimisticGain <= 0) {
+    because.push(
+      `About ${gainMonths} months earlier at the midpoint, which is inside the uncertainty of both estimates.`,
+    );
+    if (pessimisticGain <= 0) {
+      because.push("On the slower end of each range, moving does not come out ahead at all.");
+    }
+    return {
+      verdict: "too_close",
+      target: other.category,
+      headline: `${label} and ${yourCategory.replace("EB", "EB-")} are too close to separate for your date.`,
+      because,
+      caveats,
+      reversal,
+    };
+  }
+
+  because.push(
+    `Estimated about ${gainMonths} months earlier in ${label}, and still earlier on the slower end of both ranges.`,
+  );
+  if (mine.queue.ok && other.queue.ok && other.queue.peopleAhead && mine.queue.peopleAhead) {
+    const fewer = Math.round(mine.queue.peopleAhead.mid - other.queue.peopleAhead.mid);
+    if (fewer > 0) {
+      because.push(`About ${fewer.toLocaleString("en-US")} fewer people ahead of you in ${label}.`);
+    }
+  }
+  if (mine.supply && other.supply && other.supply.mid > mine.supply.mid) {
+    because.push(
+      `${label} has received more visa numbers a year for your country, ${Math.round(other.supply.mid).toLocaleString("en-US")} against ${Math.round(mine.supply.mid).toLocaleString("en-US")} in a median year.`,
+    );
+  }
+
+  return {
+    verdict: "worth_asking",
+    target: other.category,
+    headline: `On the numbers, ${label} looks better for your date. It is worth asking your employer and attorney about.`,
+    because,
+    caveats,
+    reversal,
+  };
+}

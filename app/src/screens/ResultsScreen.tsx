@@ -12,6 +12,7 @@ import { DetailSheet, type CardDetail } from "../components/DetailSheet";
 import { BackIcon, CardWatermark, HelpIcon } from "../components/Icons";
 import { EstimateTimeline } from "../components/EstimateTimeline";
 import { QueueCard } from "../components/QueueCard";
+import { StageCard } from "../components/StageCard";
 import { EventsCard } from "../components/EventsCard";
 import { ChangesCard } from "../components/ChangesCard";
 import { CompareCard } from "../components/CompareCard";
@@ -72,8 +73,18 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
   // the "3 of 6" count always reflects what is really there.
   const cards: CarouselItem[] = [];
 
-  // First card when the date is already current, because at that point the
-  // headline estimate has nothing left to say and this is the whole answer.
+  // First card when the application is already filed, because at that point the
+  // bulletin has stopped being what stands in the way.
+  if (draft.filedI485) {
+    cards.push({
+      key: "stage",
+      title: "Your I-485",
+      node: <StageCard theme={theme} draft={draft} assessment={assessment} />,
+    });
+  }
+
+  // Then, when the date is already current, because the headline estimate has
+  // nothing left to say and this is the whole answer.
   if (finalAction.status === "current") {
     cards.push({
       key: "current",

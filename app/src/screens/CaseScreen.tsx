@@ -138,6 +138,30 @@ export function CaseScreen({ theme, draft, onChange, onSubmit }: Props) {
         />
       </Field>
 
+      {/* Optional, and last, because most people arrive before this stage and a
+          required question they cannot answer is worse than no question. */}
+      <Field
+        theme={theme}
+        label="Have you filed Form I-485?"
+        hint="Optional. Once it is filed the remaining wait is a USCIS decision rather than the bulletin, which is a different question."
+      >
+        <Chips
+          theme={theme}
+          options={[
+            { code: "no", label: "Not yet" },
+            { code: "yes", label: "Yes, it is pending" },
+          ]}
+          selected={draft.filedI485 ? "yes" : "no"}
+          onSelect={(value) =>
+            onChange({
+              ...draft,
+              filedI485: value === "yes",
+              filedOn: value === "yes" ? draft.filedOn : undefined,
+            })
+          }
+        />
+      </Field>
+
       <Pressable
         accessibilityRole="button"
         disabled={!valid}

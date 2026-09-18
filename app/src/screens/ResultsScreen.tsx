@@ -1,6 +1,6 @@
 /** The estimate, its outlook, and what is acting on it. */
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Pressable, ScrollView, View, useWindowDimensions } from "react-native";
 import { Text } from "../components/Text";
 import type { CaseAssessment } from "@gc-eta/model";
@@ -8,6 +8,7 @@ import { dayToIso, historyPoints, seasonalPattern, supplyPicture, whatWouldChang
 import { categoryLabel, columnLabel, prettyDate, shortDate } from "../data";
 import { HistoryChart } from "../components/HistoryChart";
 import { CardCarousel, type CarouselItem } from "../components/CardCarousel";
+import { DetailSheet, type CardDetail } from "../components/DetailSheet";
 import { BackIcon, CardWatermark, HelpIcon } from "../components/Icons";
 import { EstimateTimeline } from "../components/EstimateTimeline";
 import { QueueCard } from "../components/QueueCard";
@@ -47,6 +48,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
   // The hero card sits inside the screen's 20pt padding and its own 16pt, so
   // the drawing has to be told how much room it really has.
   const { width: screenWidth } = useWindowDimensions();
+  const [detail, setDetail] = useState<CardDetail | null>(null);
   // Both depend only on the bundle and the pair, so they are cheap and stable.
   const season = useMemo(
     () => seasonalPattern(bundle, draft.category, draft.column),
@@ -94,6 +96,19 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
       key: "queue",
       title: "Queue",
       node: <QueueCard theme={theme} assessment={assessment} draft={draft} />,
+      detail: {
+        title: "People ahead of you",
+        paragraphs: [
+          "The count is everyone in your category and country holding a priority date earlier than yours, with spouses and children included, because each of them uses a visa number of their own.",
+          "It is built from the Department of Labor's published labour certifications. A certified labour certification carries the date the Department received it, and that date is the priority date, so counting certified cases by receipt month gives the shape of the queue. A little over a million of them are counted here.",
+          "It cannot see everyone. People applying through a national interest waiver or an extraordinary ability petition never file a labour certification at all, and for Indian EB-2 that is a large and growing share. Nor does it know whether a certified case ever became a petition, or whether the person is still pursuing it.",
+          "The filled dots are a rate, not a date. They show how much of the line one year of the visa numbers your country typically receives would cover. They do not say when the cutoff reaches you, because the cutoff moves to manage how many people file rather than working through this line in order.",
+        ],
+        caveat:
+          "The record runs from 2013 to May 2023 and nothing will extend it at either end. Before 2013 the published files carry a decision date but no receipt date, and from mid-2023 the Labor Department's newer form stopped recording the applicant's country.",
+        sources:
+          "Department of Labor, OFLC labour certification disclosure files, FY2015 to FY2024. Department of State, Report of the Visa Office, Table V.",
+      },
     });
   }
 
@@ -101,12 +116,36 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
     key: "supply",
     title: "Supply",
     node: <SupplyCard theme={theme} picture={supply} column={draft.column} category={draft.category} />,
+    detail: {
+      title: "Where the numbers come from",
+      paragraphs: [
+        "Congress set the employment-based limit at 140,000 a year in 1990 and has not changed it. No year on record has actually been 140,000, because family-sponsored numbers that go unused fall across into the employment pool, and the amount varies enormously.",
+        "That pool is then divided by statute. The first, second and third preferences take 28.6% each; the fourth and fifth take 7.1% each. Within a category, no single country may take more than 7% unless there are numbers nobody else wants, which is why a heavily oversubscribed country can receive several times its nominal share in a good year and barely its floor in a poor one.",
+        "The figures for what your country actually received come from Table V of the Report of the Visa Office, which counts both consular issuance and adjustments of status, and includes dependents. Roughly 85% of employment cases are adjustments, so a table covering only consular issuance would miss most of them.",
+      ],
+      caveat:
+        "Next year's limit is not published until October, so the most recent complete year is shown instead of a projection.",
+      sources:
+        "INA 201 and 203. Department of State annual limits and Report of the Visa Office, Table V, FY2012 to FY2024.",
+    },
   });
 
   cards.push({
     key: "season",
     title: "Season",
     node: <SeasonCard theme={theme} season={season} />,
+    detail: {
+      title: "A typical year",
+      paragraphs: [
+        "Each bar is how far this category's cutoff has typically moved in that month of the fiscal year, measured across every published bulletin since 2009 rather than assumed from a general rule.",
+        "The general rule is real but not universal. A new year of visa numbers arrives on 1 October, categories often advance steadily through the winter, hold in the spring while the Visa Office checks the pace, and freeze or move backwards in the summer as the annual limit runs out. How strongly any of that applies differs sharply between categories: some creep a few days a month and shut every summer, others advance about a month every month and only stall in September.",
+        "A month the category spent Unavailable counts as a real zero in the average, not a month to skip. Skipping them would make a category that shuts every August look like one that merely advances less, which is a different claim.",
+      ],
+      caveat:
+        "A median over about fifteen observations a month describes what has happened, not what will. A policy change or an unusually large spillover year can break the pattern entirely.",
+      sources:
+        "Department of State Visa Bulletin archive, December 2009 to the current month.",
+    },
   });
 
   cards.push({
@@ -245,7 +284,9 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
         <Tile theme={theme} label="Filing chart" value={cutoffText(filing)} tone={theme.text} />
       </View>
 
-      <CardCarousel theme={theme} items={cards} />
+      <CardCarousel theme={theme} items={cards} onOpenDetail={setDetail} />
+
+      <DetailSheet theme={theme} detail={detail} onClose={() => setDetail(null)} />
 
       <Pressable
         accessibilityRole="button"

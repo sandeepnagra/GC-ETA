@@ -46,6 +46,7 @@ import {
 import { Text } from "./Text";
 
 import type { Theme } from "../theme";
+import type { CardDetail } from "./DetailSheet";
 
 /** Matches the results screen's horizontal padding. */
 const PAGE_PADDING = 20;
@@ -53,12 +54,22 @@ const GAP = 12;
 
 export interface CarouselItem {
   key: string;
-  /** Shown in the "3 of 6" label, so it has to be short. */
+  /** Shown on the pill, so it has to be short. */
   title: string;
   node: React.ReactNode;
+  /** The long note, when this card has working worth showing. */
+  detail?: CardDetail;
 }
 
-export function CardCarousel({ theme, items }: { theme: Theme; items: CarouselItem[] }) {
+export function CardCarousel({
+  theme,
+  items,
+  onOpenDetail,
+}: {
+  theme: Theme;
+  items: CarouselItem[];
+  onOpenDetail?: (detail: CardDetail) => void;
+}) {
   const { width } = useWindowDimensions();
   const pageWidth = Math.max(240, width - PAGE_PADDING * 2);
   const stride = pageWidth + GAP;
@@ -153,6 +164,19 @@ export function CardCarousel({ theme, items }: { theme: Theme; items: CarouselIt
           );
         })}
       </ScrollView>
+      {items[current]?.detail && onOpenDetail ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => onOpenDetail(items[current]!.detail!)}
+          hitSlop={8}
+          style={{ alignSelf: "flex-end" }}
+        >
+          <Text style={{ fontSize: 13, fontWeight: "600", color: theme.accent }}>
+            Read the full note
+          </Text>
+        </Pressable>
+      ) : null}
+
       <ScrollView
         ref={scroller}
         horizontal

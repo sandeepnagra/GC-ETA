@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+"""Compact the parsed archive into the bundle the app downloads.
+
+bulletins.json is 6 MB of flat rows, which is fine on a server and wrong to ship
+to a phone. This collapses it into one dense array per series, indexed by month
+offset from a shared start, which is both far smaller and the shape the model
+actually reads.
+
+Values are encoded as:
+    "YYYY-MM-DD"  a cutoff date
+    "C"           current
+    "U"           unavailable
+    null          the series did not exist that month
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+
+# Series the app needs. Family is carried for the spillover forecaster only,
+# and only for the columns that drive it.
+WANTED_EMPLOYMENT = {
+    "EB1", "EB2", "EB3", "EB3_OTHER_WORKERS", "EB4",
+    "EB4_CERTAIN_RELIGIOUS_WORKERS", "EB5_UNRESERVED",
+    "EB5_SET_ASIDE_RURAL", "EB5_SET_ASIDE_HIGH_UNEMPLOYMENT",
+    "EB5_SET_ASIDE_INFRASTRUCTURE",
+}
+WANTED_FAMILY = {"F1", "F2A", "F2B", "F3", "F4"}
+WANTED_COLUMNS = {"ROW", "CN", "IN", "MX", "PH"}
+
+
+def month_index(month: str, start: str) -> int:
+    sy, sm = (int(p) for p in start.split("-"))
+    y, m = (int(p) for p in month.split("-"))
+    return (y - sy) * 12 + (m - sm)
+
+
+def main() -> int:
+    archive = json.loads((DATA_DIR / "bulletins.json").read_text())
+    bulletins = sorted(archive["bulletins"], key=lambda b: b["month"])
+    start = bulletins[0]["month"]
+    end = bulletins[-1]["month"]
+    span = month_index(end, start) + 1
+
+    series: dict[str, list] = {}
+    for bulletin in bulletins:
+        index = month_index(bulletin["month"], start)
+        for row in bulletin["rows"]:
+            category, column = row["category"], row["chargeability"]
+            if column not in WANTED_COLUMNS or category is None:
+                continue
+            wanted = WANTED_EMPLOYMENT if row["track"] == "employment" else WANTED_FAMILY
+            if category not in wanted:
+                continue
+            key = f"{row['chart']}|{row['track']}|{category}|{column}"
+            if key not in series:
+                series[key] = [None] * span
+            kind = row["kind"]
+            if kind == "date":
+                series[key][index] = row["date"]
+            elif kind == "current":
+                series[key][index] = "C"
+            elif kind == "unavailable":
+                series[key][index] = "U"
+
+    limits = json.loads((DATA_DIR / "limits.json").read_text())
+    payload = {
+        "schema_version": 1,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "start_month": start,
+        "end_month": end,
+        "months": span,
+        "missing_months": archive["months_missing"],
+        "series": series,
+        "limits": [
+            {
+                "fiscal_year": entry["fiscal_year"],
+                "employment_worldwide": (entry.get("determined") or {}).get("employment_worldwide"),
+                "family_worldwide": (entry.get("determined") or {}).get("family_worldwide"),
+                "per_country": (entry.get("determined") or {}).get("per_country"),
+                "determined": entry["has_determined_figure"],
+            }
+            for entry in limits["limits"]
+        ],
+    }
+
+    out = DATA_DIR / "app-bundle.json"
+    out.write_text(json.dumps(payload, separators=(",", ":")))
+    raw = (DATA_DIR / "bulletins.json").stat().st_size
+    size = out.stat().st_size
+    print(f"series      : {len(series)}")
+    print(f"months      : {span}  ({start} .. {end})")
+    print(f"bundle size : {size/1024:.0f} KB  (from {raw/1_048_576:.1f} MB raw, {raw/size:.0f}x smaller)")
+    print(f"written     : {out}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

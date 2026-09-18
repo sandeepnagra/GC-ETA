@@ -461,6 +461,40 @@ gives the NACARA reduction directly: 116 for FY2026, 106 for FY2025).
 
 **Phase 1 — MVP (2–3 weeks).** Level A model, regression-risk heuristic, event flags, the three input screens, results screen, history chart, methodology page. Ship to TestFlight and internal Android track. Definition of done: for any (country, PD, category) the app shows both estimated windows, the outlook, and active events, with a visible "data as of" date, and works offline after first load.
 
+### Phase 1 progress (started 2026-09-17)
+
+Built so far: the compact app bundle (`pipeline/build_app_bundle.py`, 237 KB from
+6.1 MB of raw archive, a 27x reduction) and the Level A model in TypeScript
+(`model/`), with 16 tests passing and a CLI for inspecting output without the
+app. Remaining: the app screens themselves.
+
+**Two model bugs the tests caught, both worth keeping in mind.**
+
+1. *Unavailable months were nearly dropped from the velocity history.* A frozen
+   month is a real observation of zero movement. Dropping it would have let the
+   model learn only from months when dates moved, flattering every estimate.
+   The step extractor now emits an explicit zero, and a test asserts that a
+   freeze-then-resume sequence yields three steps summing to the true movement.
+2. *The risk score double-counted an Unavailable category.* It applied the
+   July-to-September penalty **and** the already-Unavailable discount, which
+   scored EB-2 India as "hold" in September 2026. That is wrong: a category
+   already Unavailable cannot retrogress further, and the next scheduled event
+   is the 1 October reset. The two are now mutually exclusive, and it reads
+   "advance", matching both the mockup and the Visa Office's own signalling.
+
+**An honest limitation visible in the first real output.** For EB-2 India with a
+March 2015 priority date the model returns a P10 of October 2026, meaning a
+small share of simulations cross within a single month. That is not a coding
+error: October 2021 really did move EB-2 India about two years in one step, and
+the seasonal block bootstrap can sample exactly that. But those large jumps came
+from the pandemic-era employment limits of roughly 281,000 against 186,317 now,
+which is precisely the regime leakage §6.1 warns about. **Phase 0 established
+that the fix cannot be built from the bulletin archive**, because historical
+annual limits are not in it. Until the Annual Numerical Limits PDFs are ingested
+and each year's advance is normalised by that year's limit, the low end of every
+range is too optimistic. Do not ship a P10 to users before that is done, or the
+app will imply a possibility the current regime does not support.
+
 **Phase 2 — queue model (3–4 weeks).** Level B from inventory + waiting list + I-140 data, spillover forecaster from family issuance data, backtest harness, EB-2 vs EB-3 comparison, "current to approved" add-on.
 
 **Phase 3 — scenarios (later).** Level C Monte Carlo, probability-by-year view, optional topic-based push notifications (requires storing anonymous device tokens; decide then whether that breaks the no-data promise), localization (Hindi, Chinese, Spanish, Tagalog).

@@ -817,34 +817,55 @@ count.
 #### Head to head, same cases, both models
 
 Quarterly origins from 2016-10 to 2023-09, targets 1, 2 and 3 years beyond the
-cutoff, restricted to the 123 cases where both models answer:
+cutoff, restricted to the cases where both models answer. Two readings, and the
+second one supersedes the first:
+
+**First reading, 123 cases.** Level A better on both accuracy and coverage.
 
 | model | interval coverage | median band | median error |
 |---|---|---|---|
 | Level A (velocity) | 93% | 3.67 yr | 0.50 yr |
 | Level B (queue count) | 79% | 2.60 yr | 0.72 yr |
 
-Level B's interval is better calibrated, 79% against a nominal 80% where Level A
-over-covers at 93% with a band a year wider. Its point estimate is worse, 0.72
-years against 0.50. It answers far fewer cases. **Level B does not replace Level
-A as the source of the headline date.**
+**Second reading, 85 cases,** after adding a guard for priority dates too recent
+to have been decided:
 
-Closing the data gap did improve Level A, which had been reading a queue with a
-two-year hole in it: first-passage coverage moved 75% to 78% and median error
-0.92 to 0.83 years. The short-range result is unchanged and still does not beat
-persistence at six months.
+| model | interval coverage | median band | median error |
+|---|---|---|---|
+| Level A (velocity) | 91% | 3.50 yr | 0.50 yr |
+| Level B (queue count) | 82% | 2.51 yr | 0.49 yr |
+
+On the cases where the queue is genuinely countable, Level B now matches Level
+A's accuracy inside an interval a full year tighter, and its coverage sits at 82%
+against a nominal 80% where Level A over-covers at 91%. That is a better
+calibrated interval carrying the same information.
+
+**The honesty note that belongs with that number.** The guard was added because
+of a user-facing copy bug, not to move the metric: a 2025 priority date and a
+2009 one both returned "not covered", so the app would have told someone with a
+very recent date that the record only reaches back to 2013, which is the
+opposite of their problem. Those are genuinely different failures and needed
+different reasons. But the first reading was already in view when the change was
+made, and the change removed exactly the cases where Level B was summing a
+partial queue and therefore understating it. The improvement is a side effect of
+a correctness fix rather than a tuning exercise, and the argument for the guard
+stands without the metric. It is still a second look at the same test set, and
+85 samples is small. Neither reading justifies promoting Level B to the headline.
 
 #### What Level B is actually for
 
-The division is speculative. The count is not. "About 80,500 people are ahead of
+The division is speculative even at 0.49 years of median error, because the
+supply figure underneath it rests on one readable year. The count is not. "About 80,500 people are ahead of
 you, counting spouses and children" is a number grounded in a million certified
 labour certifications, and nothing else in the app tells a user that. The wait
 range divides it by a supply figure that cannot currently be calibrated, and the
 resulting spread, roughly 2 to 20 years for a single case, says so plainly.
 
 So Level B ships as the people-ahead count with the wait range as a clearly
-labelled cross-check, never as the headline. No blend with Level A: blending on
-123 samples where the new model is the weaker one would be fitting to noise.
+labelled cross-check, never as the headline. No blend with Level A: fitting
+blend weights on 85 samples, after already having looked at the same test set
+once, would be fitting to noise. The weights would need a held-out period, and
+a calibrated supply figure would do more for the wait range than any weighting.
 
 #### The uncalibrated parameters, named
 

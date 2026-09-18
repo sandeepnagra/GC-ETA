@@ -84,13 +84,26 @@ test("an already-current date is not a queue question", () => {
   assert.equal(r.reason, "already_current");
 });
 
-test("refuses when the span is mostly missing rather than extrapolating", () => {
-  const b = flatBundle(1000, "2012-01", "2016-12");
-  // Target well past the end of the density record.
-  const r = estimateQueue(b, "IN" as Column, "EB2", "2022-01-01", isoToDay("2015-01-01"));
+test("refuses when the span has a hole in the middle rather than extrapolating", () => {
+  const b = flatBundle(1000, "2012-01", "2022-12");
+  // Punch out most of the span between the cutoff and the target.
+  for (let y = 2016; y <= 2019; y += 1) {
+    for (let m = 1; m <= 12; m += 1) delete b.density!.IN![`${y}-${String(m).padStart(2, "0")}`];
+  }
+  const r = estimateQueue(b, "IN" as Column, "EB2", "2020-01-01", isoToDay("2015-01-01"));
   assert.equal(r.ok, false);
   assert.equal(r.reason, "density_not_covered");
   assert.ok(r.coverage!.monthsCovered < r.coverage!.monthsNeeded);
+});
+
+test("a date too recent to have been decided is a different answer than one too old", () => {
+  // Both used to report "not covered", which would put the wrong explanation on
+  // screen: a 2025 priority date is missing because those labour certifications
+  // have not been decided, not because the record starts in 2013.
+  const b = flatBundle(1000, "2012-01", "2016-12");
+  const r = estimateQueue(b, "IN" as Column, "EB2", "2022-01-01", isoToDay("2015-01-01"));
+  assert.equal(r.ok, false);
+  assert.equal(r.reason, "beyond_density_record");
 });
 
 test("the density floor sits where volume begins, not where months begin", () => {

@@ -84,6 +84,8 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
         ))}
       </Card>
 
+      <QueueCard theme={theme} assessment={assessment} draft={draft} />
+
       <Card theme={theme}>
         <Row theme={theme} title="Ten years of movement" trailing={columnLabel(draft.column)} />
         <HistoryChart
@@ -201,4 +203,93 @@ function Row({ theme, title, trailing }: { theme: Theme; title: string; trailing
       {trailing ? <Text style={{ fontSize: 12, color: theme.secondary }}>{trailing}</Text> : null}
     </View>
   );
+}
+
+/**
+ * The count of people ahead, which is the best-grounded number in the app.
+ *
+ * It comes from a million certified labour certifications, not from a model.
+ * The wait it implies is shown underneath and deliberately made secondary: the
+ * head-to-head backtest found the queue division worse than the velocity model
+ * at picking a date, and the supply figure it divides by cannot yet be
+ * calibrated. So the count leads and the years follow, hedged in words rather
+ * than presented as a second opinion of equal weight. PLAN.md, Phase 2 results.
+ */
+function QueueCard({
+  theme,
+  assessment,
+  draft,
+}: {
+  theme: Theme;
+  assessment: CaseAssessment;
+  draft: Props["draft"];
+}) {
+  const q = assessment.queue;
+
+  if (!q.ok) {
+    // Silence would be worse than an explanation. A user whose cutoff sits
+    // before the labour certification record begins should be told that is why
+    // no count appears, not left to assume the queue is empty.
+    if (q.reason === "beyond_density_record") {
+      return (
+        <Card theme={theme}>
+          <Row theme={theme} title="People ahead of you" trailing="not countable yet" />
+          <Text style={{ fontSize: 14, lineHeight: 20, color: theme.secondary }}>
+            Your priority date is recent enough that the labour certifications filed
+            around the same time are still being decided. Until they are, there is no
+            honest way to count how many of them sit ahead of you.
+          </Text>
+        </Card>
+      );
+    }
+    if (q.reason === "below_density_floor" || q.reason === "density_not_covered") {
+      return (
+        <Card theme={theme}>
+          <Row theme={theme} title="People ahead of you" trailing="not countable" />
+          <Text style={{ fontSize: 14, lineHeight: 20, color: theme.secondary }}>
+            The public record of certified labour certifications only reaches back to
+            2013, and the cutoff for your category sits at or before that. Counting
+            from there would find almost nobody and give a badly wrong answer, so no
+            count is shown.
+          </Text>
+        </Card>
+      );
+    }
+    return null;
+  }
+
+  const people = Math.round(q.peopleAhead!.mid);
+  const w = q.waitYears!;
+
+  return (
+    <Card theme={theme}>
+      <Row
+        theme={theme}
+        title="People ahead of you"
+        trailing={`${categoryLabel(draft.category)} · ${columnLabel(draft.column)}`}
+      />
+      <Text style={{ fontSize: 34, fontWeight: "700", color: theme.text, letterSpacing: -0.5 }}>
+        {people.toLocaleString("en-US")}
+      </Text>
+      <Text style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
+        Roughly this many people hold an earlier priority date than yours, counting
+        spouses and children. Counted from {(q.principalsAhead ?? 0).toLocaleString("en-US")}{" "}
+        certified labour certifications between today's cutoff and your date.
+      </Text>
+      <View style={{ height: 1, backgroundColor: theme.border, marginVertical: 4 }} />
+      <Text style={{ fontSize: 13, lineHeight: 19, color: theme.secondary }}>
+        Divided by the visa numbers your country usually receives, that queue implies
+        somewhere between {formatYears(w.low)} and {formatYears(w.high)}. The spread is
+        that wide because how many unused visas fall across from other countries each
+        year is not published anywhere. Treat the date above as the estimate and this
+        as a sanity check on it.
+      </Text>
+    </Card>
+  );
+}
+
+function formatYears(years: number): string {
+  if (years < 1) return `${Math.max(1, Math.round(years * 12))} months`;
+  if (years >= 40) return "several decades";
+  return `${years < 10 ? years.toFixed(1) : Math.round(years)} years`;
 }

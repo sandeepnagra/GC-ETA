@@ -116,9 +116,18 @@ test("assessCase returns both charts, a risk read and events", () => {
   assert.ok(result.filing.status.length > 0);
   assert.ok(result.risk.score >= 0);
   assert.ok(result.events.length > 0);
+  // A March 2015 India EB-2 date sits above the density floor, so the queue is
+  // countable and the count must be a real number of people, not a placeholder.
+  assert.equal(result.queue.ok, true, `queue should be countable: ${result.queue.reason}`);
+  assert.ok(result.queue.principalsAhead! > 1000);
+  assert.ok(result.queue.waitYears!.low < result.queue.waitYears!.high);
+  // The wording depends on whether the queue could be counted for this case,
+  // and both forms must say what the date is actually based on. The earlier
+  // version of this test matched only the word "optimistic", which the
+  // queue-aware wording drops because the count is shown instead of a caveat.
   assert.ok(
-    result.warnings.some((w) => w.includes("optimistic")),
-    "the known optimism in the low end is surfaced, not hidden",
+    result.warnings.some((w) => /how fast the cutoff has moved/.test(w)),
+    "what the estimate is based on is surfaced, not hidden",
   );
 });
 

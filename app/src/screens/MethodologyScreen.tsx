@@ -20,9 +20,19 @@ interface Props {
 
 const LIMITATIONS = [
   {
-    title: "It reads movement, not queue depth",
+    title: "The date and the queue are two different calculations",
     body:
-      "The estimate is built from how fast the cutoff has moved, not from how many people hold each priority date. Where a category once moved quickly because fewer people held those dates, it will lean optimistic. Measuring the queue is the next piece of work.",
+      "The date comes from how fast the cutoff has moved in the past. The count of people ahead of you comes from a million certified labour certifications, which is a direct measurement rather than a projection. They can disagree, and when they do, both are shown rather than averaged into one number.",
+  },
+  {
+    title: "How many visas your country gets is not published",
+    body:
+      "The law guarantees each country a floor of about seven percent of a category, but a heavily oversubscribed country routinely receives several times that when other countries leave numbers unused. How much more is not published by priority date, so the years implied by the queue are given as a wide range rather than a figure.",
+  },
+  {
+    title: "The queue cannot be seen before 2013",
+    body:
+      "Labour certification records published before 2015 carry only the decision date, not the date the application was received, and the received date is the priority date. So there is no way to count who was waiting at a 2009 priority date. Where your category's cutoff sits below that, no count is shown rather than a misleadingly small one.",
   },
   {
     title: "Years are adjusted for supply, but only back to 2021",
@@ -32,7 +42,7 @@ const LIMITATIONS = [
   {
     title: "Measured accuracy, including where it fails",
     body:
-      "Tested against 405 historical cases. The range contained the true answer 73% of the time, against a target of 80%, so the bands are a little too narrow. The midpoint was out by about 0.9 years on average.",
+      "Tested against 405 historical cases. The range contained the true answer 78% of the time, against a target of 80%, so the bands are slightly too narrow. The midpoint was out by about 0.8 years on average.",
   },
   {
     title: "The short-term outlook has no proven edge",

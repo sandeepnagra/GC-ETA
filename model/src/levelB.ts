@@ -98,6 +98,7 @@ export interface QueueEstimate {
     | "already_current"
     | "density_not_covered"
     | "below_density_floor"
+    | "beyond_density_record"
     | "no_supply_model"
     | "no_density";
   /** Principals holding a priority date in the span, before any multiplier. */
@@ -261,6 +262,23 @@ export function estimateQueue(
       reason: "below_density_floor",
       notes: [
         `The cutoff sits at ${cutoffMonth}, before the labour certification record can see the queue, which begins around ${floor}. Counting from there would return almost nobody and give a confidently wrong answer.`,
+      ],
+    };
+  }
+
+  // The opposite failure to the floor, and a different thing to tell the user.
+  // A 2025 priority date is not missing from the record because the record is
+  // old; it is missing because those labour certifications have not been
+  // decided yet. Reporting both as "not covered" would put the wrong
+  // explanation on screen.
+  const covered = Object.keys(bundle.density?.[column] ?? {}).sort();
+  const lastCovered = covered[covered.length - 1];
+  if (lastCovered && dayToIso(targetDay).slice(0, 7) > lastCovered) {
+    return {
+      ok: false,
+      reason: "beyond_density_record",
+      notes: [
+        `Labour certifications with priority dates after ${lastCovered} are still being decided, so the queue behind a date this recent cannot be counted yet.`,
       ],
     };
   }

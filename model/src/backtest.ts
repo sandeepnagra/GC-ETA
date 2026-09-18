@@ -431,7 +431,7 @@ export function backtestQueue(
 
         const q = estimateQueue(truncated, column, category, targetIso, anchor.day);
         if (!q.ok || !q.waitYears) {
-          if (q.reason === "density_not_covered" || q.reason === "no_density" || q.reason === "below_density_floor") notCovered += 1;
+          if (q.reason === "density_not_covered" || q.reason === "no_density" || q.reason === "below_density_floor" || q.reason === "beyond_density_record") notCovered += 1;
           continue;
         }
         computable += 1;

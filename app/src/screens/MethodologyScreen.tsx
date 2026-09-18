@@ -10,12 +10,15 @@
 import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
-import { bundle, events, prettyMonth } from "../data";
+import { prettyMonth } from "../data";
+import type { Bundle, EventsFile } from "@gc-eta/model";
 import type { Theme } from "../theme";
 
 interface Props {
   theme: Theme;
   onBack: () => void;
+  bundle: Bundle;
+  events: EventsFile;
 }
 
 const LIMITATIONS = [
@@ -66,7 +69,7 @@ const LIMITATIONS = [
   },
 ];
 
-export function MethodologyScreen({ theme, onBack }: Props) {
+export function MethodologyScreen({ theme, onBack, bundle, events }: Props) {
   const sectionMonths = Object.keys(bundle.sections ?? {}).length;
 
   return (

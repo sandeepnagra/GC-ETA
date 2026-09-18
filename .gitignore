@@ -63,3 +63,6 @@ app/android/
 
 # Built simulator app, kept locally for reinstalling without a rebuild
 app/build/
+
+# Staged for the Pages deploy; rebuilt by pipeline/publish.py on every run
+public/

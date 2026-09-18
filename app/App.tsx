@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { SafeAreaView, StatusBar, useColorScheme } from "react-native";
 import { assessCase, caseTimeline, compareCategories, suggestSwitch } from "@gc-eta/model";
 
-import { bundle, events, prettyMonth } from "./src/data";
+import { bundledData, prettyMonth } from "./src/data";
+import { checkForUpdate, freshness, loadCached } from "./src/updates";
 import { CaseScreen } from "./src/screens/CaseScreen";
 import { CompareScreen } from "./src/screens/CompareScreen";
 import { ExplainScreen } from "./src/screens/ExplainScreen";
@@ -24,18 +25,38 @@ export default function App() {
     path: "adjustment",
   });
 
+  // The data can change while the app is open, so it is state rather than a
+  // module constant. Every derived value below depends on it; without that the
+  // download would succeed and the estimate would not move until a relaunch.
+  const [data, setData] = useState(bundledData);
+  const { bundle, events } = data;
+
+  useEffect(() => {
+    let live = true;
+    void (async () => {
+      const cached = await loadCached(bundledData);
+      if (live && cached.source !== "bundled") setData(cached);
+      const fresher = await checkForUpdate(cached);
+      if (live && fresher) setData(fresher);
+    })();
+    return () => {
+      live = false;
+    };
+  }, []);
+
   const theme = resolveTheme(mode, system ?? null);
   const today = new Date().toISOString().slice(0, 10);
+  const stale = useMemo(() => freshness(bundle), [bundle]);
 
   // Recomputed only when the case changes. The simulation is seeded, so the
   // same case always yields the same range rather than shifting on each render.
   const assessment = useMemo(
     () => assessCase(bundle, events, { ...draft }, today),
-    [draft, today],
+    [bundle, events, draft, today],
   );
   const timeline = useMemo(
     () => caseTimeline(bundle, events, { ...draft }, today),
-    [draft, today],
+    [bundle, events, draft, today],
   );
   // Only EB-2 and EB-3 are comparable this way. EB-1 needs a different petition
   // entirely rather than a re-filing, and EB-4 and EB-5 are not alternatives to
@@ -44,11 +65,11 @@ export default function App() {
   const comparable = draft.category === "EB2" || draft.category === "EB3";
   const comparison = useMemo(
     () => (comparable ? compareCategories(bundle, { ...draft }) : null),
-    [draft, comparable],
+    [bundle, draft, comparable],
   );
   const suggestion = useMemo(
     () => (comparison ? suggestSwitch(comparison, bundle, draft.column, draft.category) : null),
-    [comparison, draft.column, draft.category],
+    [comparison, bundle, draft.column, draft.category],
   );
 
   return (
@@ -65,6 +86,8 @@ export default function App() {
           onExplain={() => setScreen("explain")}
           onNews={() => setScreen("news")}
           onCompare={comparison ? () => setScreen("compare") : undefined}
+          bundle={bundle}
+          stale={stale}
           newsCount={timeline.filter((i) => i.direct).length}
         />
       ) : screen === "compare" && comparison && suggestion ? (
@@ -76,7 +99,7 @@ export default function App() {
           onBack={() => setScreen("results")}
         />
       ) : screen === "methodology" ? (
-        <MethodologyScreen theme={theme} onBack={() => setScreen("explain")} />
+        <MethodologyScreen theme={theme} bundle={bundle} events={events} onBack={() => setScreen("explain")} />
       ) : screen === "news" ? (
         <NewsScreen theme={theme} items={timeline} onBack={() => setScreen("results")} />
       ) : (

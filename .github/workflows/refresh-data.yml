@@ -1,0 +1,113 @@
+# Refresh the published data without anyone doing it.
+#
+# PLAN.md 8.1: shipping a new number is a data publish, not a release. The app
+# fetches a manifest on launch and takes a new bundle when one exists, so this
+# job is the only thing standing between a new Visa Bulletin and every user
+# seeing it. Before this existed, every dataset in the repository had been built
+# by hand, which meant the app would have gone quietly stale within a month.
+#
+# Daily, because the bulletin's publication day drifts by a week or more and
+# polling daily catches it within 24 hours without needing to model the window.
+# Also on demand, which is the button to press when something is known to have
+# changed.
+#
+# The heavy annual sources, labour certifications and visa issuance, are NOT
+# here. They change once a year and cost most of a gigabyte to download. They
+# live in refresh-annual.yml.
+
+name: Refresh data
+
+on:
+  schedule:
+    # 15:00 UTC daily. The Visa Office publishes during the US working day, so
+    # this lands after a morning release rather than just before one.
+    - cron: "0 15 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Never let two refreshes race for the same commit or the same Pages deploy.
+concurrency:
+  group: refresh-data
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      # Without this every run re-fetches 200 bulletins from a government
+      # server that has no obligation to tolerate it. With it, a run fetches
+      # only the months it has not seen.
+      - name: Restore the fetch cache
+        uses: actions/cache@v4
+        with:
+          path: pipeline/cache
+          key: fetch-cache-${{ github.run_id }}
+          restore-keys: |
+            fetch-cache-
+
+      - run: pip install -r pipeline/requirements.txt
+
+      # Kept aside before anything overwrites it, so publish.py can refuse a
+      # bundle that went backwards.
+      - name: Keep the current bundle for comparison
+        run: cp data/app-bundle.json /tmp/previous-bundle.json
+
+      - name: Fetch the bulletin archive
+        run: python pipeline/build_bulletins.py
+
+      - name: Re-read the annual limits from the archive
+        run: python pipeline/build_limits.py
+
+      - name: Rebuild the app bundle
+        run: python pipeline/build_app_bundle.py
+
+      # This is the step that is allowed to stop the run. A refresh that
+      # succeeds quietly on bad data is worse than one that fails, because the
+      # app takes what it is given.
+      - name: Validate and stage for publishing
+        run: python pipeline/publish.py --out public/data --previous /tmp/previous-bundle.json
+
+      - name: Commit the refreshed data
+        id: commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "nothing changed"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "Refresh data: bulletin through $(python -c 'import json;print(json.load(open("data/app-bundle.json"))["end_month"])')"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      # Deployed on every successful run even when nothing changed, so the
+      # published files can never drift from the repository.
+      - id: deploy
+        uses: actions/deploy-pages@v4

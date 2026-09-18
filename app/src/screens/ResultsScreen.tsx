@@ -4,12 +4,14 @@ import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import type { CaseAssessment } from "@gc-eta/model";
 import { dayToIso, historyPoints } from "@gc-eta/model";
-import { bundle, categoryLabel, columnLabel, prettyDate } from "../data";
+import { categoryLabel, columnLabel, prettyDate } from "../data";
 import { HistoryChart } from "../components/HistoryChart";
 import { CardCarousel, type CarouselItem } from "../components/CardCarousel";
 
 import { prettyMonth } from "../data";
 import { directionStyle, type Theme } from "../theme";
+import type { Bundle } from "@gc-eta/model";
+import type { Freshness } from "../updates";
 import type { CaseDraft } from "../types";
 
 interface Props {
@@ -21,10 +23,13 @@ interface Props {
   onNews: () => void;
   /** Absent when the category has no comparable alternative. */
   onCompare?: () => void;
+  /** The live bundle, which may be newer than the one compiled into the app. */
+  bundle: Bundle;
+  stale: Freshness;
   newsCount: number;
 }
 
-export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, onCompare, newsCount }: Props) {
+export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, onCompare, bundle, stale, newsCount }: Props) {
   const { finalAction, filing, outlook } = assessment;
   const blockers = assessment.events.filter((e) => e.relevance === "blocks");
   const context = assessment.events.filter((e) => e.relevance === "context");
@@ -130,6 +135,11 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
           <Text style={{ fontSize: 12, color: theme.secondary }}>
             Priority date {prettyDate(draft.priorityDate)} · bulletin {prettyMonth(assessment.asOfMonth)}
           </Text>
+          {stale.stale ? (
+            // A broken pipeline and a working one look identical to a reader
+            // unless the app says which it is. PLAN.md 8.1.
+            <Text style={{ fontSize: 12, color: theme.caution }}>{stale.note}</Text>
+          ) : null}
         </View>
         <Pressable accessibilityRole="button" accessibilityLabel="How this works" onPress={onExplain} hitSlop={12}>
           <Text style={{ fontSize: 17, color: theme.accent }}>?</Text>

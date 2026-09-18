@@ -9,11 +9,23 @@
 
 import type { Bundle, EventsFile } from "@gc-eta/model";
 
+import type { DataSet } from "./updates";
 import bundledBundle from "../assets/data/app-bundle.json";
 import bundledEvents from "../assets/data/events.json";
 
-export const bundle = bundledBundle as unknown as Bundle;
-export const events = bundledEvents as unknown as EventsFile;
+/**
+ * The snapshot compiled into the app.
+ *
+ * Deliberately not exported as `bundle`. It is the floor, not the data: at
+ * runtime the app may be holding something newer that it downloaded, and a
+ * screen importing a module-level constant would quietly keep rendering this
+ * one after an update landed. The live set is passed down as a prop instead.
+ */
+export const bundledData: DataSet = {
+  bundle: bundledBundle as unknown as Bundle,
+  events: bundledEvents as unknown as EventsFile,
+  source: "bundled",
+};
 
 export const COLUMNS = [
   { code: "IN", label: "India" },

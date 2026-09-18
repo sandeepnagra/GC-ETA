@@ -1,0 +1,67 @@
+# The sources that change once a year and cost most of a gigabyte to read.
+#
+# Labour certification disclosure files run 60 to 90 MB each and the visa
+# issuance tables are a PDF per fiscal year. Neither changes between releases,
+# so running them daily would download hundreds of megabytes to produce an
+# identical file. Monthly is frequent enough to notice a new publication within
+# weeks, and the button is here for when one is known to be out.
+#
+# This deliberately does not deploy. It commits the refreshed source data, and
+# the daily job publishes it on its next run, so there is exactly one code path
+# that puts files in front of users.
+
+name: Refresh annual sources
+
+on:
+  schedule:
+    # 04:00 UTC on the 3rd of each month, away from the daily job.
+    - cron: "0 4 3 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-annual
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r pipeline/requirements.txt
+
+      # Both scripts are resumable and skip years they already hold, so a run
+      # that adds nothing is cheap and a run that adds a year is the only one
+      # that pays for the download.
+      - name: Labour certification density
+        run: python pipeline/build_perm_density.py
+
+      - name: Visa issuance from the Report of the Visa Office
+        run: python pipeline/build_issuance.py
+
+      - name: Rebuild the app bundle
+        run: python pipeline/build_app_bundle.py
+
+      - name: Validate
+        run: python pipeline/publish.py --out /tmp/check --previous data/app-bundle.json
+
+      - name: Commit if anything changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "no new annual data"
+          else
+            git commit -m "Refresh annual sources: labour certifications and visa issuance"
+            git push
+          fi

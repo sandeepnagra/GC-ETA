@@ -509,6 +509,58 @@ palette but not yet on brand. Loading those needs `expo-font` and the font
 files. Visual verification also still needs a simulator; nothing here has been
 seen running on a device.
 
+### Regime normalisation, and what it exposed (2026-09-17)
+
+The Phase 1 limitation is now fixed as far as the data allows, and fixing it
+surfaced something more important than the fix.
+
+**Historical limits are available after all, from a source this plan had
+mis-ranked.** The Annual Numerical Limits PDF exists only for the current year;
+the State Department replaces it each October rather than archiving it, so nine
+years of URL probing returns one hit. But the **USCIS employment-based
+adjustment FAQ restates prior years' limits in prose** and is not behind a bot
+filter. `build_historical_limits.py` now extracts FY2021 through FY2026:
+262,288, 281,507, 197,091, 160,791, 150,037, 186,317.
+
+**Unknown years are left unscaled rather than assumed to be at the base.** The
+first version assumed 140,000 for missing years, which amplified FY2021 by a
+third when its real limit of 262,288 meant it should have been discounted by a
+third. That is a factor of nearly two in the wrong direction, on the year with
+the largest jumps. Not transforming data we cannot justify is the safer failure
+and errs toward longer waits.
+
+**The uncomfortable result.** With scaling in place, Level A puts the
+probability that EB-2 India with a March 2015 priority date becomes current
+within twelve months at about **56%**. That is far more optimistic than this
+plan's own illustrative figures, and it is not a coding error: several
+historical twelve-month windows genuinely did move EB-2 India more than 1.5
+years, particularly 2015 through 2019.
+
+The reason those years moved fast is that the priority-date cohorts behind the
+cutoff were thinner than today's. **Level A cannot see cohort density at all**,
+which §6.1 has always noted and finding 32 sharpened. So the honest reading is
+not that the wait is short; it is that **Level A alone is not trustworthy for
+deeply backlogged categories**, which is precisely the audience this app is for.
+
+Two consequences, both now implemented rather than deferred:
+
+1. The model reports **crossing probabilities at twelve, twenty-four and sixty
+   months** alongside the percentiles. A range on its own implies an evenness
+   that is not there; "56 in 100 within a year" is a claim a reader can weigh.
+2. Both caveats are **unconditional**, not shown only when the number looks
+   bad. The app states plainly that the estimate reads cutoff movement rather
+   than queue depth, and will lean optimistic where a category once moved
+   quickly because fewer people held those dates.
+
+A test that asserted the one-year probability was below 0.35 was **removed
+rather than satisfied**. It encoded a hunch, and making the model match it would
+have been fitting the code to a prior. The suite now asserts structure, such as
+monotonicity across horizons, and leaves magnitudes to the data.
+
+This raises the priority of the queue model and of the PERM density work in
+finding 32: they are not refinements, they are what makes the headline number
+defensible for the users who most need it.
+
 **Phase 2 — queue model (3–4 weeks).** Level B from inventory + waiting list + I-140 data, spillover forecaster from family issuance data, backtest harness, EB-2 vs EB-3 comparison, "current to approved" add-on.
 
 **Phase 3 — scenarios (later).** Level C Monte Carlo, probability-by-year view, optional topic-based push notifications (requires storing anonymous device tokens; decide then whether that breaks the no-data promise), localization (Hindi, Chinese, Spanish, Tagalog).

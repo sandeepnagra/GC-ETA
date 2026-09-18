@@ -71,6 +71,7 @@ def main() -> int:
                 series[key][index] = "U"
 
     limits = json.loads((DATA_DIR / "limits.json").read_text())
+    historical = json.loads((DATA_DIR / "limits-historical.json").read_text())
     payload = {
         "schema_version": 1,
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -79,6 +80,13 @@ def main() -> int:
         "months": span,
         "missing_months": archive["months_missing"],
         "series": series,
+        # Employment limit per fiscal year, so the model can discount an advance
+        # made in a year with far more visa numbers than today. Years absent
+        # here fall back to the statutory base.
+        "employment_limit_by_fy": {
+            str(e["fiscal_year"]): e["employment_worldwide"] for e in historical["limits"]
+        },
+        "statutory_base": historical["statutory_base"],
         "limits": [
             {
                 "fiscal_year": entry["fiscal_year"],

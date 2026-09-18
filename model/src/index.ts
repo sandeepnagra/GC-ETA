@@ -1,6 +1,6 @@
 export * from "./types.js";
 export * from "./bundle.js";
-export { estimate, extractSteps, simulateFirstPassage } from "./levelA.js";
+export { estimate, extractSteps, simulateFirstPassage, scaleStepsToRegime } from "./levelA.js";
 export { assessRisk } from "./risk.js";
 export { applicableEvents, staleEvents } from "./events.js";
 export type { ApplicableEvent, Relevance } from "./events.js";

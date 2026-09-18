@@ -1,0 +1,38 @@
+{
+ "schema_version": 1,
+ "generated_at": "2026-09-18T03:41:30.424843+00:00",
+ "note": "Employment-based worldwide limit by fiscal year. Used to normalise historical cutoff advances so that a year with far more visa numbers is not treated as comparable to today. Years not listed fall back to the statutory base of 140,000 for reference only; the model leaves unknown years unscaled rather than assuming the base, because assuming it would wrongly amplify a high-spillover year.",
+ "statutory_base": 140000,
+ "limits": [
+  {
+   "fiscal_year": 2021,
+   "employment_worldwide": 262288,
+   "source": "https://www.uscis.gov/archive/fiscal-year-2022-employment-based-adjustment-of-status-faqs"
+  },
+  {
+   "fiscal_year": 2022,
+   "employment_worldwide": 281507,
+   "source": "https://www.uscis.gov/green-card/green-card-processes-and-procedures/fiscal-year-2023-employment-based-adjustment-of-status-faqs"
+  },
+  {
+   "fiscal_year": 2023,
+   "employment_worldwide": 197091,
+   "source": "https://www.uscis.gov/green-card/green-card-processes-and-procedures/fiscal-year-2023-employment-based-adjustment-of-status-faqs"
+  },
+  {
+   "fiscal_year": 2024,
+   "employment_worldwide": 160791,
+   "source": "https://www.uscis.gov/green-card/green-card-processes-and-procedures/fiscal-year-2023-employment-based-adjustment-of-status-faqs"
+  },
+  {
+   "fiscal_year": 2025,
+   "employment_worldwide": 150037,
+   "source": "Visa Bulletin, stated determination"
+  },
+  {
+   "fiscal_year": 2026,
+   "employment_worldwide": 186317,
+   "source": "Visa Bulletin, stated determination"
+  }
+ ]
+}

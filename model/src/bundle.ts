@@ -40,6 +40,13 @@ export function absoluteToMonth(absolute: number): string {
   return `${String(y).padStart(4, "0")}-${String(m).padStart(2, "0")}`;
 }
 
+/** US federal fiscal year containing this absolute month. */
+export function fiscalYearOf(absolute: number): number {
+  const year = Math.floor(absolute / 12);
+  const month = (absolute % 12) + 1;
+  return month >= 10 ? year + 1 : year;
+}
+
 /** 0 = October, 11 = September. Fiscal-year position drives the seasonality. */
 export function fiscalMonthIndex(absolute: number): number {
   const calendarMonth = absolute % 12; // 0 = January

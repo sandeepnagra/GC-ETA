@@ -49,9 +49,24 @@ export function assessCase(
   // annual limits are ingested and advances are normalised by them, because
   // the bootstrap can sample pandemic-era jumps drawn from a far larger pool.
   // PLAN.md Phase 1 progress. Surfacing it rather than hiding it.
-  if (finalAction.p10 && !finalAction.beyondHorizon) {
+  // Explain the early end rather than just disclaiming it. For a deeply
+  // backlogged category the P10 often reflects one unusual historical October
+  // recovering from a retrogression, not a likely outcome, so state the actual
+  // probability instead of leaving the range to imply one.
+  const soon = finalAction.probabilityWithin?.find((p) => p.months === 12);
+  if (soon && finalAction.p10) {
     warnings.push(
-      "The earliest end of this range is optimistic: it can draw on years when far more visa numbers were available than today.",
+      `About ${Math.round(soon.probability * 100)} in 100 simulations became current within a year. A range alone can imply an evenness that is not there, so treat the early end as a possibility with that weight, not as a forecast.`,
+    );
+  }
+
+  // Level A reads how fast the cutoff moved, not how many people are queued
+  // behind each priority-date month. Where past movement came from years with
+  // thinner cohorts than today, it will read optimistic. The queue model is the
+  // fix; until then this is stated rather than smoothed away.
+  if (!finalAction.beyondHorizon && finalAction.status === "not_current") {
+    warnings.push(
+      "This estimate is based on how fast the cutoff has moved, not on how many people are waiting ahead of you. Where a category moved quickly in the past because fewer people held those dates, the estimate will lean optimistic.",
     );
   }
   const stale = staleEvents(events, onDate);

@@ -21,6 +21,7 @@ import {
   absoluteToMonth,
   dayToIso,
   fiscalMonthIndex,
+  fiscalYearOf,
   getSeries,
   isoToDay,
   lastKnownIndex,
@@ -52,6 +53,38 @@ export interface Step {
   /** 0 = October .. 11 = September. */
   fiscalMonth: number;
   advanceDays: number;
+  /** Fiscal year the step happened in, for regime scaling. */
+  fiscalYear: number;
+}
+
+/**
+ * Discount historical advances to today's supply of visa numbers.
+ *
+ * A cutoff jump made in FY2022, when 281,507 employment visas were available,
+ * is not evidence that the same jump can happen now against 186,317. Without
+ * this the simulation samples pandemic-era Octobers at face value and reports
+ * crossings that the current regime cannot produce. PLAN.md 6.1 and the Phase 1
+ * limitation note.
+ *
+ * Years absent from the map are left UNSCALED rather than assumed to be at the
+ * statutory base. Assuming the base would have wrongly amplified FY2021, whose
+ * real limit was 262,288, by a third instead of discounting it by a third: a
+ * factor of nearly two in the wrong direction, on exactly the year with the
+ * largest October jumps. Not transforming data we cannot justify is the safer
+ * failure, and it errs toward longer waits rather than shorter.
+ */
+export function scaleStepsToRegime(
+  steps: Step[],
+  limitByFiscalYear: Record<string, number>,
+  base: number,
+  targetFiscalYear: number,
+): Step[] {
+  const target = limitByFiscalYear[String(targetFiscalYear)] ?? base;
+  return steps.map((step) => {
+    const historical = limitByFiscalYear[String(step.fiscalYear)];
+    if (!historical || historical <= 0) return step;
+    return { ...step, advanceDays: step.advanceDays * (target / historical) };
+  });
 }
 
 /**
@@ -77,7 +110,11 @@ export function extractSteps(cells: Cell[], startAbsolute: number): Step[] {
 
     if (cell.kind === "unavailable") {
       if (previousDay !== null && i === previousIndex + 1) {
-        steps.push({ fiscalMonth: fiscalMonthIndex(startAbsolute + i), advanceDays: 0 });
+        steps.push({
+          fiscalMonth: fiscalMonthIndex(startAbsolute + i),
+          advanceDays: 0,
+          fiscalYear: fiscalYearOf(startAbsolute + i),
+        });
         previousIndex = i;
       }
       continue;
@@ -87,6 +124,7 @@ export function extractSteps(cells: Cell[], startAbsolute: number): Step[] {
       steps.push({
         fiscalMonth: fiscalMonthIndex(startAbsolute + i),
         advanceDays: cell.day! - previousDay,
+        fiscalYear: fiscalYearOf(startAbsolute + i),
       });
     }
     previousDay = cell.day!;
@@ -243,8 +281,14 @@ export function estimate(
   }
 
   const startFiscalMonth = fiscalMonthIndex(startAbsolute + latestIndex);
-  const { crossings, crossedFraction } = simulateFirstPassage(
+  const scaled = scaleStepsToRegime(
     steps,
+    bundle.employment_limit_by_fy ?? {},
+    bundle.statutory_base ?? 140000,
+    fiscalYearOf(startAbsolute + latestIndex),
+  );
+  const { crossings, crossedFraction } = simulateFirstPassage(
+    scaled,
     launchDay,
     targetDay,
     startFiscalMonth,
@@ -273,6 +317,11 @@ export function estimate(
   }
 
   crossings.sort((a, b) => a - b);
+  const probabilityWithin = [12, 24, 60].map((months) => ({
+    months,
+    probability:
+      crossings.filter((m) => m <= months).length / iterations,
+  }));
   const base = monthToAbsolute(asOfMonth);
   const toMonth = (q: number) =>
     absoluteToMonth(base + Math.round(percentile(crossings, q)));
@@ -285,7 +334,7 @@ export function estimate(
     spreadYears <= 2 ? "high" : spreadYears <= 5 ? "medium" : "low";
 
   drivers.push(
-    `Based on ${steps.length} months of published movement for this category and country.`,
+    `Based on ${steps.length} months of published movement, adjusted so years with far more visa numbers than today do not inflate the estimate.`,
   );
 
   return {
@@ -296,6 +345,7 @@ export function estimate(
     p50: toMonth(0.5),
     p90,
     crossedFraction,
+    probabilityWithin,
     confidence,
     drivers,
   };

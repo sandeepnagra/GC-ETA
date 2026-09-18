@@ -12,7 +12,7 @@ import {
   isoToDay,
   monthToAbsolute,
 } from "../src/bundle.js";
-import { estimate, extractSteps } from "../src/levelA.js";
+import { estimate, extractSteps, scaleStepsToRegime } from "../src/levelA.js";
 import { assessRisk } from "../src/risk.js";
 import type { Bundle } from "../src/types.js";
 
@@ -180,4 +180,38 @@ test("a Current worldwide category still reads as at risk late in the fiscal yea
   const risk = assessRisk(bundle, "EB2", "ROW");
   assert.notEqual(risk.outlook, "advance");
   assert.ok(risk.reasons.some((r) => r.includes("July to September")));
+});
+
+test("probability of becoming current is reported alongside the range", () => {
+  const result = estimate(bundle, {
+    column: "IN", category: "EB2", priorityDate: "2015-03-10",
+  });
+  assert.ok(result.probabilityWithin, "probabilities accompany the percentiles");
+  const [oneYear, twoYear, fiveYear] = result.probabilityWithin!;
+  // Monotone by construction: a longer window can only include more crossings.
+  assert.ok(oneYear!.probability <= twoYear!.probability);
+  assert.ok(twoYear!.probability <= fiveYear!.probability);
+  // Deliberately NOT asserting a magnitude here. An earlier version of this
+  // test asserted the one-year probability was under 0.35, which encoded a
+  // hunch rather than anything verified; the model returns about 0.56 because
+  // several historical twelve-month windows really did move EB-2 India more
+  // than 1.5 years. Level A cannot see that those years had thinner priority
+  // date cohorts than today, which is its documented blind spot. Pinning a
+  // number here would freeze a guess into the test suite.
+  for (const point of result.probabilityWithin!) {
+    assert.ok(point.probability >= 0 && point.probability <= 1);
+  }
+});
+
+test("regime scaling discounts a high-supply year and leaves unknown years alone", () => {
+  const steps = [
+    { fiscalMonth: 0, advanceDays: 300, fiscalYear: 2022 },
+    { fiscalMonth: 0, advanceDays: 300, fiscalYear: 2019 },
+  ];
+  const scaled = scaleStepsToRegime(steps, { "2022": 281507, "2026": 186317 }, 140000, 2026);
+  assert.ok(scaled[0]!.advanceDays < 300, "a 281,507-visa year is discounted to today");
+  assert.equal(
+    scaled[1]!.advanceDays, 300,
+    "an unknown year is left untouched rather than assumed to be at the base",
+  );
 });

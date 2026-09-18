@@ -32,6 +32,10 @@ export interface Bundle {
   months: number;
   missing_months: string[];
   series: Record<string, RawCell[]>;
+  /** Employment-based worldwide limit per fiscal year, where known. */
+  employment_limit_by_fy: Record<string, number>;
+  /** Statutory base used when a year is absent from the map above. */
+  statutory_base: number;
   limits: Array<{
     fiscal_year: number;
     employment_worldwide: number | null;
@@ -74,6 +78,13 @@ export interface Estimate {
    */
   beyondHorizon?: boolean;
   crossedFraction?: number;
+  /**
+   * Probability of becoming current within N months, for a few horizons.
+   * More honest than a percentile alone: a P10 of "next month" can reflect a
+   * single unusual historical jump rather than a likely outcome, and this says
+   * how likely it actually is.
+   */
+  probabilityWithin?: { months: number; probability: number }[];
   confidence: "low" | "medium" | "high";
   /** Plain-language drivers, most important first. */
   drivers: string[];

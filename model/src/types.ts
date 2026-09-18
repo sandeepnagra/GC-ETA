@@ -85,3 +85,45 @@ export interface RiskAssessment {
   outlook: Outlook;
   reasons: string[];
 }
+
+
+/* ------------------------------------------------------------------ events */
+
+export type ProcessingPath = "adjustment" | "consular";
+
+export interface GcEvent {
+  id: string;
+  type: string;
+  title: string;
+  summary: string;
+  countries: "all" | { list?: string; also?: string };
+  affects: ProcessingPath[];
+  categories: "all" | string[];
+  start: string | null;
+  end: string | null;
+  status: string;
+  modeling: Record<string, unknown>;
+  confidence: "verified" | "secondary";
+  verified_against: string | null;
+  last_checked: string;
+}
+
+export interface EventsFile {
+  schema_version: number;
+  last_reviewed: string;
+  country_lists: Record<string, { countries: string[]; complete?: boolean; note?: string }>;
+  events: GcEvent[];
+}
+
+/* ------------------------------------------------------- case assessment */
+
+export interface CaseInput {
+  /** ISO country of birth, e.g. "IN". Drives event matching. */
+  birthCountry?: string;
+  /** Bulletin column, resolved from birth country or cross-chargeability. */
+  column: Column;
+  category: string;
+  priorityDate: string;
+  path: ProcessingPath;
+  seed?: number;
+}

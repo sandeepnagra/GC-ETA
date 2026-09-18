@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "last_reviewed": "2026-09-17",
+  "note": "Hand-curated. Detection is automated (Federal Register, court dockets, agency alerts) but assigning a modelling effect is a judgement call, so entries arrive as pull requests with an empty effect for a maintainer to fill. See PLAN.md 8.1. Every entry carries verified_against and confidence; the app must not display an entry whose last_checked is stale.",
+  "country_lists": {
+    "travel_ban_full": {
+      "note": "Proclamation 10949, full restrictions.",
+      "countries": ["AF", "MM", "TD", "CG", "GQ", "ER", "HT", "IR", "LY", "SO", "SD", "YE", "BF", "ML", "NE", "SS", "SY", "LA", "SL"]
+    },
+    "travel_ban_partial": {
+      "note": "Proclamation 10998, partial restrictions, added to the above for a combined 39.",
+      "countries": ["AO", "AG", "BJ", "CI", "DM", "GA", "GM", "MW", "MR", "NG", "SN", "TZ", "TO", "ZM", "ZW", "BI", "CU", "TG", "TM", "VE"]
+    },
+    "iv_pause_75": {
+      "note": "INCOMPLETE. The full 75-country list was not captured during research; only a partial sample is recorded. Do not use this list to tell an individual they are unaffected. Resolve before the event layer gates any user-facing claim.",
+      "complete": false,
+      "countries": ["BD", "NG", "PK"]
+    }
+  },
+  "events": [
+    {
+      "id": "dhs-public-charge-rule-2026",
+      "type": "adjudication_standard",
+      "title": "Stricter public charge standard for adjustment of status",
+      "summary": "DHS rescinds the December 2022 public charge rule and replaces it with stricter sub-regulatory guidance and broad adjudicator discretion. A new Form I-485 keyed to the standard is issued the same day. Benefits received before the effective date are assessed under the old rule.",
+      "countries": "all",
+      "affects": ["adjustment"],
+      "categories": "all",
+      "start": "2026-09-18",
+      "end": null,
+      "status": "in_force",
+      "modeling": {
+        "approval_rate_multiplier": null,
+        "note": "Direction is adverse for approval rates and adjudication speed, magnitude unknown. Leave null rather than invent a number; it widens the §6.5 approval curve rather than shifting it."
+      },
+      "confidence": "verified",
+      "verified_against": "https://www.federalregister.gov/documents/2026/07/20/2026-14539/public-charge-ground-of-inadmissibility",
+      "last_checked": "2026-09-17"
+    },
+    {
+      "id": "dos-worldwide-iv-interview-pause-2026",
+      "type": "consular_pause",
+      "title": "Immigrant visa interviews paused worldwide",
+      "summary": "The State Department paused immigrant visa interviews at every post while consular officers complete public charge training. Adjustment of status at USCIS is not affected.",
+      "countries": "all",
+      "affects": ["consular"],
+      "categories": "all",
+      "start": "2026-08-25",
+      "end": null,
+      "status": "active",
+      "modeling": {
+        "consular_demand_multiplier_during": 0.0,
+        "redistribute_unused": true,
+        "note": "Unused EMPLOYMENT numbers stranded this way are lost at year end, not recycled. Unused FAMILY numbers do raise the next year's employment limit. See PLAN.md 1.5."
+      },
+      "confidence": "verified",
+      "verified_against": "https://www.fragomen.com/insights/united-states-state-department-temporarily-pauses-immigrant-visa-interviews-worldwide.html",
+      "last_checked": "2026-09-17"
+    },
+    {
+      "id": "eb4-religious-worker-sunset-2026",
+      "type": "category_sunset",
+      "title": "EB-4 non-minister religious worker category sunsets",
+      "summary": "H.R. 7148, signed 3 February 2026, extended the non-minister special immigrant religious worker program only through 30 September 2026. No enacted further extension was found.",
+      "countries": "all",
+      "affects": ["consular", "adjustment"],
+      "categories": ["EB4_CERTAIN_RELIGIOUS_WORKERS"],
+      "start": "2026-09-30",
+      "end": null,
+      "status": "scheduled",
+      "modeling": {"category_unavailable_after": "2026-09-30"},
+      "confidence": "secondary",
+      "verified_against": null,
+      "last_checked": "2026-09-17"
+    },
+    {
+      "id": "proclamation-10949-travel-ban",
+      "type": "entry_ban",
+      "title": "Travel ban, Proclamation 10949",
+      "summary": "Entry restrictions on nationals of nineteen countries. Applies to entry from abroad; it does not by itself stop an adjustment of status case filed inside the United States.",
+      "countries": {"list": "travel_ban_full"},
+      "affects": ["consular"],
+      "categories": "all",
+      "start": "2025-06-01",
+      "end": null,
+      "status": "in_force",
+      "modeling": {"consular_demand_multiplier_during": 0.0, "redistribute_unused": true},
+      "confidence": "secondary",
+      "verified_against": null,
+      "last_checked": "2026-09-17"
+    },
+    {
+      "id": "proclamation-10998-travel-ban-expansion",
+      "type": "entry_ban",
+      "title": "Travel ban expansion, Proclamation 10998",
+      "summary": "Partial restrictions added for twenty further countries, bringing the combined total to thirty-nine.",
+      "countries": {"list": "travel_ban_partial"},
+      "affects": ["consular"],
+      "categories": "all",
+      "start": "2025-12-01",
+      "end": null,
+      "status": "in_force",
+      "modeling": {"consular_demand_multiplier_during": 0.5, "redistribute_unused": true},
+      "confidence": "secondary",
+      "verified_against": null,
+      "last_checked": "2026-09-17"
+    },
+    {
+      "id": "uscis-adjudication-pause-travel-ban-nationals",
+      "type": "adjudication_pause",
+      "title": "USCIS adjudication pause for travel-ban nationals",
+      "summary": "Paused adjustment of status, work permit and advance parole adjudications for nationals of the listed countries. Began December 2025 for nineteen countries, expanded 1 January 2026 to thirty-nine, and was vacated by the District of Rhode Island on 5 June 2026. The underlying entry bans were not disturbed.",
+      "countries": {"list": "travel_ban_full", "also": "travel_ban_partial"},
+      "affects": ["adjustment"],
+      "categories": "all",
+      "start": "2025-12-01",
+      "end": "2026-06-05",
+      "status": "vacated",
+      "modeling": {"adjustment_demand_multiplier_during": 0.0, "rebound_after_months": 6},
+      "confidence": "secondary",
+      "verified_against": null,
+      "last_checked": "2026-09-17"
+    },
+    {
+      "id": "dos-iv-pause-75-countries-2026",
+      "type": "consular_pause",
+      "title": "Immigrant visa issuance pause, 75 countries",
+      "summary": "The State Department paused immigrant visa issuance for nationals of seventy-five countries on public charge grounds. A federal court held it unlawful and it ended on 21 August 2026.",
+      "countries": {"list": "iv_pause_75"},
+      "affects": ["consular"],
+      "categories": "all",
+      "start": "2026-01-21",
+      "end": "2026-08-21",
+      "status": "ended_by_court",
+      "modeling": {
+        "consular_demand_multiplier_during": 0.0,
+        "redistribute_unused": true,
+        "rebound_after_months": 6,
+        "note": "Demand suppressed by a country-specific pause does not evaporate. The Visa Office reallocated the numbers by advancing other countries' cutoffs, and the affected countries rebound afterwards."
+      },
+      "confidence": "secondary",
+      "verified_against": null,
+      "last_checked": "2026-09-17"
+    },
+    {
+      "id": "h1b-100k-fee-proclamation",
+      "type": "future_demand",
+      "title": "H-1B $100,000 fee proclamation",
+      "summary": "A fee on H-1B petitions for beneficiaries abroad. Vacated at district court with the government's appeal pending. Affects the multi-year pipeline feeding future priority dates, not any current queue position.",
+      "countries": "all",
+      "affects": [],
+      "categories": "all",
+      "start": "2025-09-19",
+      "end": null,
+      "status": "vacated_on_appeal",
+      "modeling": {"future_demand_multiplier": 0.8, "lag_years": 4},
+      "confidence": "secondary",
+      "verified_against": null,
+      "last_checked": "2026-09-17"
+    },
+    {
+      "id": "h1b-weighted-selection-rule",
+      "type": "future_demand",
+      "title": "Wage-weighted H-1B selection",
+      "summary": "Cap-subject H-1B registrations are selected with weighting by wage level. Registrations fell from about 344,000 to about 210,000 year on year, which reduces the pipeline feeding priority dates several years out.",
+      "countries": "all",
+      "affects": [],
+      "categories": "all",
+      "start": "2026-02-27",
+      "end": null,
+      "status": "in_force",
+      "modeling": {"future_demand_multiplier": 0.85, "lag_years": 4},
+      "confidence": "secondary",
+      "verified_against": null,
+      "last_checked": "2026-09-17"
+    },
+    {
+      "id": "gold-card-eb1-eb2",
+      "type": "supply_draw",
+      "title": "Gold Card draws on EB-1 and EB-2 numbers",
+      "summary": "A pay-for-priority route drawing visa numbers from the existing EB-1 and EB-2 pools without changing the statutory caps. Uptake has been negligible: a few hundred requests and one approval by mid-2026, with litigation pending.",
+      "countries": "all",
+      "affects": ["consular", "adjustment"],
+      "categories": ["EB1", "EB2"],
+      "start": "2025-12-01",
+      "end": null,
+      "status": "minor",
+      "modeling": {"supply_reduction_per_year": 0, "note": "Negligible at observed uptake. Revisit if approvals reach the thousands."},
+      "confidence": "secondary",
+      "verified_against": null,
+      "last_checked": "2026-09-17"
+    },
+    {
+      "id": "per-country-cap-reform-bills",
+      "type": "legislation",
+      "title": "Per-country cap reform: EAGLE Act and IVES Act",
+      "summary": "Bills that would phase out the seven percent per-country limit for employment-based green cards. Not passed. Track by sponsor and title rather than bill number: S.3291 and H.R.6542 are 118th Congress numbers and died on 3 January 2025.",
+      "countries": "all",
+      "affects": [],
+      "categories": "all",
+      "start": null,
+      "end": null,
+      "status": "pending",
+      "modeling": {"note": "Structural. Would be modelled as a scenario in Level C, not applied to the base estimate."},
+      "confidence": "secondary",
+      "verified_against": null,
+      "last_checked": "2026-09-17"
+    }
+  ]
+}

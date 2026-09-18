@@ -26,6 +26,7 @@ import {
   monthToAbsolute,
 } from "./bundle.js";
 import { estimate, extractSteps, scaleStepsToRegime, simulateFirstPassage } from "./levelA.js";
+import { estimateQueue } from "./levelB.js";
 import type { Bundle, Cell, Column } from "./types.js";
 
 /**
@@ -364,5 +365,211 @@ export function backtestFirstPassage(
     beyondHorizonCorrect: beyondTotal ? beyondCorrect / beyondTotal : NaN,
     beyondHorizonTotal: beyondTotal,
     brier24: brierCount ? brierSum / brierCount : NaN,
+  };
+}
+
+/* --------------------------------------------------------- level B queue */
+
+export interface QueueScore {
+  /** Cases where the queue was countable at all. */
+  computable: number;
+  /** Cases skipped because density did not cover the span. */
+  notCovered: number;
+  samples: number;
+  censored: number;
+  /** Truth inside [low, high]. */
+  coverage: number;
+  /** Median |mid - truth| in years. */
+  medianErrorYears: number;
+  /**
+   * Median width of [low, high] in years. Reported next to coverage because a
+   * band ten years wide covers almost anything, and coverage alone would make
+   * an uncalibrated supply look like skill.
+   */
+  medianBandYears: number;
+}
+
+/**
+ * Score the queue count the way the first-passage test scores Level A.
+ *
+ * The truth is the same: the first month after the origin when the cutoff
+ * reaches the target date. The prediction is `waitYears` from `estimateQueue`,
+ * built only from the truncated bundle, so density leakage is already handled
+ * by `bundleAsOf`.
+ */
+export function backtestQueue(
+  bundle: Bundle,
+  pairs: Array<{ category: string; column: Column }>,
+  origins: string[],
+  targetOffsetsYears: number[],
+): QueueScore {
+  const start = monthToAbsolute(bundle.start_month);
+  const last = monthToAbsolute(bundle.end_month);
+  const errors: number[] = [];
+  const bands: number[] = [];
+  let computable = 0;
+  let notCovered = 0;
+  let samples = 0;
+  let censored = 0;
+  let inBand = 0;
+
+  for (const originMonth of origins) {
+    const origin = monthToAbsolute(originMonth);
+    if (origin < start || origin > last) continue;
+    const truncated = bundleAsOf(bundle, originMonth);
+
+    for (const { category, column } of pairs) {
+      const full = getSeries(bundle, "final_action", "employment", category, column);
+      const visible = getSeries(truncated, "final_action", "employment", category, column);
+      if (!full || !visible) continue;
+      const anchor = latestDated(visible);
+      if (!anchor) continue;
+
+      for (const offset of targetOffsetsYears) {
+        const targetDay = anchor.day + Math.round(offset * 365.25);
+        const targetIso = new Date(targetDay * 86_400_000).toISOString().slice(0, 10);
+
+        const q = estimateQueue(truncated, column, category, targetIso, anchor.day);
+        if (!q.ok || !q.waitYears) {
+          if (q.reason === "density_not_covered" || q.reason === "no_density" || q.reason === "below_density_floor") notCovered += 1;
+          continue;
+        }
+        computable += 1;
+
+        let truthMonths: number | null = null;
+        for (let i = origin - start + 1; i < full.length; i += 1) {
+          const cell = full[i]!;
+          if (cell.kind === "date" && cell.day! >= targetDay) { truthMonths = i - (origin - start); break; }
+          if (cell.kind === "current") { truthMonths = i - (origin - start); break; }
+        }
+
+        const { low, mid, high } = q.waitYears;
+        bands.push(high - low);
+        samples += 1;
+
+        if (truthMonths === null) {
+          censored += 1;
+          if (high * 12 >= last - origin) inBand += 1;
+          continue;
+        }
+        const truthYears = truthMonths / 12;
+        if (truthYears >= low && truthYears <= high) inBand += 1;
+        errors.push(Math.abs(mid - truthYears));
+      }
+    }
+  }
+
+  errors.sort((a, b) => a - b);
+  bands.sort((a, b) => a - b);
+  return {
+    computable,
+    notCovered,
+    samples,
+    censored,
+    coverage: samples ? inBand / samples : NaN,
+    medianErrorYears: errors.length ? errors[Math.floor(errors.length / 2)]! : NaN,
+    medianBandYears: bands.length ? bands[Math.floor(bands.length / 2)]! : NaN,
+  };
+}
+
+/* ------------------------------------------------------------ head to head */
+
+export interface HeadToHead {
+  samples: number;
+  censored: number;
+  levelA: { coverage: number; medianErrorYears: number; medianBandYears: number };
+  levelB: { coverage: number; medianErrorYears: number; medianBandYears: number };
+}
+
+/**
+ * Score Level A and Level B on exactly the same cases.
+ *
+ * The separate scores are not comparable: Level B can only answer where the
+ * density covers the span, which is a different and easier set of cases than
+ * the ones Level A is scored on. Restricting both to the intersection is the
+ * only way to ask whether counting the queue beats extrapolating the speed.
+ */
+export function backtestHeadToHead(
+  bundle: Bundle,
+  pairs: Array<{ category: string; column: Column }>,
+  origins: string[],
+  targetOffsetsYears: number[],
+  iterations = 500,
+): HeadToHead {
+  const start = monthToAbsolute(bundle.start_month);
+  const last = monthToAbsolute(bundle.end_month);
+  const aErr: number[] = []; const aBand: number[] = []; let aIn = 0;
+  const bErr: number[] = []; const bBand: number[] = []; let bIn = 0;
+  let samples = 0; let censored = 0;
+
+  for (const originMonth of origins) {
+    const origin = monthToAbsolute(originMonth);
+    if (origin < start || origin > last) continue;
+    const truncated = bundleAsOf(bundle, originMonth);
+
+    for (const { category, column } of pairs) {
+      const full = getSeries(bundle, "final_action", "employment", category, column);
+      const visible = getSeries(truncated, "final_action", "employment", category, column);
+      if (!full || !visible) continue;
+      const anchor = latestDated(visible);
+      if (!anchor) continue;
+
+      for (const offset of targetOffsetsYears) {
+        const targetDay = anchor.day + Math.round(offset * 365.25);
+        const targetIso = new Date(targetDay * 86_400_000).toISOString().slice(0, 10);
+
+        const q = estimateQueue(truncated, column, category, targetIso, anchor.day);
+        if (!q.ok || !q.waitYears) continue;
+
+        const a = estimate(
+          truncated,
+          { column, category, priorityDate: targetIso, seed: origin, iterations },
+          "final_action",
+        );
+        if (a.status !== "not_current" || a.beyondHorizon) continue;
+        if (!a.p10 || !a.p50 || !a.p90) continue;
+
+        let truthMonths: number | null = null;
+        for (let i = origin - start + 1; i < full.length; i += 1) {
+          const cell = full[i]!;
+          if (cell.kind === "date" && cell.day! >= targetDay) { truthMonths = i - (origin - start); break; }
+          if (cell.kind === "current") { truthMonths = i - (origin - start); break; }
+        }
+
+        const aLow = (monthToAbsolute(a.p10) - origin) / 12;
+        const aMid = (monthToAbsolute(a.p50) - origin) / 12;
+        const aHigh = (monthToAbsolute(a.p90) - origin) / 12;
+        const { low: bLow, mid: bMid, high: bHigh } = q.waitYears;
+
+        samples += 1;
+        aBand.push(aHigh - aLow);
+        bBand.push(bHigh - bLow);
+
+        if (truthMonths === null) {
+          censored += 1;
+          const remaining = (last - origin) / 12;
+          if (aHigh >= remaining) aIn += 1;
+          if (bHigh >= remaining) bIn += 1;
+          continue;
+        }
+        const truth = truthMonths / 12;
+        if (truth >= aLow && truth <= aHigh) aIn += 1;
+        if (truth >= bLow && truth <= bHigh) bIn += 1;
+        aErr.push(Math.abs(aMid - truth));
+        bErr.push(Math.abs(bMid - truth));
+      }
+    }
+  }
+
+  const med = (xs: number[]) => {
+    if (!xs.length) return NaN;
+    const s = [...xs].sort((x, y) => x - y);
+    return s[Math.floor(s.length / 2)]!;
+  };
+  return {
+    samples,
+    censored,
+    levelA: { coverage: samples ? aIn / samples : NaN, medianErrorYears: med(aErr), medianBandYears: med(aBand) },
+    levelB: { coverage: samples ? bIn / samples : NaN, medianErrorYears: med(bErr), medianBandYears: med(bBand) },
   };
 }

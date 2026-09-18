@@ -6,7 +6,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { absoluteToMonth, monthToAbsolute } from "./bundle.js";
-import { backtestCutoff, backtestFirstPassage } from "./backtest.js";
+import { backtestCutoff, backtestFirstPassage, backtestQueue, backtestHeadToHead } from "./backtest.js";
 import type { Bundle, Column } from "./types.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -56,4 +56,43 @@ console.log(`   interval coverage   : ${pct(passage.coverage)}   target ~80%`);
 console.log(`   median error of P50 : ${Number.isFinite(passage.medianErrorYears) ? passage.medianErrorYears.toFixed(2) + " years" : "n/a"}`);
 console.log(`   Brier, current ≤24mo: ${Number.isFinite(passage.brier24) ? passage.brier24.toFixed(3) : "n/a"}   (0 perfect, 0.25 = always saying 50%)`);
 console.log(`   "beyond horizon"    : ${passage.beyondHorizonTotal} calls, ${pct(passage.beyondHorizonCorrect)} still not current`);
+console.log();
+
+console.log("3. QUEUE COUNT (Level B): people ahead divided by numbers available.");
+console.log("   Band width is printed next to coverage on purpose. Supply is");
+console.log("   uncalibrated, so the band is wide, and a wide band covers the");
+console.log("   truth without knowing anything. Coverage alone would mislead.\n");
+
+const INDIA = PAIRS.filter((p) => p.column === "IN");
+const REST = PAIRS.filter((p) => p.column !== "IN");
+const yrs = (v: number) => (Number.isFinite(v) ? `${v.toFixed(2)} yr` : "n/a");
+
+for (const [label, set] of [["India", INDIA], ["other columns", REST]] as const) {
+  const q = backtestQueue(bundle, set, origins, [1, 2, 3]);
+  console.log(`   ${label}`);
+  console.log(`     countable / not covered : ${q.computable} / ${q.notCovered}`);
+  if (q.samples === 0) {
+    console.log("     no scorable cases: density never covered the span between");
+    console.log("     the cutoff and the target in these origin months.\n");
+    continue;
+  }
+  console.log(`     samples                 : ${q.samples}  (${q.censored} still not current)`);
+  console.log(`     interval coverage       : ${pct(q.coverage)}`);
+  console.log(`     median band width       : ${yrs(q.medianBandYears)}`);
+  console.log(`     median error of mid     : ${yrs(q.medianErrorYears)}\n`);
+}
+
+console.log("4. HEAD TO HEAD: same cases, both models.");
+console.log("   The separate scores above are not comparable, because Level B");
+console.log("   only answers where it can see the queue, which is an easier");
+console.log("   set. This restricts both to exactly the cases both answer.\n");
+const h = backtestHeadToHead(bundle, PAIRS, origins, [1, 2, 3], 500);
+console.log(`   samples: ${h.samples}  (${h.censored} still not current)\n`);
+console.log(`   ${"model".padEnd(10)}${"coverage".padStart(10)}${"band".padStart(12)}${"median err".padStart(13)}`);
+for (const [name, r] of [["Level A", h.levelA], ["Level B", h.levelB]] as const) {
+  console.log(
+    `   ${name.padEnd(10)}${pct(r.coverage).padStart(10)}` +
+    `${yrs(r.medianBandYears).padStart(12)}${yrs(r.medianErrorYears).padStart(13)}`,
+  );
+}
 console.log();

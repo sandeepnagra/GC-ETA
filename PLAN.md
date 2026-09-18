@@ -749,6 +749,133 @@ piece of Phase 2, not a refinement of this one.
 
 ---
 
+### Phase 2: the real queue model, and what measuring it showed (2026-09-18)
+
+Built Level B as §6.2 specifies: count the people between the cutoff and the
+applicant's priority date, and divide by the visa numbers their country can
+actually use. **On the cases where both models can answer, it does not beat
+Level A.** That is the headline and it is recorded first because the temptation
+to bury it is exactly why the backtest exists.
+
+#### The data gap that had to be closed first
+
+The density record covered only six decision years, FY2015 to FY2021 minus
+FY2018. Two things were wrong with the file map, and neither was a naming
+puzzle worth guessing at:
+
+- FY2014 and FY2018 were recorded as unpublished. Both are published, under
+  `PERM_FY14_Q4.xlsx` and `PERM_Disclosure_Data_FY2018_EOY.xlsx`. The OFLC
+  performance page links every disclosure file; scraping its hrefs found them in
+  one request, after seventy guessed filenames found nothing.
+- FY2022 to FY2025 were in the file map and had simply never been run.
+
+Adding FY2018 alone corrected what looked like a real feature of the queue. The
+counts for priority-date years 2017 and 2018 roughly doubled:
+
+| PD year | before | after |
+|---|---|---|
+| 2017 | 24,679 | 52,706 |
+| 2018 | 23,044 | 51,645 |
+
+The dip was a missing file, not a lull in filings. The record now spans eleven
+decision years with no gaps, 1,036,273 certified cases against 562,953 before,
+and India priority-date coverage runs 2006-06 to 2023-05.
+
+One access note worth keeping: DOL returns 403 to a spoofed browser user agent
+and 200 to the project's own honest one. The polite header is the one that works.
+
+#### The floor the record cannot go below, and why it is not a naming problem
+
+Files for FY2008 through FY2014 are published and downloadable, and they are
+useless here. They carry 27 columns: case number, decision date, case status,
+employer and wage fields, country of citizenship, class of admission. **There is
+no receipt date.** The priority date *is* the receipt date, so a decision date
+cannot substitute without inventing a processing-time distribution for exactly
+the years the estimate is most sensitive to. From FY2015 the file widens to 125
+columns and carries receipt date, the job's education requirement, and birth
+country.
+
+So priority-date coverage begins around 2013 and nothing will move it earlier.
+India's employment cutoffs sit at the edge of that: EB-2 at January 2013, EB-3
+at January 2014.
+
+#### Counting the empty region produced confident nonsense
+
+The first version gated on month coverage: count the months present between the
+cutoff and the target, and proceed if most are there. Pre-2013 months *are*
+present, as a thin tail of unusually slow cases, so the gate passed and the
+count came back near zero. Scored against India origins from 2016 to 2023 that
+gave **26% interval coverage inside a band 0.22 years wide**. Confidently wrong
+is worse than silent.
+
+The fix is a volume floor rather than a presence test: the first month whose
+trailing twelve-month total reaches a tenth of the column's busiest year. It
+lands at 2013-01 for India and mid-2013 elsewhere. Below it the model refuses.
+India then drops from 102 scorable historical cases to 12, which is the honest
+count.
+
+#### Head to head, same cases, both models
+
+Quarterly origins from 2016-10 to 2023-09, targets 1, 2 and 3 years beyond the
+cutoff, restricted to the 123 cases where both models answer:
+
+| model | interval coverage | median band | median error |
+|---|---|---|---|
+| Level A (velocity) | 93% | 3.67 yr | 0.50 yr |
+| Level B (queue count) | 79% | 2.60 yr | 0.72 yr |
+
+Level B's interval is better calibrated, 79% against a nominal 80% where Level A
+over-covers at 93% with a band a year wider. Its point estimate is worse, 0.72
+years against 0.50. It answers far fewer cases. **Level B does not replace Level
+A as the source of the headline date.**
+
+Closing the data gap did improve Level A, which had been reading a queue with a
+two-year hole in it: first-passage coverage moved 75% to 78% and median error
+0.92 to 0.83 years. The short-range result is unchanged and still does not beat
+persistence at six months.
+
+#### What Level B is actually for
+
+The division is speculative. The count is not. "About 80,500 people are ahead of
+you, counting spouses and children" is a number grounded in a million certified
+labour certifications, and nothing else in the app tells a user that. The wait
+range divides it by a supply figure that cannot currently be calibrated, and the
+resulting spread, roughly 2 to 20 years for a single case, says so plainly.
+
+So Level B ships as the people-ahead count with the wait range as a clearly
+labelled cross-check, never as the headline. No blend with Level A: blending on
+123 samples where the new model is the weaker one would be fitting to noise.
+
+#### The uncalibrated parameters, named
+
+Three numbers are guesses carried as explicit ranges rather than hidden
+constants, and the middle one is the largest error source in the model:
+
+| parameter | range | basis |
+|---|---|---|
+| dependents per principal | 1.7 / 2.0 / 2.4 | roughly half of employment numbers go to family members |
+| spillover multiple of the per-country floor | 1.5 / 3.0 / 6.0 | one readable year, FY2022 at 5.8x, in the record's highest-limit year |
+| materialisation rate | 0.6 / 0.8 / 1.0 | finding 47; nothing public measures it |
+
+An earlier draft applied a materialisation decay curve, 0.92 falling 0.035 a
+year to a floor of 0.45, which quietly halved the queue for a 2015 priority date
+on no evidence. The decay is probably real. Inventing its shape is not
+justifiable, so it is a flat range labelled as a guess.
+
+Calibrating the spillover multiple needs Department of State Table V issuance by
+country and category. That is the next thing worth building, and it would narrow
+the wait range more than any change to the model's structure.
+
+#### A fifth bias for §6.2, documented rather than fixed
+
+The four biases already recorded there are the queue not being closed, Dates for
+Filing truncation, double counting, and dimension mismatch. Add: the PERM
+education field records the job's minimum requirement, not the category the
+I-140 was eventually filed under. For India at old priority dates this
+undercounts EB-2 specifically, because much of that queue holds
+bachelor's-requirement certifications later ported to EB-2 on a second I-140
+while keeping the original priority date. The field cannot see that move.
+
 ## 10. Validation
 
 - **Backtest 1, short-range movement:** for every month from October 2021 to now, run the model using only data published before that month and predict FAD 6 and 12 months ahead. Report mean absolute error in months against a persistence baseline (assume no movement) and a naive trend baseline.

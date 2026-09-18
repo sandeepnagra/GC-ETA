@@ -56,17 +56,35 @@ OUT = DATA_DIR / "perm-density.json"
 
 BASE = "https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/"
 
-# Naming is inconsistent across years; these were found by probing.
+# Naming is inconsistent across years, and guessing at names wasted a lot of
+# time. The authoritative list is the OFLC performance page, which links every
+# published disclosure file; scraping its hrefs for /PERM.*\.xlsx?/ found both
+# of the years previously recorded as missing, under names no pattern guessed:
+# FY2014 as PERM_FY14_Q4.xlsx and FY2018 as PERM_Disclosure_Data_FY2018_EOY.xlsx.
+#
+# THE RECORD CANNOT REACH BACK BEFORE FY2015, and not because of naming.
+# Files for FY2008 through FY2014 are published and downloadable, but they carry
+# 27 columns: CASE_NO, DECISION_DATE, CASE_STATUS, employer and wage fields,
+# COUNTRY_OF_CITIZENSHIP, CLASS_OF_ADMISSION. There is no CASE_RECEIVED_DATE.
+# The priority date IS the receipt date, so a decision date cannot substitute
+# without inventing a processing-time distribution for exactly the years the
+# estimate is most sensitive to. Those years are excluded on purpose. From
+# FY2015 the file widens to 125 columns and carries receipt date, the job's
+# education requirement, and birth country.
+#
+# The practical floor this sets: a PERM decided in FY2015 was typically received
+# in 2013 or 2014, so priority-date coverage begins around 2012 and is thin
+# until 2013. India's employment cutoffs currently sit at the edge of that,
+# which is why the queue count works going forward from today but not for
+# historical backtest months when cutoffs sat in the 2000s.
 FILES = {
-    2013: "PERM_FY2013_Q4.xlsx",
     2015: "PERM_Disclosure_Data_FY15_Q4.xlsx",
     2016: "PERM_Disclosure_Data_FY16.xlsx",
     2017: "PERM_Disclosure_Data_FY17.xlsx",
-    # NOTE: the file published as PERM_FY2018.xlsx contains only Q2 despite the
-    # name, and no Q4 variant is published. Including it would undercount 2018
-    # received-months, which is worse than a visible gap, so 2018 is excluded
-    # and listed as missing. The coverage report below is what caught this.
-
+    # Found on the OFLC index. The file previously tried, PERM_FY2018.xlsx,
+    # holds only Q2; this one holds 119,776 rows across the full year and fills
+    # what looked like a real dip in 2017-2018 priority dates but was a gap.
+    2018: "PERM_Disclosure_Data_FY2018_EOY.xlsx",
     2019: "PERM_Disclosure_Data_FY2019.xlsx",
     2020: "PERM_Disclosure_Data_FY2020_Q4.xlsx",
     2021: "PERM_Disclosure_Data_FY2021_Q4.xlsx",
@@ -75,8 +93,10 @@ FILES = {
     2024: "PERM_Disclosure_Data_FY2024_Q4.xlsx",
     2025: "PERM_Disclosure_Data_FY2025_Q4.xlsx",
 }
-# FY2014 is not published under any pattern that was tried.
-KNOWN_MISSING = [2014, 2018]
+# Decision-date-only schema, so no priority date can be derived. Not a gap that
+# further searching will close.
+NO_RECEIPT_DATE = [2008, 2009, 2010, 2011, 2012, 2013, 2014]
+KNOWN_MISSING = []
 
 COLUMN_FOR_COUNTRY = {
     "INDIA": "IN",
@@ -241,12 +261,14 @@ def main() -> int:
                 "EB-1 and national interest waiver cases, which file no PERM."
             ),
             "years_missing": KNOWN_MISSING,
+            "years_without_receipt_date": NO_RECEIPT_DATE,
             "years": done,
             "density": density,
         }, separators=(",", ":")))
 
     total = sum(v["certified"] for v in done.values())
     print(f"\nyears aggregated : {len(done)}  (missing: {KNOWN_MISSING})")
+    print(f"no receipt date  : FY{NO_RECEIPT_DATE[0]}-FY{NO_RECEIPT_DATE[-1]} publish decision date only")
     print(f"certified cases  : {total:,}")
     print(f"written          : {OUT} ({OUT.stat().st_size/1024:.0f} KB)")
 

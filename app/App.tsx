@@ -8,6 +8,7 @@ import { checkForUpdate, freshness, loadCached } from "./src/updates";
 import { FONTS } from "./src/components/Text";
 import { CaseScreen } from "./src/screens/CaseScreen";
 import { CompareScreen } from "./src/screens/CompareScreen";
+import { DisruptionsScreen } from "./src/screens/DisruptionsScreen";
 import { ExplainScreen } from "./src/screens/ExplainScreen";
 import { MethodologyScreen } from "./src/screens/MethodologyScreen";
 import { NewsScreen } from "./src/screens/NewsScreen";
@@ -111,6 +112,7 @@ export default function App() {
           comparison={comparison}
           suggestion={suggestion}
           events={events}
+          onDisruptions={() => setScreen("disruptions")}
           bundle={bundle}
           stale={stale}
           newsCount={timeline.filter((i) => i.direct).length}
@@ -121,6 +123,13 @@ export default function App() {
           draft={draft}
           comparison={comparison}
           suggestion={suggestion}
+          onBack={() => setScreen("results")}
+        />
+      ) : screen === "disruptions" && assessment ? (
+        <DisruptionsScreen
+          theme={theme}
+          events={events}
+          applicable={assessment.events}
           onBack={() => setScreen("results")}
         />
       ) : screen === "methodology" ? (

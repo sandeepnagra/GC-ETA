@@ -35,13 +35,14 @@ interface Props {
   comparison?: Comparison | null;
   suggestion?: SwitchSuggestion | null;
   events: EventsFile;
+  onDisruptions: () => void;
   /** The live bundle, which may be newer than the one compiled into the app. */
   bundle: Bundle;
   stale: Freshness;
   newsCount: number;
 }
 
-export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, onCompare, comparison, suggestion, events, bundle, stale, newsCount }: Props) {
+export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, onCompare, comparison, suggestion, events, onDisruptions, bundle, stale, newsCount }: Props) {
   const { finalAction, filing, outlook } = assessment;
   // The hero card sits inside the screen's 20pt padding and its own 16pt, so
   // the drawing has to be told how much room it really has.
@@ -127,7 +128,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
     cards.push({
       key: "events",
       title: "Events",
-      node: <EventsCard theme={theme} events={assessment.events} onAll={onNews} />,
+      node: <EventsCard theme={theme} events={assessment.events} onAll={onDisruptions} />,
     });
   }
 

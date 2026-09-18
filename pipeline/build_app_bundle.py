@@ -76,6 +76,12 @@ def main() -> int:
         b["month"]: b["sections"] for b in bulletins if b.get("sections")
     }
 
+    # Priority-date density: how many people hold each priority-date month.
+    # Without it the model reads speed without knowing what that speed was
+    # moving through. See build_perm_density.py.
+    density_path = DATA_DIR / "perm-density.json"
+    density = json.loads(density_path.read_text()) if density_path.exists() else None
+
     limits = json.loads((DATA_DIR / "limits.json").read_text())
     historical = json.loads((DATA_DIR / "limits-historical.json").read_text())
     payload = {
@@ -87,6 +93,11 @@ def main() -> int:
         "missing_months": archive["months_missing"],
         "series": series,
         "sections": sections,
+        "density": (density or {}).get("density", {}),
+        "density_coverage": {
+            "decision_years": sorted((density or {}).get("years", {}).keys()),
+            "missing_years": (density or {}).get("years_missing", []),
+        },
         # Employment limit per fiscal year, so the model can discount an advance
         # made in a year with far more visa numbers than today. Years absent
         # here fall back to the statutory base.
@@ -112,6 +123,9 @@ def main() -> int:
     size = out.stat().st_size
     print(f"series      : {len(series)}")
     print(f"months w/ sections: {len(sections)}")
+    if density:
+        cols = density.get("density", {})
+        print(f"density columns   : {sorted(cols.keys())}")
     print(f"months      : {span}  ({start} .. {end})")
     print(f"bundle size : {size/1024:.0f} KB  (from {raw/1_048_576:.1f} MB raw, {raw/size:.0f}x smaller)")
     print(f"written     : {out}")

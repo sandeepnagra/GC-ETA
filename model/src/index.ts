@@ -1,6 +1,6 @@
 export * from "./types.js";
 export * from "./bundle.js";
-export { estimate, extractSteps, simulateFirstPassage, scaleStepsToRegime } from "./levelA.js";
+export { estimate, extractSteps, simulateFirstPassage, scaleStepsToRegime, scaleStepsToDensity } from "./levelA.js";
 export { assessRisk, sectionsFor } from "./risk.js";
 export { applicableEvents, staleEvents } from "./events.js";
 export type { ApplicableEvent, Relevance } from "./events.js";
@@ -9,3 +9,5 @@ export type { CaseAssessment } from "./assess.js";
 export { caseTimeline } from "./news.js";
 export type { NewsItem } from "./news.js";
 export { bundleAsOf, forecastCutoff, backtestCutoff, backtestFirstPassage } from "./backtest.js";
+export { densityAt, densityRatio, densityHorizon } from "./density.js";
+export type { DensityLookup } from "./density.js";

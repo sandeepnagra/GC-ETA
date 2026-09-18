@@ -68,3 +68,15 @@ test("a cutoff forecast is ordered and anchored to the visible present", () => {
 test("truncating before the archive starts is refused rather than silently empty", () => {
   assert.throws(() => bundleAsOf(bundle, "2001-01"));
 });
+
+test("density is hidden until those cases would have been decided", () => {
+  // A priority date month's certified count is only knowable once the cases
+  // have been adjudicated, roughly two years later. A 2016 run seeing the
+  // finished 2016 cohort would be using knowledge nobody had.
+  const past = bundleAsOf(bundle, "2017-01");
+  for (const months of Object.values(past.density ?? {})) {
+    for (const pdMonth of Object.keys(months)) {
+      assert.ok(pdMonth <= "2015-01", `${pdMonth} leaked into a 2017-01 run`);
+    }
+  }
+});

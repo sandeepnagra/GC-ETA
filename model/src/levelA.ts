@@ -27,7 +27,8 @@ import {
   lastKnownIndex,
   monthToAbsolute,
 } from "./bundle.js";
-import type { Bundle, Cell, Chart, Estimate, EstimateInput } from "./types.js";
+import { densityRatio } from "./density.js";
+import type { Bundle, Cell, Chart, Column, Estimate, EstimateInput } from "./types.js";
 
 /** 25 years. Past this we stop pretending to know. */
 const HORIZON_MONTHS = 300;
@@ -55,6 +56,37 @@ export interface Step {
   advanceDays: number;
   /** Fiscal year the step happened in, for regime scaling. */
   fiscalYear: number;
+  /** Where the cutoff stood before this step, for density scaling. */
+  fromDay: number;
+}
+
+/**
+ * Discount historical advances for how crowded the priority dates were.
+ *
+ * A month that advanced through thin 2013 dates is not evidence about a month
+ * advancing through 2015 dates: for India those cohorts differ by roughly six
+ * times. Clearing the same number of people covers fewer days of priority date
+ * when those days are denser, so a step recorded in a thin stretch is shrunk
+ * before being applied to a dense one.
+ *
+ * Steps whose density cannot be measured at both ends are left untouched, so
+ * the correction never rests on a guess. The backtest is what decides whether
+ * this helps; see PLAN.md.
+ */
+export function scaleStepsToDensity(
+  steps: Step[],
+  bundle: Bundle,
+  column: Column,
+  targetDay: number,
+): { steps: Step[]; adjusted: number } {
+  let adjusted = 0;
+  const out = steps.map((step) => {
+    const { factor, covered } = densityRatio(bundle, column, step.fromDay, targetDay);
+    if (!covered || factor === 1) return step;
+    adjusted += 1;
+    return { ...step, advanceDays: step.advanceDays * factor };
+  });
+  return { steps: out, adjusted };
 }
 
 /**
@@ -114,6 +146,7 @@ export function extractSteps(cells: Cell[], startAbsolute: number): Step[] {
           fiscalMonth: fiscalMonthIndex(startAbsolute + i),
           advanceDays: 0,
           fiscalYear: fiscalYearOf(startAbsolute + i),
+          fromDay: previousDay,
         });
         previousIndex = i;
       }
@@ -125,6 +158,7 @@ export function extractSteps(cells: Cell[], startAbsolute: number): Step[] {
         fiscalMonth: fiscalMonthIndex(startAbsolute + i),
         advanceDays: cell.day! - previousDay,
         fiscalYear: fiscalYearOf(startAbsolute + i),
+        fromDay: previousDay,
       });
     }
     previousDay = cell.day!;
@@ -281,14 +315,25 @@ export function estimate(
   }
 
   const startFiscalMonth = fiscalMonthIndex(startAbsolute + latestIndex);
-  const scaled = scaleStepsToRegime(
+  const regimeScaled = scaleStepsToRegime(
     steps,
     bundle.employment_limit_by_fy ?? {},
     bundle.statutory_base ?? 140000,
     fiscalYearOf(startAbsolute + latestIndex),
   );
+  const densityScaled = scaleStepsToDensity(
+    regimeScaled,
+    bundle,
+    input.column,
+    launchDay,
+  );
+  if (densityScaled.adjusted > 0) {
+    drivers.push(
+      "Adjusted for how many people hold the priority dates ahead of you, which differs sharply across years.",
+    );
+  }
   const { crossings, crossedFraction } = simulateFirstPassage(
-    scaled,
+    densityScaled.steps,
     launchDay,
     targetDay,
     startFiscalMonth,

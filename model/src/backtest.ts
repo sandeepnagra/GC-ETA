@@ -53,6 +53,19 @@ export function bundleAsOf(bundle: Bundle, month: string): Bundle {
     if (limitKnownFrom(Number(fy)) <= month) limits[fy] = value;
   }
 
+  // Density leaks too. A priority date month's certified count is only known
+  // once those cases have been decided, which takes about two years. Letting a
+  // 2016 run see the finished 2016 cohort would hand it knowledge nobody had.
+  const density: NonNullable<Bundle["density"]> = {};
+  for (const [column, months] of Object.entries(bundle.density ?? {})) {
+    const visible: Record<string, { total: number; advanced?: number; bachelors?: number }> = {};
+    for (const [pdMonth, value] of Object.entries(months)) {
+      const knownFrom = absoluteToMonth(monthToAbsolute(pdMonth) + 24);
+      if (knownFrom <= month) visible[pdMonth] = value;
+    }
+    density[column] = visible;
+  }
+
   const sections: NonNullable<Bundle["sections"]> = {};
   for (const [key, value] of Object.entries(bundle.sections ?? {})) {
     if (key <= month) sections[key] = value;
@@ -65,6 +78,7 @@ export function bundleAsOf(bundle: Bundle, month: string): Bundle {
     series,
     employment_limit_by_fy: limits,
     sections,
+    density,
   };
 }
 

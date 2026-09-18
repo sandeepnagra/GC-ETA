@@ -38,6 +38,12 @@ export interface Bundle {
   statutory_base: number;
   /** Per-category narrative sections by month, the Visa Office's own guidance. */
   sections?: Record<string, BulletinSection[]>;
+  /**
+   * Certified labour certifications by chargeability column and priority-date
+   * month: how many people hold each month of the queue.
+   */
+  density?: Record<string, Record<string, { total: number; advanced?: number; bachelors?: number }>>;
+  density_coverage?: { decision_years: string[]; missing_years: number[] };
   limits: Array<{
     fiscal_year: number;
     employment_worldwide: number | null;

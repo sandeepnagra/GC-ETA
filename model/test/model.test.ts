@@ -205,8 +205,8 @@ test("probability of becoming current is reported alongside the range", () => {
 
 test("regime scaling discounts a high-supply year and leaves unknown years alone", () => {
   const steps = [
-    { fiscalMonth: 0, advanceDays: 300, fiscalYear: 2022 },
-    { fiscalMonth: 0, advanceDays: 300, fiscalYear: 2019 },
+    { fiscalMonth: 0, advanceDays: 300, fiscalYear: 2022, fromDay: 16000 },
+    { fiscalMonth: 0, advanceDays: 300, fiscalYear: 2019, fromDay: 16000 },
   ];
   const scaled = scaleStepsToRegime(steps, { "2022": 281507, "2026": 186317 }, 140000, 2026);
   assert.ok(scaled[0]!.advanceDays < 300, "a 281,507-visa year is discounted to today");

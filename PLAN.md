@@ -685,6 +685,64 @@ That is consistent with the diagnosis already recorded: Level A reads cutoff
 movement and cannot see queue depth. It raises, again, the priority of the queue
 model and the priority-date density work.
 
+### Phase 2 start: priority-date density (2026-09-18)
+
+The backtest pointed three times at the same gap, so this went after it: the
+model reads how fast the cutoff moved without knowing how many people hold each
+priority date.
+
+**The data exists and is better than the plan assumed.** DOL labour
+certification disclosure files give a certified case's received date, which *is*
+the priority date. `build_perm_density.py` now aggregates them into counts by
+chargeability column and priority-date month. Six decision-year files loaded,
+562,953 certified cases.
+
+**It shows exactly the effect that was suspected.** India certified cases by
+received year: about 7,500 across 2013, 32,700 across 2014, 45,100 across 2015,
+48,600 across 2016. The cohorts behind the cutoff are roughly **six times
+denser** at 2016 dates than 2013 dates. A model that learned its speed from thin
+2013 months and applies it to dense 2015 months will always run optimistic,
+which is what the backtest measured.
+
+**Three data traps, all caught by measuring coverage rather than trusting names.**
+
+1. The file published as `PERM_FY2018.xlsx` contains only Q2 despite the name,
+   and no full-year version is published. Including it would have undercounted
+   2018 silently. It is excluded and listed as missing.
+2. The files are keyed by **decision** fiscal year, not received date. The
+   FY2016 file contains cases received from 2008 onward. A priority-date month
+   is only complete once every case in it has been decided.
+3. FY2020 renamed the schema: `CASE_RECEIVED_DATE` became `RECEIVED_DATE`,
+   `JOB_INFO_EDUCATION` became `MINIMUM_EDUCATION`, and
+   `FW_INFO_BIRTH_COUNTRY` was dropped. Four years silently produced zero rows
+   until the coverage report flagged them.
+
+That third one refines a standing caveat: **birth country is published through
+FY2019 and only citizenship after**, so the citizenship-as-proxy limitation
+applies to newer cohorts, not to the 2013-2017 dates where the India queue sits.
+
+**The honest result: it helps a little, and does not fix the model.**
+
+| metric | before density | after |
+|---|---|---|
+| interval coverage | 73% | **75%** (target 80%) |
+| median error of midpoint | 0.92 years | 0.92 years |
+| Brier, current within 24 months | 0.257 | 0.260 |
+
+Loading three further decision years did not move it again. Coverage improved by
+two points, which is real but small; the midpoint error and the probability
+skill are unchanged. For the headline case the estimate did move meaningfully in
+the right direction, from a midpoint of September 2027 out to July 2028 with
+confidence dropping to low.
+
+**Why it is not enough, and what follows.** Rescaling velocity by a density
+ratio is a blunt instrument, and the leakage guard hides density for the two
+years nearest the cutoff, which is where it would matter most. The proper form
+is the one §6.2 already specifies: count the people ahead of the applicant and
+divide by the numbers their country can actually use, rather than adjusting a
+speed. Density is the input that finally makes that computable. That is the next
+piece of Phase 2, not a refinement of this one.
+
 **Phase 2 — queue model (3–4 weeks).** Level B from inventory + waiting list + I-140 data, spillover forecaster from family issuance data, backtest harness, EB-2 vs EB-3 comparison, "current to approved" add-on.
 
 **Phase 3 — scenarios (later).** Level C Monte Carlo, probability-by-year view, optional topic-based push notifications (requires storing anonymous device tokens; decide then whether that breaks the no-data promise), localization (Hindi, Chinese, Spanish, Tagalog).

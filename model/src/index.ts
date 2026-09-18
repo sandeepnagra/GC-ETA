@@ -8,3 +8,4 @@ export { assessCase } from "./assess.js";
 export type { CaseAssessment } from "./assess.js";
 export { caseTimeline } from "./news.js";
 export type { NewsItem } from "./news.js";
+export { bundleAsOf, forecastCutoff, backtestCutoff, backtestFirstPassage } from "./backtest.js";

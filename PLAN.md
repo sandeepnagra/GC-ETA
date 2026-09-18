@@ -641,6 +641,50 @@ registry rather than a raw feed, for three reasons.
 Privacy holds by construction: the pipeline curates, the app reads the same
 published file as everyone else, and no request is keyed to the user's case.
 
+### Backtest results (2026-09-18)
+
+The harness is built (`model/src/backtest.ts`) and has been run. It truncates
+the bundle to what was knowable at each origin month, including hiding a fiscal
+year's employment limit until roughly July of that year, and six tests assert
+that no future observation leaks.
+
+**Short range, where will the cutoff be.** Mean absolute error over 2018-10
+onward, six pairs:
+
+| horizon | n | model | persistence | seasonal | coverage |
+|---|---|---|---|---|---|
+| 6 months | 465 | 9.6 mo | **9.2 mo** | 10.1 mo | 78% |
+| 12 months | 434 | **12.1 mo** | 13.4 mo | 12.1 mo | 78% |
+
+At six months the model is **worse than assuming the cutoff does not move**. At
+twelve it beats persistence by about 1.3 months and exactly ties the
+seasonal-only baseline. §10 predicted both: persistence is strong because the
+cutoff is unchanged most months, and the seasonal baseline was included
+precisely because it was likely to match the model.
+
+**First passage, what the app actually sells.** 405 samples across 28 quarterly
+origins from 2016 to 2023, targets one to three years ahead of the cutoff:
+
+- **interval coverage 73%** against a target of 80%, so the published bands are
+  about seven points too narrow, meaning mildly overconfident rather than wild.
+- **median error of the midpoint 0.92 years**, which is respectable for a
+  multi-year forecast.
+- **Brier score 0.257 for "current within 24 months"**, against 0.25 for always
+  answering fifty percent. The probability output has **no demonstrated skill**.
+
+**What was changed as a result.** The app previously told users "about 56 in 100
+simulations became current within a year". The backtest says that number carries
+no proven information, so presenting it would claim skill the evidence does not
+support. It has been replaced by a statement of the measured coverage. The
+accuracy screen now reports the real figures, including that the six-month
+outlook has no edge over assuming nothing changes.
+
+**What this means for the roadmap.** The range is roughly calibrated and the
+midpoint is usable; the probabilities and the short-horizon outlook are not.
+That is consistent with the diagnosis already recorded: Level A reads cutoff
+movement and cannot see queue depth. It raises, again, the priority of the queue
+model and the priority-date density work.
+
 **Phase 2 — queue model (3–4 weeks).** Level B from inventory + waiting list + I-140 data, spillover forecaster from family issuance data, backtest harness, EB-2 vs EB-3 comparison, "current to approved" add-on.
 
 **Phase 3 — scenarios (later).** Level C Monte Carlo, probability-by-year view, optional topic-based push notifications (requires storing anonymous device tokens; decide then whether that breaks the no-data promise), localization (Hindi, Chinese, Spanish, Tagalog).

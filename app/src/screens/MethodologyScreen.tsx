@@ -30,9 +30,14 @@ const LIMITATIONS = [
       "An advance made when 281,507 visas were available is discounted to today's smaller pool. Published limits only go back to FY2021; earlier years are left unadjusted rather than assumed, which errs toward longer waits.",
   },
   {
-    title: "Accuracy has not been measured yet",
+    title: "Measured accuracy, including where it fails",
     body:
-      "No backtest has been run, so there is no published error figure. Until there is, treat the range as a structured argument rather than a validated forecast.",
+      "Tested against 405 historical cases. The range contained the true answer 73% of the time, against a target of 80%, so the bands are a little too narrow. The midpoint was out by about 0.9 years on average.",
+  },
+  {
+    title: "The short-term outlook has no proven edge",
+    body:
+      "Over six months the model is no more accurate than assuming the cutoff does not move at all, and its odds of becoming current within two years scored no better than a coin flip. Read the direction and the reasoning, not the precise odds.",
   },
   {
     title: "One month is missing from the record",

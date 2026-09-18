@@ -53,10 +53,13 @@ export function assessCase(
   // backlogged category the P10 often reflects one unusual historical October
   // recovering from a retrogression, not a likely outcome, so state the actual
   // probability instead of leaving the range to imply one.
-  const soon = finalAction.probabilityWithin?.find((p) => p.months === 12);
-  if (soon && finalAction.p10) {
+  // The backtest measured this model's probability output as no better than a
+  // coin flip at two years (Brier 0.257 against 0.25 for always saying 50%).
+  // Presenting "56 in 100" as though it were informative would claim skill the
+  // evidence does not support, so the caveat cites the measurement instead.
+  if (finalAction.p10 && !finalAction.beyondHorizon) {
     warnings.push(
-      `About ${Math.round(soon.probability * 100)} in 100 simulations became current within a year. A range alone can imply an evenness that is not there, so treat the early end as a possibility with that weight, not as a forecast.`,
+      "Tested against past cases, a range like this contained the true answer about 73% of the time rather than the 80% intended, so treat it as slightly too narrow rather than exact.",
     );
   }
 

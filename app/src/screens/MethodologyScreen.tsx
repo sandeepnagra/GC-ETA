@@ -35,6 +35,11 @@ const LIMITATIONS = [
       "Labour certification records published before 2015 carry only the decision date, not the date the application was received, and the received date is the priority date. So there is no way to count who was waiting at a 2009 priority date. Where your category's cutoff sits below that, no count is shown rather than a misleadingly small one.",
   },
   {
+    title: "The queue cannot be seen after May 2023 either",
+    body:
+      "The Labor Department phased in a new application form during 2023. Its published records list the employer's country and the attorney's country but not the applicant's own, and a queue is counted per country. So priority dates from mid-2023 onward have no count, and this will not improve with time unless that field is published again.",
+  },
+  {
     title: "Years are adjusted for supply, but only back to 2021",
     body:
       "An advance made when 281,507 visas were available is discounted to today's smaller pool. Published limits only go back to FY2021; earlier years are left unadjusted rather than assumed, which errs toward longer waits.",

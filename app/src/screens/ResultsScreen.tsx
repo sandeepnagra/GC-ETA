@@ -233,11 +233,13 @@ function QueueCard({
     if (q.reason === "beyond_density_record") {
       return (
         <Card theme={theme}>
-          <Row theme={theme} title="People ahead of you" trailing="not countable yet" />
+          <Row theme={theme} title="People ahead of you" trailing="not countable" />
           <Text style={{ fontSize: 14, lineHeight: 20, color: theme.secondary }}>
-            Your priority date is recent enough that the labour certifications filed
-            around the same time are still being decided. Until they are, there is no
-            honest way to count how many of them sit ahead of you.
+            The public record of certified labour certifications ends in May 2023. The
+            Labor Department's newer form records the employer's country and the
+            attorney's country but no longer records the applicant's own, and a queue
+            is counted per country. So for a priority date after that there is nothing
+            honest to count.
           </Text>
         </Card>
       );

@@ -840,6 +840,14 @@ A's accuracy inside an interval a full year tighter, and its coverage sits at 82
 against a nominal 80% where Level A over-covers at 91%. That is a better
 calibrated interval carrying the same information.
 
+**What the 85 cases are, and are not.** The guard removes a case when the target
+priority date sits past what the density covers as of that origin month, and the
+backtest hides density until a priority-date month is 24 months old. That bites
+the 3-year and 2-year targets far more often than the 1-year ones, so the
+surviving set leans toward the shorter horizon, which is easier for both models.
+The comparison between them is still like for like. Its absolute numbers are not
+a sample of the app's typical question.
+
 **The honesty note that belongs with that number.** The guard was added because
 of a user-facing copy bug, not to move the metric: a 2025 priority date and a
 2009 one both returned "not covered", so the app would have told someone with a
@@ -896,6 +904,58 @@ I-140 was eventually filed under. For India at old priority dates this
 undercounts EB-2 specifically, because much of that queue holds
 bachelor's-requirement certifications later ported to EB-2 on a second I-140
 while keeping the original priority date. The field cannot see that move.
+
+#### The other end of the record, found in review
+
+The density stopped at May 2023, and the reason given in the app was that recent
+labour certifications are still being decided. That was wrong, and checking it
+turned up a data corruption underneath.
+
+FY2025's file covers receipts from June 2023 to September 2024, so those cases
+*are* decided and published. They were not showing up per country because the
+Labor Department phased in a **new ETA Form 9089** during 2023. Its disclosure
+files carry the employer's country, the point of contact's country and the
+attorney's country, and **drop the applicant's own birth country and
+citizenship**. A queue is counted per chargeability column, so those rows cannot
+be placed in one at all.
+
+The aggregator did not notice. It looked the column up with
+`index.get(country_key, -1)`, and a missing key became a silent `-1`, which in
+Python reads the **last column of every row**. Nothing there matched a country
+name, so `COLUMN_FOR_COUNTRY.get(..., "ROW")` filed all of it under
+rest-of-world. A second default compounded it: the recorded country basis came
+from `"birth" if key == "FW_INFO_BIRTH_COUNTRY" else "citizenship"`, so a key
+that was absent entirely was reported as `citizenship`. The provenance field
+asserted something about data that had no provenance.
+
+The result was **80,680 FY2025 cases filed under rest-of-world**, and India,
+China, Mexico and the Philippines empty from June 2023 onward, with the coverage
+report showing 14 healthy received-months for the year. Every check passed.
+
+| | before | after |
+|---|---|---|
+| certified cases | 1,036,273 | 955,593 |
+| ROW months covered | 185 | 171 |
+| ROW rows after 2023-06 | 80,680 | 0 |
+
+Removal was exact rather than approximate: FY2024's receipts stop at May 2023
+and no other column had a single row after it, so FY2025's contribution was
+precisely the rest-of-world months from June 2023 on. Removing them dropped the
+total by exactly FY2025's certified count, and the remaining density then summed
+to exactly the sum of the remaining years. Both identities were checked before
+writing the file.
+
+The fix is to refuse rather than default. A sheet with no worker-country column
+is skipped, named in the run output and recorded in `unusable_sheets`. The
+`-1` fallback is gone, and the country basis is now derived only from a key that
+exists. This did not change the head-to-head, because the corrupted months were
+all hidden behind the backtest's 24-month leakage guard anyway. It changed what
+the app tells people, which is the part that reaches anyone.
+
+So the record has a hard ceiling as well as a hard floor: **priority-date
+coverage runs 2013 to May 2023**, bounded below by files that publish no receipt
+date and above by files that publish no applicant country. Neither bound moves
+with more searching. The upper one would move if DOL republished the field.
 
 ## 10. Validation
 

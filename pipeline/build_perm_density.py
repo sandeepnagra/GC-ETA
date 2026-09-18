@@ -98,6 +98,16 @@ FILES = {
 NO_RECEIPT_DATE = [2008, 2009, 2010, 2011, 2012, 2013, 2014]
 KNOWN_MISSING = []
 
+# The other end of the record, and the same kind of limit. DOL phased in a new
+# ETA Form 9089 during 2023, and its disclosure files publish the employer's
+# country, the point of contact's country and the attorney's country, but not
+# the foreign worker's birth country or citizenship. A queue is per
+# chargeability column, so those rows cannot be placed in one. This affects
+# PERM_Disclosure_Data_FY2025_Q4.xlsx and the separate
+# PERM_Disclosure_Data_New_Form_FY2024_Q4.xlsx, and it is why priority-date
+# coverage ends in mid-2023 rather than at the present day.
+NO_WORKER_COUNTRY = [2025]
+
 COLUMN_FOR_COUNTRY = {
     "INDIA": "IN",
     "CHINA": "CN",
@@ -144,6 +154,7 @@ def aggregate(path: Path) -> dict:
     rows_seen = 0
     counted = 0
     bases: set[str] = set()
+    unusable: list[str] = []
 
     for sheet_name in workbook.sheetnames:
         sheet = workbook[sheet_name]
@@ -167,12 +178,34 @@ def aggregate(path: Path) -> dict:
         received_key = first_present("CASE_RECEIVED_DATE", "RECEIVED_DATE")
         if "CASE_STATUS" not in index or received_key is None:
             continue
+
+        # WITHOUT A WORKER-COUNTRY COLUMN THIS FILE IS UNUSABLE, and saying so
+        # loudly matters more than salvaging the rows. The new ETA Form 9089,
+        # which DOL phased in during 2023, publishes the employer's country, the
+        # point of contact's country and the attorney's country, and drops the
+        # foreign worker's birth country and citizenship entirely. A queue is
+        # per chargeability column, so rows with no worker country cannot be
+        # placed in one.
+        #
+        # The previous version looked the column up with `index.get(key, -1)`,
+        # which is a silent -1 into the row tuple: it read the LAST column of
+        # every row, found nothing matching a country name, and filed all of it
+        # under rest-of-world. That put 80,680 FY2025 cases into ROW and left
+        # India, China, Mexico and the Philippines empty from June 2023 onward.
+        # It also reported the country basis as "citizenship" for those rows,
+        # because that was the else branch of a two-way test on a key that was
+        # actually absent. Two defaults, each individually reasonable, combining
+        # into confidently wrong data.
         country_key = first_present("FW_INFO_BIRTH_COUNTRY", "COUNTRY_OF_CITIZENSHIP")
+        if country_key is None:
+            unusable.append(
+                f"{path.name}:{sheet_name} has no worker-country column "
+                f"(found {[h for h in header if 'COUNTRY' in h][:4]}); skipped"
+            )
+            continue
+
         education_key = first_present("JOB_INFO_EDUCATION", "MINIMUM_EDUCATION")
-        country_basis = (
-            "birth" if country_key == "FW_INFO_BIRTH_COUNTRY" else "citizenship"
-        )
-        bases.add(country_basis)
+        bases.add("birth" if country_key == "FW_INFO_BIRTH_COUNTRY" else "citizenship")
 
         for row in stream:
             rows_seen += 1
@@ -182,7 +215,7 @@ def aggregate(path: Path) -> dict:
             received = row[index[received_key]]
             if not isinstance(received, datetime):
                 continue
-            country = str(row[index.get(country_key, -1)] or "").strip().upper()
+            country = str(row[index[country_key]] or "").strip().upper()
             column = COLUMN_FOR_COUNTRY.get(country, "ROW")
             month = f"{received.year:04d}-{received.month:02d}"
             education = bucket_education(
@@ -196,6 +229,7 @@ def aggregate(path: Path) -> dict:
     return {
         "rows_seen": rows_seen,
         "certified": counted,
+        "unusable_sheets": unusable,
         "months": sorted({m for months in counts.values() for m in months}),
         "country_basis": sorted(bases),
         "counts": {c: {m: dict(v) for m, v in months.items()} for c, months in counts.items()},
@@ -239,7 +273,10 @@ def main() -> int:
             "received_months": len(months),
             "span": [months[0], months[-1]] if months else None,
             "country_basis": result["country_basis"],
+            "unusable_sheets": result["unusable_sheets"],
         }
+        for message in result["unusable_sheets"]:
+            print(f"  FY{year}  SKIPPED: {message}")
         months = result["months"]
         span = f"{months[0]}..{months[-1]}" if months else "none"
         print(
@@ -262,6 +299,7 @@ def main() -> int:
             ),
             "years_missing": KNOWN_MISSING,
             "years_without_receipt_date": NO_RECEIPT_DATE,
+            "years_without_worker_country": NO_WORKER_COUNTRY,
             "years": done,
             "density": density,
         }, separators=(",", ":")))
@@ -269,6 +307,7 @@ def main() -> int:
     total = sum(v["certified"] for v in done.values())
     print(f"\nyears aggregated : {len(done)}  (missing: {KNOWN_MISSING})")
     print(f"no receipt date  : FY{NO_RECEIPT_DATE[0]}-FY{NO_RECEIPT_DATE[-1]} publish decision date only")
+    print(f"no worker country: FY{NO_WORKER_COUNTRY} use the new ETA Form 9089 schema")
     print(f"certified cases  : {total:,}")
     print(f"written          : {OUT} ({OUT.stat().st_size/1024:.0f} KB)")
 

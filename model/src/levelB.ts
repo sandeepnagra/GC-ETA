@@ -276,10 +276,15 @@ export function estimateQueue(
   }
 
   // The opposite failure to the floor, and a different thing to tell the user.
-  // A 2025 priority date is not missing from the record because the record is
-  // old; it is missing because those labour certifications have not been
-  // decided yet. Reporting both as "not covered" would put the wrong
-  // explanation on screen.
+  //
+  // It is NOT that these cases are still being decided, which is what an
+  // earlier version of this said. The Labor Department phased in a new ETA Form
+  // 9089 during 2023 whose disclosure files publish the employer's country, the
+  // point of contact's country and the attorney's country, and drop the
+  // applicant's own birth country and citizenship. A queue is per chargeability
+  // column, so those rows cannot be placed in one at any future date. The
+  // record ends in May 2023 and will not extend unless DOL republishes the
+  // field.
   const covered = Object.keys(bundle.density?.[column] ?? {}).sort();
   const lastCovered = covered[covered.length - 1];
   if (lastCovered && dayToIso(targetDay).slice(0, 7) > lastCovered) {
@@ -287,7 +292,7 @@ export function estimateQueue(
       ok: false,
       reason: "beyond_density_record",
       notes: [
-        `Labour certifications with priority dates after ${lastCovered} are still being decided, so the queue behind a date this recent cannot be counted yet.`,
+        `The published record of certified labour certifications ends at ${lastCovered}, because the Labor Department's newer form no longer records which country the applicant is from. A queue after that date cannot be counted.`,
       ],
     };
   }

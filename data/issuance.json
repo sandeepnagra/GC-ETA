@@ -1,9 +1,16 @@
 {
  "schema_version": 1,
- "generated_at": "2026-09-18T15:40:26.242011+00:00",
+ "generated_at": "2026-09-18T15:57:56.334797+00:00",
  "source": "Department of State, Report of the Visa Office, Table V Part 2",
  "note": "Immigrant visas issued AND adjustments of status subject to numerical limitations, by foreign state of chargeability. Includes dependents, so these are visa numbers rather than principals. ROW is the grand total less India, mainland-born China, Mexico and the Philippines. A figure is supply only where the category was oversubscribed; where a column was Current it reflects demand.",
  "years": {
+  "2024": {
+   "countries_parsed": 230,
+   "grand_total_eb2": 46314,
+   "eb2_share_of_expected": 1.007,
+   "source": "https://adoption.state.gov/content/dam/visas/Statistics/AnnualReports/FY2024AnnualReport/Table%20V_PartII.pdf",
+   "layout": "part2"
+  },
   "2012": {
    "countries_parsed": 236,
    "grand_total_eb2": 50593,
@@ -87,16 +94,61 @@
    "eb2_share_of_expected": 1.01,
    "source": "https://adoption.state.gov/content/dam/visas/Statistics/AnnualReports/FY2023AnnualReport/FY2023_AR_TableV_Part2.pdf",
    "layout": "part2"
-  },
-  "2024": {
-   "countries_parsed": 230,
-   "grand_total_eb2": 46314,
-   "eb2_share_of_expected": 1.007,
-   "source": "https://adoption.state.gov/content/dam/visas/Statistics/AnnualReports/FY2024AnnualReport/Table%20V_PartII.pdf",
-   "layout": "part2"
   }
  },
  "issuance": {
+  "2024": {
+   "CN": {
+    "EB1": 6952,
+    "EB2": 6556,
+    "EB3": 5964,
+    "EB3_OTHER_WORKERS": 177,
+    "EB3_TOTAL": 6141,
+    "EB4": 58,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 20,
+    "EB4_TOTAL": 78
+   },
+   "IN": {
+    "EB1": 8809,
+    "EB2": 3916,
+    "EB3": 3643,
+    "EB3_OTHER_WORKERS": 12,
+    "EB3_TOTAL": 3655,
+    "EB4": 379,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 49,
+    "EB4_TOTAL": 428
+   },
+   "PH": {
+    "EB1": 331,
+    "EB2": 379,
+    "EB3": 9111,
+    "EB3_OTHER_WORKERS": 1047,
+    "EB3_TOTAL": 10158,
+    "EB4": 65,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 13,
+    "EB4_TOTAL": 78
+   },
+   "MX": {
+    "EB1": 2059,
+    "EB2": 1314,
+    "EB3": 1684,
+    "EB3_OTHER_WORKERS": 2207,
+    "EB3_TOTAL": 3891,
+    "EB4": 437,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 26,
+    "EB4_TOTAL": 463
+   },
+   "ROW": {
+    "EB1": 29311,
+    "EB2": 34149,
+    "EB3": 18164,
+    "EB3_OTHER_WORKERS": 5281,
+    "EB3_TOTAL": 23445,
+    "EB4": 10152,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 473,
+    "EB4_TOTAL": 10625
+   }
+  },
   "2012": {
    "CN": {
     "EB1": 6183,
@@ -719,58 +771,6 @@
     "EB4": 11444,
     "EB4_CERTAIN_RELIGIOUS_WORKERS": 565,
     "EB4_TOTAL": 12009
-   }
-  },
-  "2024": {
-   "CN": {
-    "EB1": 6952,
-    "EB2": 6556,
-    "EB3": 5964,
-    "EB3_OTHER_WORKERS": 177,
-    "EB3_TOTAL": 6141,
-    "EB4": 58,
-    "EB4_CERTAIN_RELIGIOUS_WORKERS": 20,
-    "EB4_TOTAL": 78
-   },
-   "IN": {
-    "EB1": 8809,
-    "EB2": 3916,
-    "EB3": 3643,
-    "EB3_OTHER_WORKERS": 12,
-    "EB3_TOTAL": 3655,
-    "EB4": 379,
-    "EB4_CERTAIN_RELIGIOUS_WORKERS": 49,
-    "EB4_TOTAL": 428
-   },
-   "PH": {
-    "EB1": 331,
-    "EB2": 379,
-    "EB3": 9111,
-    "EB3_OTHER_WORKERS": 1047,
-    "EB3_TOTAL": 10158,
-    "EB4": 65,
-    "EB4_CERTAIN_RELIGIOUS_WORKERS": 13,
-    "EB4_TOTAL": 78
-   },
-   "MX": {
-    "EB1": 2059,
-    "EB2": 1314,
-    "EB3": 1684,
-    "EB3_OTHER_WORKERS": 2207,
-    "EB3_TOTAL": 3891,
-    "EB4": 437,
-    "EB4_CERTAIN_RELIGIOUS_WORKERS": 26,
-    "EB4_TOTAL": 463
-   },
-   "ROW": {
-    "EB1": 29311,
-    "EB2": 34149,
-    "EB3": 18164,
-    "EB3_OTHER_WORKERS": 5281,
-    "EB3_TOTAL": 23445,
-    "EB4": 10152,
-    "EB4_CERTAIN_RELIGIOUS_WORKERS": 473,
-    "EB4_TOTAL": 10625
    }
   }
  }

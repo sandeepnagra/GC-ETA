@@ -197,8 +197,14 @@ def main() -> int:
             if entry.get("employment_worldwide"):
                 limits[int(entry["fiscal_year"])] = entry["employment_worldwide"]
 
-    issuance: dict[str, dict[str, dict[str, int]]] = {}
-    report: dict[str, dict] = {}
+    # MERGE, DO NOT REPLACE. A --years run is for adding a newly published year
+    # or re-parsing one, and rebuilding the file from only those years silently
+    # destroys the rest. Running "--years 2024" as a smoke test did exactly that
+    # and left a thirteen-year file holding one year, with "no problems"
+    # printed underneath.
+    existing = json.loads(OUT.read_text()) if OUT.exists() else {}
+    issuance: dict[str, dict[str, dict[str, int]]] = dict(existing.get("issuance", {}))
+    report: dict[str, dict] = dict(existing.get("years", {}))
     problems: list[str] = []
 
     for year in args.years:
@@ -292,7 +298,9 @@ def main() -> int:
     }
     OUT.write_text(json.dumps(payload, indent=1))
 
-    print(f"\nyears parsed : {len(issuance)}  {sorted(issuance)}")
+    added = sorted(str(y) for y in args.years if str(y) in issuance)
+    print(f"\nyears in file : {len(issuance)}  {sorted(issuance)}")
+    print(f"years this run: {len(added)}  {added}")
     print(f"written      : {OUT} ({OUT.stat().st_size/1024:.0f} KB)")
     if problems:
         print(f"\nPROBLEMS ({len(problems)}):")

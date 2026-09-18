@@ -39,17 +39,37 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
   // chart tiles stay outside the carousel: the answer should never be a swipe
   // away. Cards with nothing to say are left out rather than shown empty, so
   // the "3 of 6" count always reflects what is really there.
-  const cards: CarouselItem[] = [
-    {
-      key: "outlook",
-      title: "What is scheduled",
-      node: <OutlookCard theme={theme} outlook={outlook} />,
-    },
-    {
+  const cards: CarouselItem[] = [];
+
+  // First card when the date is already current, because at that point the
+  // headline estimate has nothing left to say and this is the whole answer.
+  if (finalAction.status === "current") {
+    cards.push({
+      key: "current",
+      title: "Your date is current",
+      node: <CurrentCard theme={theme} draft={draft} standing={assessment.standing} />,
+    });
+  }
+
+  cards.push({
+    key: "outlook",
+    title: "What is scheduled",
+    node: <OutlookCard theme={theme} outlook={outlook} />,
+  });
+
+  // Only when it will actually draw something. QueueCard renders nothing for a
+  // date that is already current or a column with no density at all, and an
+  // item with a null node is a blank page that still counts in "1 of 7".
+  if (queueCardRenders(assessment.queue)) {
+    cards.push({
       key: "queue",
       title: "People ahead of you",
       node: <QueueCard theme={theme} assessment={assessment} draft={draft} />,
-    },
+    });
+  }
+
+  cards.push(
+
     {
       key: "history",
       title: "Ten years of movement",
@@ -78,7 +98,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
         </Card>
       ),
     },
-  ];
+  );
 
   if (blockers.length > 0) {
     cards.push({
@@ -278,6 +298,16 @@ function Row({ theme, title, trailing }: { theme: Theme; title: string; trailing
  * calibrated. So the count leads and the years follow, hedged in words rather
  * than presented as a second opinion of equal weight. PLAN.md, Phase 2 results.
  */
+/** The reasons QueueCard has something on screen for. */
+function queueCardRenders(queue: CaseAssessment["queue"]): boolean {
+  if (queue.ok) return true;
+  return (
+    queue.reason === "below_density_floor" ||
+    queue.reason === "density_not_covered" ||
+    queue.reason === "beyond_density_record"
+  );
+}
+
 function QueueCard({
   theme,
   assessment,
@@ -427,6 +457,61 @@ function OutlookCard({ theme, outlook }: { theme: Theme; outlook: CaseAssessment
           </View>
         );
       })}
+    </Card>
+  );
+}
+
+/**
+ * The answer for someone whose date is already current.
+ *
+ * Before this, such a user got one sentence: this category and country is
+ * Current, so every priority date is eligible. Nine of the thirty category and
+ * country pairs are current, including EB-1 and EB-2 for the rest of the world,
+ * so that was a third of the combinations landing on an empty screen.
+ *
+ * What it does NOT do is estimate how long the remaining government processing
+ * takes. That needs a source whose quality has not been assessed, and it should
+ * not hold back the useful thing the archive can already say: being current is
+ * not permanent, and the record says how permanent it has been. EB-1 for the
+ * rest of the world has been current for three years after closing twice;
+ * EB-2 has closed six times and has been current for six months. A screen
+ * saying only "Current" makes those look identical.
+ */
+function CurrentCard({
+  theme,
+  draft,
+  standing,
+}: {
+  theme: Theme;
+  draft: CaseDraft;
+  standing: CaseAssessment["standing"];
+}) {
+  const months = standing.monthsSoFar;
+  const duration =
+    months >= 24
+      ? `${Math.floor(months / 12)} years`
+      : months >= 1
+        ? `${months} month${months === 1 ? "" : "s"}`
+        : "this month";
+
+  return (
+    <Card theme={theme}>
+      <Row theme={theme} title="How long this lasts" trailing={categoryLabel(draft.category)} />
+      <Text display style={{ fontSize: 26, color: theme.text, letterSpacing: -0.4 }}>
+        {standing.since ? `Current since ${prettyMonth(standing.since)}` : "Current"}
+      </Text>
+      <Text style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
+        A visa number is available for your priority date now.{" "}
+        {draft.path === "adjustment"
+          ? "That is what lets Form I-485 be filed and approved. Check which chart U.S. Citizenship and Immigration Services has designated this month, because that decides which of the two dates applies to filing."
+          : "The National Visa Center schedules interviews as numbers become available, so the next step sits with them and the consulate rather than with the bulletin."}
+      </Text>
+      <View style={{ height: 1, backgroundColor: theme.border, marginVertical: 4 }} />
+      <Text style={{ fontSize: 13, lineHeight: 19, color: theme.secondary }}>
+        {standing.timesClosed === 0
+          ? `It has been current for the whole published record, ${duration} and counting. That is unusual and is not a guarantee.`
+          : `It has been current for ${duration}. Since 2009 this category has closed and reopened ${standing.timesClosed} ${standing.timesClosed === 1 ? "time" : "times"}${standing.medianClosedMonths ? `, and past stretches of being current lasted about ${standing.medianClosedMonths} months` : ""}. Being current is a state, not a milestone, and it can end.`}
+      </Text>
     </Card>
   );
 }

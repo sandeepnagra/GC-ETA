@@ -1080,13 +1080,16 @@ use the thing. Needs an EAS or Xcode release configuration, an App Store Connect
 record, and the privacy declarations, which are unusually easy here because the
 app collects nothing.
 
-**6. Custom typefaces.** Fraunces and IBM Plex Sans via `expo-font`. Purely
-cosmetic, and the last thing between the app and the approved design.
+**6. ~~Custom typefaces.~~ DONE.** Fraunces and IBM Plex Sans, vendored. See
+"The typefaces" below.
 
-**7. The "current to approved" add-on and the filed-I-485 path.** §6.5. The
-optional "have you already filed" question is collected and changes very little
-today. Once a date is current the remaining wait is USCIS processing rather than
-the bulletin, which is a different and better-documented distribution.
+**7. The "current to approved" add-on and the filed-I-485 path.** §6.5.
+**Partly done.** A current applicant now gets a real screen: what current means,
+what the next step is, and how durable being current has been for that category.
+What remains is the processing-time estimate itself, which needs USCIS data
+whose quality has not been assessed. Note the premise on the old backlog was
+wrong: the "have you already filed" question was never built, so nothing is
+collected and ignored.
 
 ---
 
@@ -1388,6 +1391,79 @@ no staleness note, which is correct for fresh data.
 confirm-manually design stands, but detect-and-open-a-PR is a feature with its
 own failure modes and its own review burden, and `events.json` is curated.
 For now it is copied through unchanged.
+
+### The typefaces, and the screen for people already current (2026-09-18)
+
+Both done before shipping, at the owner's direction, and the reasoning for each
+turned out to be different from the one on the backlog.
+
+#### Fraunces and IBM Plex Sans
+
+The mechanical argument mattered more than the aesthetic one. Custom fonts need
+a native rebuild and so does a release build, so doing the fonts afterwards
+would have meant two native cycles and a second upload for something cosmetic.
+
+**React Native does not pick a weight out of a custom family.** With the system
+font `fontWeight: "600"` gets you semibold; with a custom family iOS keeps the
+one face it was handed and either ignores the weight or synthesises a smeared
+fake bold. Each weight is a separately registered family. So a `Text` wrapper
+resolves weight into family name once, rather than at 37 call sites, and strips
+the weight from the style it passes down, because leaving it beside a custom
+family is what triggers the synthetic bold. Screens still write `fontWeight`
+exactly as before. A `display` prop selects Fraunces for the three places the
+design uses the serif: the app title, the headline estimate and the count of
+people ahead. The chart's axis labels are set directly, since the wrapper cannot
+reach inside an SVG and they would otherwise have stayed on the system font
+while everything around them changed.
+
+**Vendored, not packaged.** The `@expo-google-fonts` packages ship every weight
+and every italic, and with Expo bundling all assets that put 32 font files and
+4.5 MB into the app to use four of them. Copying the four in is 736 KB and
+removes two dependencies. Measured on a clean build: **33 MB with four font
+files, down from 38 MB with 36.** Both families are under the SIL Open Font
+License, whose terms require the licence to travel with the fonts, so both
+licence files sit beside them.
+
+**This machine cannot run `expo run:ios`.** Simulator.app is not installed, so
+builds go through `xcodebuild` and `simctl` directly, and must be Release rather
+than Debug because Debug expects a Metro server. Worth recording before the
+release build is attempted.
+
+#### The screen for a date that is already current
+
+The app was built around one question and had nothing to say to anyone past it.
+A current applicant got a single sentence: this category and country is Current,
+so every priority date is eligible.
+
+That is not an edge case. **Nine of the thirty category and country pairs are
+current right now**, including EB-1 and EB-2 for the rest of the world, which is
+the largest employment population there is. A third of the combinations,
+weighted toward the busiest, were landing on an empty answer.
+
+The card does **not** model USCIS processing time. That needs a source whose
+quality has not been assessed, and it should not hold back what the archive can
+already say: being current is not permanent, and the record says how permanent
+it has been.
+
+| | current for | closed before | median past spell |
+|---|---|---|---|
+| EB-1, rest of world | 36 months | 2 times | 72 months |
+| EB-2, rest of world | 6 months | 6 times | 21 months |
+| EB-5 unreserved, Philippines | 53 months | never | n/a |
+
+A screen that said only "Current" made those identical. One of them is a
+category that has closed six times.
+
+Two details in the counting. A month nobody published does not end a run: the
+archive genuinely lacks October 2012, and treating a gap as a closure would
+invent one. And the median is taken over spells that have **ended**, excluding
+the one still running, which would otherwise bias it short by however early in
+the spell the reader happens to look.
+
+Found while building it: the carousel counted a card that renders nothing. The
+queue card returns null for a date that is already current, but its entry stayed
+in the list, so there was a blank page inside "1 of 7". Items are now added only
+when they will draw something.
 
 ## 10. Validation
 

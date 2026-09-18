@@ -18,3 +18,5 @@ export { compareCategories, suggestSwitch } from "./compare.js";
 export type { Comparison, CategorySide, Crossover, SwitchSuggestion, SwitchVerdict, Reversal } from "./compare.js";
 export { expectedLatestMonth, freshness } from "./freshness.js";
 export type { Freshness } from "./freshness.js";
+export { currentStanding } from "./current.js";
+export type { CurrentStanding, CurrentSpell } from "./current.js";

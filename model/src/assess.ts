@@ -10,6 +10,7 @@ import { getSeries, lastKnownIndex } from "./bundle.js";
 import { applicableEvents, staleEvents, type ApplicableEvent } from "./events.js";
 import { estimate } from "./levelA.js";
 import { estimateQueue, type QueueEstimate } from "./levelB.js";
+import { currentStanding, type CurrentStanding } from "./current.js";
 import { nearTermOutlook, type Outlook } from "./outlook.js";
 import type {
   Bundle,
@@ -33,6 +34,14 @@ export interface CaseAssessment {
    * plainly when there is nothing.
    */
   outlook: Outlook;
+  /**
+   * How long this category has been Current and how often it has closed.
+   *
+   * Only meaningful when the date is already current, which is the case the
+   * rest of this structure has nothing to say about. Nine of the thirty
+   * category and country pairs are current, so it is not an edge case.
+   */
+  standing: CurrentStanding;
   /**
    * How many people hold an earlier priority date, from the labour
    * certification record. Present only when the record actually covers the
@@ -70,6 +79,7 @@ export function assessCase(
   const finalAction = estimate(bundle, input, "final_action");
   const filing = estimate(bundle, input, "dates_for_filing");
   const outlook = nearTermOutlook(bundle, events, input, onDate);
+  const standing = currentStanding(bundle, input.category, input.column);
   const applicable = applicableEvents(events, {
     birthCountry: input.birthCountry,
     category: input.category,
@@ -121,5 +131,5 @@ export function assessCase(
     );
   }
 
-  return { asOfMonth: bundle.end_month, finalAction, filing, outlook, queue, events: applicable, warnings };
+  return { asOfMonth: bundle.end_month, finalAction, filing, outlook, standing, queue, events: applicable, warnings };
 }

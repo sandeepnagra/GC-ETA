@@ -151,32 +151,7 @@ export async function checkForUpdate(current: DataSet): Promise<DataSet | null> 
 
 /* ------------------------------------------------------------- freshness */
 
-/**
- * The newest bulletin month the app ought to be holding today.
- *
- * The Visa Office publishes the bulletin governing a month during the middle of
- * the month before. So for most of a month the newest available bulletin is the
- * current one, and from around the 25th the next month's should be out.
- * PLAN.md 8.1 requires the app to say so when it is behind rather than present
- * stale figures as current, because otherwise a broken pipeline and a working
- * one look identical to the reader.
- */
-export function expectedLatestMonth(today: Date): string {
-  const year = today.getFullYear();
-  const month = today.getMonth(); // 0-based
-  const advance = today.getDate() >= 25 ? 1 : 0;
-  const absolute = year * 12 + month + advance;
-  return `${String(Math.floor(absolute / 12)).padStart(4, "0")}-${String((absolute % 12) + 1).padStart(2, "0")}`;
-}
-
-export interface Freshness {
-  stale: boolean;
-  /** Short enough to sit next to the bulletin month in a header. */
-  note: string | null;
-}
-
-export function freshness(bundle: Bundle, today: Date = new Date()): Freshness {
-  const expected = expectedLatestMonth(today);
-  if (bundle.end_month >= expected) return { stale: false, note: null };
-  return { stale: true, note: "a newer bulletin may be out" };
-}
+// The rule lives in the model package, where there is a test runner. Re-exported
+// here so the app has one import for everything about data currency.
+export { expectedLatestMonth, freshness } from "@gc-eta/model";
+export type { Freshness } from "@gc-eta/model";

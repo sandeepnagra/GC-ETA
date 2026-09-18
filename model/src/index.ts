@@ -16,3 +16,5 @@ export { estimateQueue, peopleBetween, annualSupply } from "./levelB.js";
 export type { QueueEstimate, QueueBounds } from "./levelB.js";
 export { compareCategories, suggestSwitch } from "./compare.js";
 export type { Comparison, CategorySide, Crossover, SwitchSuggestion, SwitchVerdict, Reversal } from "./compare.js";
+export { expectedLatestMonth, freshness } from "./freshness.js";
+export type { Freshness } from "./freshness.js";

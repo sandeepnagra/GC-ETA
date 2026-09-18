@@ -1302,6 +1302,93 @@ a direction with its reasoning, not an arithmetic saving, because the reversal
 table is precisely the evidence that an arithmetic saving would be false
 precision.
 
+### Automated refresh, built (2026-09-18)
+
+§8.1 promised that shipping a new number is a data publish rather than a
+release. It had been written down and not built, and the gap was wider than a
+missing cron: `app/src/data.ts` read the snapshot compiled into the app and
+nothing else, while its own header comment and `sync-data.mjs` both described a
+runtime fetch that did not exist. A scheduled rebuild alone would not have
+satisfied "without a human", because a release is a human.
+
+**Publish side.** Two workflows, each also triggerable on demand.
+
+| | cadence | does | deploys |
+|---|---|---|---|
+| `refresh-data.yml` | daily, 15:00 UTC | bulletin archive, annual limits, rebuild bundle | yes, to GitHub Pages |
+| `refresh-annual.yml` | monthly, 3rd | labour certifications, visa issuance | no |
+
+The annual one deliberately does not deploy. It commits, and the daily job
+publishes on its next run, so exactly one code path puts files in front of
+users. It is separate because those sources change once a year and cost most of
+a gigabyte; running them daily would download hundreds of megabytes to produce
+an identical file.
+
+The daily job caches `pipeline/cache`, without which every run would re-fetch
+two hundred bulletins from a government server that has no obligation to
+tolerate it.
+
+**`pipeline/publish.py` is the gate, and the checks are the point of it.** It
+compares the new bundle against the one currently committed and refuses to
+publish anything that went backwards: fewer series, an earlier last month, fewer
+months, a shrunken density or issuance record, a changed schema version. The
+archive only grows, so a shrink means something upstream broke. Verified by
+feeding it a bundle that regresses; it refused with three named problems and a
+non-zero exit rather than publishing.
+
+**Consume side.** The app renders from what it holds, then fetches a small
+manifest in the background and pulls the bundle only when the manifest is newer.
+Every failure path leaves the previous data in place, so a first launch with no
+network still works from the compiled-in snapshot.
+
+Two things this forced that were not obvious:
+
+- **The bundle had to stop being a module constant.** `App.tsx` computed the
+  assessment, the timeline, the comparison and the suggestion in memos keyed on
+  the draft. A successful download would have changed nothing on screen until
+  the next relaunch. It is state now, and every memo depends on it.
+- **The app repeats the shape checks on download.** A build server and a phone
+  can disagree, and the phone is the one holding the user's answer. That
+  includes refusing a bundle whose last month is earlier than the one already
+  held, which protects against a botched rollback replacing good data with
+  worse.
+
+**On not checking the manifest's hash.** The manifest carries a sha256 of each
+file and the app ignores it. That looks like a shortcut and is not: the hash
+comes from the same origin as the file it describes, so anything able to serve a
+bad bundle can serve a matching manifest, and it protects against nothing HTTPS
+does not already cover. What it would genuinely catch is a truncated or corrupt
+download, and parsing the JSON and checking its shape catches that and more. The
+hashes stay in the manifest for humans and for a future integrity story that
+involves a second origin.
+
+**Staleness is shown, not assumed.** §8.1 requires the app to say when it is
+behind, because otherwise a broken pipeline and a working one look identical to
+a reader. The rule: the bulletin governing a month is published during the
+middle of the month before, so from around the 25th the next month's should be
+in hand. When it is not, the results header adds "a newer bulletin may be out"
+under the bulletin month.
+
+That rule now lives in the model package rather than in the app, because it is
+pure logic and the app has no test runner. Its whole purpose is to be visible
+when the refresh fails, so leaving it untested was the wrong place for it. Seven
+tests cover the month boundary, the year rollover, being ahead of expectation,
+and the case that actually matters: holding September on 26 September, when
+October is out and a silent app would show the old figures as current.
+
+**Dry run, on demand.** Triggered `refresh-data.yml` by hand. It fetched the
+archive, rebuilt, validated, committed "Refresh data: bulletin through 2026-09"
+and deployed. All three files serve from Pages with `application/json`. Then the
+app was built with its snapshot back-dated to January, launched on a simulator,
+and it downloaded and cached the newer bundle: 504 KB of bundle, events, and a
+stamp recording what it holds. The estimate rendered from the fetched data with
+no staleness note, which is correct for fresh data.
+
+**Still manual, on purpose.** The event layer. §8.1's detect-automatically,
+confirm-manually design stands, but detect-and-open-a-PR is a feature with its
+own failure modes and its own review burden, and `events.json` is curated.
+For now it is copied through unchanged.
+
 ## 10. Validation
 
 - **Backtest 1, short-range movement:** for every month from October 2021 to now, run the model using only data published before that month and predict FAD 6 and 12 months ahead. Report mean absolute error in months against a persistence baseline (assume no movement) and a naive trend baseline.

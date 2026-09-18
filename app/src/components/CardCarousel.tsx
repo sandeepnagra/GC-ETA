@@ -37,10 +37,10 @@ import {
   NativeSyntheticEvent,
   Pressable,
   ScrollView,
-  Text,
   useWindowDimensions,
   View,
 } from "react-native";
+import { Text } from "./Text";
 
 import type { Theme } from "../theme";
 

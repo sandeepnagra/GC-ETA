@@ -8,7 +8,8 @@
  */
 
 import React from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
+import { Text } from "../components/Text";
 
 import { prettyMonth } from "../data";
 import type { Bundle, EventsFile } from "@gc-eta/model";

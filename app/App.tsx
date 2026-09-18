@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { SafeAreaView, StatusBar, useColorScheme } from "react-native";
+import { SafeAreaView, StatusBar, View, useColorScheme } from "react-native";
+import { useFonts } from "expo-font";
 import { assessCase, caseTimeline, compareCategories, suggestSwitch } from "@gc-eta/model";
 
 import { bundledData, prettyMonth } from "./src/data";
 import { checkForUpdate, freshness, loadCached } from "./src/updates";
+import { FONTS } from "./src/components/Text";
 import { CaseScreen } from "./src/screens/CaseScreen";
 import { CompareScreen } from "./src/screens/CompareScreen";
 import { ExplainScreen } from "./src/screens/ExplainScreen";
@@ -44,6 +46,8 @@ export default function App() {
     };
   }, []);
 
+  const [fontsLoaded] = useFonts(FONTS);
+
   const theme = resolveTheme(mode, system ?? null);
   const today = new Date().toISOString().slice(0, 10);
   const stale = useMemo(() => freshness(bundle), [bundle]);
@@ -71,6 +75,14 @@ export default function App() {
     () => (comparison ? suggestSwitch(comparison, bundle, draft.column, draft.category) : null),
     [comparison, bundle, draft.column, draft.category],
   );
+
+  // Held back until the faces are in memory. Every hook above runs first, so
+  // the order is identical on both sides of this branch. Rendering through it
+  // would show a frame of system font and then reflow the whole screen, which
+  // is worse than a moment of the background colour.
+  if (!fontsLoaded) {
+    return <View style={{ flex: 1, backgroundColor: theme.bg }} />;
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>

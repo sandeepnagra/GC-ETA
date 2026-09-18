@@ -1,7 +1,8 @@
 /** Step 1: the three inputs that determine everything. */
 
 import React, { useState } from "react";
-import { Platform, Pressable, ScrollView, Text, View } from "react-native";
+import { Platform, Pressable, ScrollView, View } from "react-native";
+import { Text } from "../components/Text";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 import { CATEGORIES, COLUMNS, prettyDate } from "../data";
@@ -48,7 +49,7 @@ export function CaseScreen({ theme, draft, onChange, onSubmit }: Props) {
       keyboardShouldPersistTaps="handled"
     >
       <View style={{ gap: 4 }}>
-        <Text style={{ fontSize: 28, fontWeight: "700", color: theme.accent, letterSpacing: -0.5 }}>
+        <Text display style={{ fontSize: 28, color: theme.accent, letterSpacing: -0.5 }}>
           GC ETA
         </Text>
         <Text style={{ fontSize: 15, lineHeight: 21, color: theme.secondary }}>

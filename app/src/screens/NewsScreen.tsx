@@ -8,7 +8,8 @@
  */
 
 import React from "react";
-import { Linking, Pressable, ScrollView, Text, View } from "react-native";
+import { Linking, Pressable, ScrollView, View } from "react-native";
+import { Text } from "../components/Text";
 import type { NewsItem } from "@gc-eta/model";
 
 import { prettyDate } from "../data";

@@ -8,7 +8,8 @@
  */
 
 import React from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { Text } from "./Text";
 import Svg, { Circle, Line, Path, Rect, Text as SvgText } from "react-native-svg";
 import type { HistoryPoint } from "@gc-eta/model";
 import { isoToDay } from "@gc-eta/model";
@@ -75,7 +76,7 @@ export function HistoryChart({ theme, points, priorityDate, width = 326, height 
         {ticks.map((tick) => (
           <React.Fragment key={tick}>
             <Line x1={padLeft} y1={y(tick)} x2={width - 6} y2={y(tick)} stroke={theme.border} strokeWidth={1} />
-            <SvgText x={2} y={y(tick) + 4} fontSize={10} fill={theme.secondary}>
+            <SvgText fontFamily="IBMPlexSans_400Regular" x={2} y={y(tick) + 4} fontSize={10} fill={theme.secondary}>
               {String(yearLabel(tick))}
             </SvgText>
           </React.Fragment>
@@ -102,7 +103,7 @@ export function HistoryChart({ theme, points, priorityDate, width = 326, height 
           x1={padLeft} y1={y(target)} x2={width - 6} y2={y(target)}
           stroke={theme.negative} strokeWidth={1.5} strokeDasharray="4,4"
         />
-        <SvgText x={width - 8} y={y(target) - 5} fontSize={10} fill={theme.negative} textAnchor="end">
+        <SvgText fontFamily="IBMPlexSans_400Regular" x={width - 8} y={y(target) - 5} fontSize={10} fill={theme.negative} textAnchor="end">
           your date
         </SvgText>
 
@@ -113,10 +114,10 @@ export function HistoryChart({ theme, points, priorityDate, width = 326, height 
           return <Circle cx={x(lastIndex)} cy={y(last.day)} r={4} fill={theme.accent} />;
         })()}
 
-        <SvgText x={padLeft} y={height - 6} fontSize={10} fill={theme.secondary}>
+        <SvgText fontFamily="IBMPlexSans_400Regular" x={padLeft} y={height - 6} fontSize={10} fill={theme.secondary}>
           {points[0]?.month ?? ""}
         </SvgText>
-        <SvgText x={width - 6} y={height - 6} fontSize={10} fill={theme.secondary} textAnchor="end">
+        <SvgText fontFamily="IBMPlexSans_400Regular" x={width - 6} y={height - 6} fontSize={10} fill={theme.secondary} textAnchor="end">
           {points[points.length - 1]?.month ?? ""}
         </SvgText>
       </Svg>

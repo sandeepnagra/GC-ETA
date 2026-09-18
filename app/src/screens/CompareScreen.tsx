@@ -17,7 +17,8 @@
  */
 
 import React from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
+import { Text } from "../components/Text";
 import type { Comparison, SwitchSuggestion } from "@gc-eta/model";
 
 import { categoryLabel, columnLabel, prettyDate, prettyMonth } from "../data";

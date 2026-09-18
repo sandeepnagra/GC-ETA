@@ -1,7 +1,8 @@
 /** The estimate, its outlook, and what is acting on it. */
 
 import React from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
+import { Text } from "../components/Text";
 import type { CaseAssessment } from "@gc-eta/model";
 import { dayToIso, historyPoints } from "@gc-eta/model";
 import { categoryLabel, columnLabel, prettyDate } from "../data";
@@ -151,7 +152,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
         <Text style={{ fontSize: 12, fontWeight: "600", letterSpacing: 0.4, color: theme.heroText, opacity: 0.85, textTransform: "uppercase" }}>
           {finalAction.status === "current" ? "Your date is current" : "Final action likely"}
         </Text>
-        <Text style={{ fontSize: 28, fontWeight: "700", lineHeight: 34, color: theme.heroText, letterSpacing: -0.5 }}>
+        <Text display style={{ fontSize: 28, lineHeight: 34, color: theme.heroText, letterSpacing: -0.5 }}>
           {headline(assessment)}
         </Text>
         {finalAction.p50 && !finalAction.beyondHorizon ? (
@@ -342,7 +343,7 @@ function QueueCard({
         title="People ahead of you"
         trailing={`${categoryLabel(draft.category)} · ${columnLabel(draft.column)}`}
       />
-      <Text style={{ fontSize: 34, fontWeight: "700", color: theme.text, letterSpacing: -0.5 }}>
+      <Text display style={{ fontSize: 34, color: theme.text, letterSpacing: -0.5 }}>
         {people.toLocaleString("en-US")}
       </Text>
       <Text style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>

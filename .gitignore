@@ -60,3 +60,6 @@ app/assets/data/
 # deployment-target fix is reapplied by app/plugins/withPodDeploymentTarget.js.
 app/ios/
 app/android/
+
+# Built simulator app, kept locally for reinstalling without a rebuild
+app/build/

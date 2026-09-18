@@ -49,3 +49,33 @@ UTC yields the 9th, and writing it back with `toISOString()` shifts it again.
 This was live in the app and only visible on device, where the field read
 10 March while the picker wheel sat on 9. `CaseScreen` stays in local calendar
 components throughout. Do not reintroduce `toISOString()` for these.
+
+## Reinstalling without a rebuild
+
+A Release build embeds the JavaScript, so it runs with no Metro server. That is
+what you want for hands-on testing; a Debug build shows a red error screen the
+moment the dev server stops.
+
+```bash
+xcrun simctl boot "iPhone 17 Pro"
+xcrun simctl install booted app/build/GCETA.app
+xcrun simctl launch booted com.gceta.app
+```
+
+To rebuild that artifact after a change:
+
+```bash
+cd app && node scripts/sync-data.mjs
+cd ios && xcodebuild -workspace GCETA.xcworkspace -scheme GCETA \
+  -configuration Release -sdk iphonesimulator \
+  -destination "id=<udid>" -derivedDataPath build \
+  CODE_SIGNING_ALLOWED=NO build
+```
+
+## Seeing the simulator window
+
+`Simulator.app` is missing from this machine's Xcode install, so the GUI cannot
+be opened from here even though `simctl` drives the device fine. If the window
+does not appear, the install is incomplete: reinstall Xcode from the App Store,
+or install the simulator runtime through Xcode's Settings, Platforms tab.
+Screenshots work regardless: `xcrun simctl io booted screenshot shot.png`.

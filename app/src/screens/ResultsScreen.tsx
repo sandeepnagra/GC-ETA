@@ -5,9 +5,10 @@ import { Pressable, ScrollView, View } from "react-native";
 import { Text } from "../components/Text";
 import type { CaseAssessment } from "@gc-eta/model";
 import { dayToIso, historyPoints } from "@gc-eta/model";
-import { categoryLabel, columnLabel, prettyDate } from "../data";
+import { categoryLabel, columnLabel, prettyDate, shortDate } from "../data";
 import { HistoryChart } from "../components/HistoryChart";
 import { CardCarousel, type CarouselItem } from "../components/CardCarousel";
+import { BackIcon, CardWatermark, HelpIcon } from "../components/Icons";
 
 import { prettyMonth } from "../data";
 import { directionStyle, type Theme } from "../theme";
@@ -46,14 +47,14 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
   if (finalAction.status === "current") {
     cards.push({
       key: "current",
-      title: "Your date is current",
+      title: "Current",
       node: <CurrentCard theme={theme} draft={draft} standing={assessment.standing} />,
     });
   }
 
   cards.push({
     key: "outlook",
-    title: "What is scheduled",
+    title: "Outlook",
     node: <OutlookCard theme={theme} outlook={outlook} />,
   });
 
@@ -63,7 +64,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
   if (queueCardRenders(assessment.queue)) {
     cards.push({
       key: "queue",
-      title: "People ahead of you",
+      title: "Queue",
       node: <QueueCard theme={theme} assessment={assessment} draft={draft} />,
     });
   }
@@ -72,7 +73,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
 
     {
       key: "history",
-      title: "Ten years of movement",
+      title: "History",
       node: (
         <Card theme={theme}>
           <Row theme={theme} title="Ten years of movement" trailing={columnLabel(draft.column)} />
@@ -86,7 +87,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
     },
     {
       key: "drivers",
-      title: "What drives this",
+      title: "Drivers",
       node: (
         <Card theme={theme}>
           <Row theme={theme} title="What drives this" />
@@ -103,7 +104,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
   if (blockers.length > 0) {
     cards.push({
       key: "blockers",
-      title: "Affects you directly",
+      title: "Events",
       node: (
         <Card theme={theme}>
           <Row theme={theme} title="Affects you directly" trailing={String(blockers.length)} />
@@ -126,7 +127,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
   if (context.length > 0) {
     cards.push({
       key: "context",
-      title: "Numbers behind you",
+      title: "Behind you",
       node: (
         <Card theme={theme}>
           <Row theme={theme} title="Moving the numbers behind you" trailing={String(context.length)} />
@@ -145,26 +146,44 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
       style={{ flex: 1, backgroundColor: theme.bg }}
       contentContainerStyle={{ padding: 20, paddingBottom: 48, gap: 12 }}
     >
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Edit your case" onPress={onBack} hitSlop={12}>
-          <Text style={{ fontSize: 17, color: theme.accent }}>Edit</Text>
-        </Pressable>
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 17, fontWeight: "600", color: theme.text }}>
-            {categoryLabel(draft.category)} · {columnLabel(draft.column)}
-          </Text>
-          <Text style={{ fontSize: 12, color: theme.secondary }}>
-            Priority date {prettyDate(draft.priorityDate)} · bulletin {prettyMonth(assessment.asOfMonth)}
-          </Text>
-          {stale.stale ? (
-            // A broken pipeline and a working one look identical to a reader
-            // unless the app says which it is. PLAN.md 8.1.
-            <Text style={{ fontSize: 12, color: theme.caution }}>{stale.note}</Text>
-          ) : null}
+      {/* Header. The watermark is drawn first so the text paints over it. */}
+      <View style={{ position: "relative" }}>
+        <View
+          pointerEvents="none"
+          style={{ position: "absolute", right: 38, top: -28, opacity: theme.dark ? 0.09 : 0.06 }}
+        >
+          <CardWatermark color={theme.accent} width={186} />
         </View>
-        <Pressable accessibilityRole="button" accessibilityLabel="How this works" onPress={onExplain} hitSlop={12}>
-          <Text style={{ fontSize: 17, color: theme.accent }}>?</Text>
-        </Pressable>
+
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Back to your case"
+            onPress={onBack}
+            style={{ width: 44, height: 44, marginLeft: -10, alignItems: "center", justifyContent: "center", borderRadius: 22 }}
+          >
+            <BackIcon color={theme.text} />
+          </Pressable>
+
+          <View style={{ flex: 1, gap: 1 }}>
+            <Text display style={{ fontSize: 19, color: theme.text, letterSpacing: -0.2 }}>
+              {columnLabel(draft.column)} · {categoryLabel(draft.category)} · {shortDate(draft.priorityDate)}
+            </Text>
+            <Text style={{ fontSize: 12, color: theme.secondary }}>
+              Bulletin {prettyMonth(assessment.asOfMonth)}
+              {stale.stale ? ` · ${stale.note}` : ""}
+            </Text>
+          </View>
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="How this works"
+            onPress={onExplain}
+            style={{ width: 44, height: 44, marginRight: -10, alignItems: "center", justifyContent: "center", borderRadius: 22 }}
+          >
+            <HelpIcon color={theme.text} />
+          </Pressable>
+        </View>
       </View>
 
       {/* Hero */}

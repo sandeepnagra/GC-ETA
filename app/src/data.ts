@@ -75,3 +75,11 @@ export function prettyDate(iso: string): string {
   if (!y || !m || !d) return iso;
   return `${d} ${names[m - 1]} ${y}`;
 }
+
+/** "2015-03-10" to "10 Mar 2015", for places where the full month is too wide. */
+export function shortDate(iso: string): string {
+  const names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const [y, m, d] = iso.split("-").map(Number);
+  if (!y || !m || !d) return iso;
+  return `${d} ${names[m - 1]} ${y}`;
+}

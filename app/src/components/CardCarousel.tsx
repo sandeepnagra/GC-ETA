@@ -10,9 +10,11 @@
  * buttons stay outside the carousel, so the thing the user came for is always
  * visible and the carousel only holds supporting detail.
  *
- * The carousel says how much there is. A label reads "3 of 6" with the current
- * card's name, so the reader knows the remaining cards exist and what they are,
- * rather than discovering them by accident.
+ * The carousel names every card. A row of pills above the cards, one per card,
+ * is what the design specifies and it is strictly better than the dots that
+ * were here first: dots say how many cards exist, pills say what they are and
+ * let the reader go straight to the one they want instead of swiping past
+ * three. Nothing is hidden behind an anonymous marker.
  *
  * It never clips, and it does not pad. The track follows the height of the page
  * you are on. A first attempt sized it to the tallest card, which is simpler
@@ -26,9 +28,10 @@
  * two pages being straddled, recomputed as the scroll moves, which never clips
  * and never leaves a gap once the gesture finishes.
  *
- * Arrows sit next to the dots because a horizontal swipe is awkward for anyone
- * with limited dexterity, and because a swipe target inside a vertically
- * scrolling screen is easy to miss.
+ * The pills are 32 points tall, as drawn, with hit slop taking the real touch
+ * target past the 44 points iOS asks for. A tappable label also solves what the
+ * arrows were there for: a horizontal swipe inside a vertically scrolling
+ * screen is awkward to start and easy to miss.
  */
 
 import React, { useRef, useState } from "react";
@@ -61,6 +64,9 @@ export function CardCarousel({ theme, items }: { theme: Theme; items: CarouselIt
   const stride = pageWidth + GAP;
 
   const scroller = useRef<ScrollView>(null);
+  const tabs = useRef<ScrollView>(null);
+  /** Where each pill sits, so the strip can follow the selection. */
+  const offsets = useRef<Array<{ x: number; w: number } | undefined>>([]);
   const [index, setIndex] = useState(0);
   const [heights, setHeights] = useState<number[]>([]);
   const [offset, setOffset] = useState(0);
@@ -82,6 +88,14 @@ export function CardCarousel({ theme, items }: { theme: Theme; items: CarouselIt
     const clamped = Math.max(0, Math.min(items.length - 1, next));
     setIndex(clamped);
     scroller.current?.scrollTo({ x: clamped * stride, animated: true });
+    revealTab(clamped);
+  };
+
+  /** Keep the selected pill on screen when the strip is wider than the phone. */
+  const revealTab = (i: number) => {
+    const at = offsets.current[i];
+    if (!at) return;
+    tabs.current?.scrollTo({ x: Math.max(0, at.x - 12), animated: true });
   };
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -96,6 +110,49 @@ export function CardCarousel({ theme, items }: { theme: Theme; items: CarouselIt
 
   return (
     <View style={{ gap: 10 }}>
+      <ScrollView
+        ref={tabs}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ gap: 6, paddingRight: 4 }}
+      >
+        {items.map((item, i) => {
+          const on = i === current;
+          return (
+            <Pressable
+              key={item.key}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: on }}
+              accessibilityLabel={`${item.title}, card ${i + 1} of ${items.length}`}
+              onPress={() => goTo(i)}
+              hitSlop={{ top: 8, bottom: 8, left: 2, right: 2 }}
+              onLayout={(event) => {
+                const { x, width: w } = event.nativeEvent.layout;
+                offsets.current[i] = { x, w };
+              }}
+              style={{
+                height: 32,
+                paddingHorizontal: 12,
+                justifyContent: "center",
+                borderRadius: 16,
+                borderWidth: 1,
+                backgroundColor: on ? theme.text : theme.card,
+                borderColor: on ? theme.text : theme.border,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 13,
+                  fontWeight: on ? "600" : "400",
+                  color: on ? theme.bg : theme.text,
+                }}
+              >
+                {item.title}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
       <ScrollView
         ref={scroller}
         horizontal
@@ -131,52 +188,6 @@ export function CardCarousel({ theme, items }: { theme: Theme; items: CarouselIt
         ))}
       </ScrollView>
 
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Previous card"
-          accessibilityState={{ disabled: current === 0 }}
-          onPress={() => goTo(current - 1)}
-          hitSlop={12}
-        >
-          <Text style={{ fontSize: 20, color: current === 0 ? theme.border : theme.accent }}>‹</Text>
-        </Pressable>
-
-        <View style={{ flexDirection: "row", gap: 6, alignItems: "center" }}>
-          {items.map((item, i) => (
-            <View
-              key={item.key}
-              style={{
-                width: i === current ? 18 : 6,
-                height: 6,
-                borderRadius: 3,
-                backgroundColor: i === current ? theme.accent : theme.border,
-              }}
-            />
-          ))}
-        </View>
-
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Next card"
-          accessibilityState={{ disabled: current === items.length - 1 }}
-          onPress={() => goTo(current + 1)}
-          hitSlop={12}
-        >
-          <Text
-            style={{
-              fontSize: 20,
-              color: current === items.length - 1 ? theme.border : theme.accent,
-            }}
-          >
-            ›
-          </Text>
-        </Pressable>
-
-        <Text style={{ flex: 1, textAlign: "right", fontSize: 12, color: theme.secondary }}>
-          {current + 1} of {items.length} · {items[current]!.title}
-        </Text>
-      </View>
     </View>
   );
 }

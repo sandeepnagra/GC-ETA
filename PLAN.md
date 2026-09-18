@@ -1045,73 +1045,72 @@ the tests and the type checker all passed. It was visible only on screen.
 `RUNNING.md` already documented the sync; the lesson is to use the script rather
 than the compiler directly.
 
-### Ordered backlog (set 2026-09-18)
+### Ordered backlog (revised 2026-09-18, after items 1 to 3)
 
 Ordered by what changes what a user is told, not by how interesting it is to
-build. Everything above the line is worth doing before any new modelling.
+build.
 
-**1. ~~Decide what the "Next 3 to 6 months" card is allowed to claim.~~ DONE.**
-Rebuilt as a schedule of what is actually coming rather than a forecast. See
-"The outlook card, rebuilt as a schedule" below. The original text follows.
-The card ships a six-month outlook that the backtest measured as no more
-accurate than assuming the cutoff does not move, and a two-year probability that
-scored no better than a coin flip (Brier 0.259 against 0.25). The reasoning it
-prints is genuinely useful because it quotes the Visa Office's own warnings. The
-forecast around it is not. Options: keep the reasons and drop the score, show
-direction only, or replace the model with the seasonal baseline that at least
-ties at twelve months. This is a live claim being made to users today, which is
-why it sits first.
+**Done this round.**
 
-**2. ~~Flash-card carousel.~~ DONE.** Built and verified on a device. The original text follows: A Phase 1 commitment, still a plain stack. The
-results screen has grown a card since, so the case for paging through them
-rather than scrolling a column is stronger than when it was first designed.
+1. ~~Decide what the "Next 3 to 6 months" card may claim.~~ Rebuilt as a
+   schedule of what is actually coming. The statistical forecast is deleted.
+2. ~~Flash-card carousel.~~ Built and verified on a device.
+3. ~~EB-2 versus EB-3.~~ Built as a full side-by-side comparison, and then
+   extended with a switch suggestion at the owner's request. Note this
+   **supersedes finding 44's "no recommendation"**: the app now gives a
+   direction, read from the estimates rather than today's chart, with the
+   reversal history and six caveats attached. It still prints no saved-years
+   figure.
 
-**3. ~~EB-2 versus EB-3, descriptive only.~~ DONE.** Built as a full side-by-side
-comparison screen; see "EB-2 against EB-3" below for what the constraint does
-and does not restrict. The original text follows. Now genuinely computable for the
-first time: per-category density gives the queue on each side and Table V gives
-what each actually receives. Finding 44 governs the presentation, and it is
-strict. No recommendation, no single-number delta, no implied advice about
-downgrading, because the app cannot see the legal costs or the employer's
-willingness. Show both queues and both issuance histories side by side and let
-the reader draw the conclusion.
+**Next, in order.**
 
-**4. Custom typefaces.** Fraunces and IBM Plex Sans via `expo-font`. Purely
-cosmetic, but it is the last thing between the app and the approved design.
+**4. Refresh the data without a human.** Nothing currently does. There is no CI,
+no schedule, and every dataset was last built by hand. The October 2026 bulletin
+publishes within days and the app would not know. This now sits first because
+everything below it is worth less on stale data, and because an app that quietly
+goes out of date is worse than one that is visibly incomplete. §8.1 already
+specifies the cadence: the bulletin monthly, events on review, the labour
+certification and issuance files annually. The pieces are all built and
+idempotent; what is missing is a scheduled run and a check that fails loudly.
 
-**5. The "current to approved" add-on and the filed-I-485 path.** §6.5. The
-optional "have you already filed" question is collected and currently changes
-very little. Once a date is current the remaining wait is USCIS processing, not
-the bulletin, and that is a different and better-documented distribution.
+**5. Ship it.** Phase 1's definition of done was TestFlight and an internal
+Android track. Nothing has shipped. The app exists on one simulator, which means
+every measurement so far is about the model rather than about whether anyone can
+use the thing. Needs an EAS or Xcode release configuration, an App Store Connect
+record, and the privacy declarations, which are unusually easy here because the
+app collects nothing.
+
+**6. Custom typefaces.** Fraunces and IBM Plex Sans via `expo-font`. Purely
+cosmetic, and the last thing between the app and the approved design.
+
+**7. The "current to approved" add-on and the filed-I-485 path.** §6.5. The
+optional "have you already filed" question is collected and changes very little
+today. Once a date is current the remaining wait is USCIS processing rather than
+the bulletin, which is a different and better-documented distribution.
 
 ---
 
-**6. Spillover forecaster from DHS OHSS quarterly data.** Deliberately demoted.
-It would sharpen an estimate of how many numbers fall across to an
-oversubscribed country, which is precisely the divisor the Table V work showed
-should not be dividing anything yet. Its real value now is explanatory rather
-than predictive: it answers "why might this move next year", which the
-per-category sections already partly do.
+**8. Spillover forecaster from DHS OHSS quarterly data.** Deliberately demoted.
+It would sharpen a divisor that the Table V work showed should not be dividing
+anything yet. Its value now is explanatory: why might this move next year.
 
-**7. Level C: Monte Carlo over scenarios, and a probability-by-year view.**
-Phase 3. Worth building only after item 1 is settled, because it multiplies
-whatever probability skill the model has, and the measured skill is currently
-zero.
+**9. Level C: Monte Carlo over scenarios, and a probability-by-year view.**
+Phase 3. It multiplies whatever probability skill the model has, and the
+measured skill is currently zero, so it is worth building only if that changes.
 
-**8. Notifications and localization.** Phase 3. Push notifications need device
-tokens, which has to be weighed against the no-account, no-data promise in §7.1.
-Hindi, Chinese, Spanish and Tagalog.
+**10. Notifications and localization.** Phase 3. Push notifications need device
+tokens, weighed against the no-account promise in §7.1. Hindi, Chinese, Spanish
+and Tagalog.
 
-**Dropped, with reason.** The inventory XLSX parser, a Phase 0 leftover. §4.1
-established that the published file has no India EB-2 or EB-3 rows for the
-priority dates that matter, so the parser would be real work for a file that
-cannot answer the question it was meant to answer.
+**Dropped, with reason.** The inventory XLSX parser. §4.1 established that the
+published file has no India EB-2 or EB-3 rows for the priority dates that
+matter, so it would be real work on a file that cannot answer the question.
 
-**Still unanswered from the Phase 0 gate,** both cheap and both worth closing
-before item 6: whether a November 2025 edition of the DOS Annual Report of
+**Still unanswered from the Phase 0 gate,** both cheap, both worth closing
+before item 8: whether a November 2025 edition of the DOS Annual Report of
 Immigrant Visa Applicants exists and breaks employment down finely enough to
 apportion by priority date, and how many usable filing-chart opening events
-exist per category and country since 2016, which sets whether the
+exist per category and country since 2016, which decides whether the
 materialisation rate can be estimated at all.
 
 ### The outlook card, rebuilt as a schedule (2026-09-18)

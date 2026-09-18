@@ -1,9 +1,10 @@
 /** Step 1: the three inputs that determine everything. */
 
-import React from "react";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import React, { useState } from "react";
+import { Platform, Pressable, ScrollView, Text, View } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
-import { CATEGORIES, COLUMNS } from "../data";
+import { CATEGORIES, COLUMNS, prettyDate } from "../data";
 import type { Theme } from "../theme";
 import type { CaseDraft } from "../types";
 
@@ -14,8 +15,31 @@ interface Props {
   onSubmit: () => void;
 }
 
+/** Priority dates run from the early 1990s to today; none can be in the future. */
+const EARLIEST = new Date(1990, 0, 1);
+
+// A priority date is a calendar date with no time and no zone. Converting
+// through UTC shifts it: parsing "2015-03-10" as UTC midnight and rendering it
+// in a timezone behind UTC shows the 9th, and writing it back with
+// toISOString() then shifts it again. The picker was visibly one day behind the
+// field because of exactly this. Stay in local calendar components throughout.
+function toIso(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function fromIso(iso: string): Date {
+  const [year, month, day] = iso.split("-").map(Number);
+  if (!year || !month || !day) return new Date();
+  return new Date(year, month - 1, day);
+}
+
 export function CaseScreen({ theme, draft, onChange, onSubmit }: Props) {
+  const [picking, setPicking] = useState(false);
   const valid = /^\d{4}-\d{2}-\d{2}$/.test(draft.priorityDate);
+  const today = new Date();
 
   return (
     <ScrollView
@@ -44,21 +68,48 @@ export function CaseScreen({ theme, draft, onChange, onSubmit }: Props) {
       <Field
         theme={theme}
         label="Priority date"
-        hint="On your I-140 approval notice. For PERM cases it is the day the Labor Department received the PERM, not the day it was certified."
+        hint="On your I-140 approval notice. For PERM cases it is the day the Labor Department received the PERM, not the day it was certified. Future dates are not selectable."
       >
-        <TextInput
-          value={draft.priorityDate}
-          onChangeText={(priorityDate) => onChange({ ...draft, priorityDate })}
-          placeholder="YYYY-MM-DD"
-          placeholderTextColor={theme.secondary}
-          autoCapitalize="none"
-          autoCorrect={false}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Priority date, currently ${prettyDate(draft.priorityDate)}. Opens a date picker.`}
+          onPress={() => setPicking((open) => !open)}
           style={{
-            height: 52, paddingHorizontal: 16, fontSize: 17, color: theme.text,
+            minHeight: 52, paddingHorizontal: 16, justifyContent: "center",
             backgroundColor: theme.card, borderWidth: 1,
-            borderColor: valid ? theme.border : theme.negative, borderRadius: 14,
+            borderColor: picking ? theme.accent : valid ? theme.border : theme.negative,
+            borderRadius: 14,
           }}
-        />
+        >
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <Text style={{ flex: 1, fontSize: 17, color: theme.text }}>
+              {prettyDate(draft.priorityDate)}
+            </Text>
+            <Text style={{ fontSize: 14, color: theme.accent }}>
+              {picking ? "Done" : "Change"}
+            </Text>
+          </View>
+        </Pressable>
+
+        {picking ? (
+          <View style={{ backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 14, overflow: "hidden" }}>
+            <DateTimePicker
+              value={fromIso(draft.priorityDate)}
+              mode="date"
+              // A spinner beats a calendar grid here: priority dates are often
+              // a decade back, and paging a month at a time to reach 2013 is
+              // punishing. The spinner jumps by year directly.
+              display={Platform.OS === "ios" ? "spinner" : "default"}
+              minimumDate={EARLIEST}
+              maximumDate={today}
+              themeVariant={theme.dark ? "dark" : "light"}
+              onChange={(_event, selected) => {
+                if (Platform.OS !== "ios") setPicking(false);
+                if (selected) onChange({ ...draft, priorityDate: toIso(selected) });
+              }}
+            />
+          </View>
+        ) : null}
       </Field>
 
       <Field theme={theme} label="I-140 category" hint="The classification on your I-140, not the PERM.">

@@ -40,3 +40,12 @@ has no tap command. Building natively avoids it entirely.
 
 **Dark mode can be tested without touching the app**: `xcrun simctl ui booted
 appearance dark`. The theme follows the system setting live, with no relaunch.
+
+## Dates are calendar dates, not instants
+
+A priority date has no time and no timezone. Converting one through UTC shifts
+it: parsing "2015-03-10" as UTC midnight and rendering it in a timezone behind
+UTC yields the 9th, and writing it back with `toISOString()` shifts it again.
+This was live in the app and only visible on device, where the field read
+10 March while the picker wheel sat on 9. `CaseScreen` stays in local calendar
+components throughout. Do not reintroduce `toISOString()` for these.

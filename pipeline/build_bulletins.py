@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from gceta.bulletin import bulletin_url, parse_bulletin  # noqa: E402
 from gceta.fetch import Fetcher  # noqa: E402
+from gceta.sections import parse_sections  # noqa: E402
 
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 SCHEMA_VERSION = 1
@@ -72,6 +73,9 @@ def main() -> int:
         parsed = parse_bulletin(doc.text, month, year, source_url=url)
         # Content hash catches same-URL revisions, which have happened before:
         # the October 2015 bulletin was revised days after publication.
+        # Per-category narrative sections: the Visa Office's own forward
+        # guidance, which only appears when it has something specific to say.
+        parsed["sections"] = parse_sections(doc.text)
         parsed["content_sha256"] = doc.sha256
         parsed["fetched_at"] = doc.fetched_at
         for warning in parsed["warnings"]:
@@ -93,9 +97,12 @@ def main() -> int:
     out.write_text(json.dumps(payload, indent=1, sort_keys=False))
 
     total_rows = sum(len(b["rows"]) for b in bulletins)
+    total_sections = sum(len(b.get("sections", [])) for b in bulletins)
+    months_with_sections = sum(1 for b in bulletins if b.get("sections"))
     print(f"months parsed : {len(bulletins)}")
     print(f"months missing: {len(missing)}  {missing[:6]}{' ...' if len(missing) > 6 else ''}")
     print(f"rows total    : {total_rows:,}")
+    print(f"sections      : {total_sections:,} across {months_with_sections} months")
     print(f"fetched live  : {fetched_live} (rest from cache)")
     print(f"written       : {out} ({out.stat().st_size/1_048_576:.1f} MB)")
     if warning_counts:

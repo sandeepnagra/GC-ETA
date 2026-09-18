@@ -13,7 +13,7 @@ import {
   monthToAbsolute,
 } from "../src/bundle.js";
 import { estimate, extractSteps, scaleStepsToRegime } from "../src/levelA.js";
-import { assessRisk } from "../src/risk.js";
+import { assessRisk, sectionsFor } from "../src/risk.js";
 import type { Bundle } from "../src/types.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -214,4 +214,51 @@ test("regime scaling discounts a high-supply year and leaves unknown years alone
     scaled[1]!.advanceDays, 300,
     "an unknown year is left untouched rather than assumed to be at the base",
   );
+});
+
+test("sections match a category worldwide or a specific column, not both loosely", () => {
+  // September 2026 carries: E (EB-1, India only), F (EB-2, all columns),
+  // G (EB-5 unreserved, all columns).
+  const eb1in = sectionsFor(bundle, "EB1", "IN");
+  const eb1cn = sectionsFor(bundle, "EB1", "CN");
+  assert.equal(eb1in.length, 1, "the EB-1 section names India");
+  assert.equal(eb1cn.length, 0, "and must not leak to China");
+
+  for (const column of ["IN", "CN", "ROW", "MX", "PH"] as const) {
+    assert.equal(
+      sectionsFor(bundle, "EB2", column).length, 1,
+      `the EB-2 section has no country, so it speaks to ${column} too`,
+    );
+  }
+});
+
+test("a bulletin warning raises risk and is quoted back to the user", () => {
+  const china = assessRisk(bundle, "EB2", "CN");
+  assert.equal(china.outlook, "retrogress");
+  assert.ok(
+    china.reasons.some((r) => r.includes("bulletin warns")),
+    "the Visa Office's own words carry the reason",
+  );
+});
+
+test("a warning about unavailability is suppressed once it has already happened", () => {
+  // EB-2 India is Unavailable in September 2026 and the EB-2 section warns the
+  // category may become unavailable. Counting that against India would be
+  // double counting a thing that has already occurred.
+  const india = assessRisk(bundle, "EB2", "IN");
+  assert.ok(
+    !india.reasons.some((r) => r.includes("bulletin warns")),
+    "no warning is applied to a category already Unavailable",
+  );
+  assert.equal(india.outlook, "advance");
+});
+
+test("months without per-category guidance carry no sections", () => {
+  // October 2025 carried only the EB-4 religious worker expiry, which is not a
+  // per-category availability warning for any of the main pairs.
+  const sections = bundle.sections?.["2025-10"] ?? [];
+  const availability = sections.filter(
+    (s) => s.signals.warns_retrogress || s.signals.warns_unavailable,
+  );
+  assert.equal(availability.length, 0);
 });

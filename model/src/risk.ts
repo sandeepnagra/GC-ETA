@@ -19,10 +19,28 @@ import {
   lastKnownIndex,
   monthToAbsolute,
 } from "./bundle.js";
-import type { Bundle, Cell, Column, RiskAssessment } from "./types.js";
+import type { Bundle, BulletinSection, Cell, Column, RiskAssessment } from "./types.js";
 
 /** Fiscal month 0 is October. July, August and September are 9, 10, 11. */
 const SUMMER_START = 9;
+
+/**
+ * Sections in the most recent bulletin that speak to this pair. A section with
+ * no column speaks to the category in every column.
+ */
+export function sectionsFor(
+  bundle: Bundle,
+  category: string,
+  column: Column,
+): BulletinSection[] {
+  const latest = bundle.sections?.[bundle.end_month];
+  if (!latest) return [];
+  return latest.filter(
+    (section) =>
+      section.category === category &&
+      (section.column === null || section.column === column),
+  );
+}
 
 function datedRun(cells: Cell[]): Array<{ index: number; day: number }> {
   const out: Array<{ index: number; day: number }> = [];
@@ -74,6 +92,36 @@ export function assessRisk(
   } else if (fiscalMonth <= 5) {
     score -= 10;
     reasons.push("Dates usually advance steadily in the first half of the fiscal year.");
+  }
+
+  // 2. The Visa Office's own guidance for this pair, which outranks every
+  //    inferred feature below when it exists.
+  const sections = sectionsFor(bundle, category, column);
+  const alreadyUnavailable = latest.kind === "unavailable";
+  for (const section of sections) {
+    const s = section.signals;
+    if (s.signals_advance) {
+      score -= 20;
+      reasons.push(
+        "The Visa Office has said this category is expected to advance when the new fiscal year begins.",
+      );
+    }
+    // A warning about going unavailable is moot once it already has: there is
+    // nothing left to lose, and the next scheduled event is the reset.
+    if (!alreadyUnavailable && (s.warns_retrogress || s.warns_unavailable)) {
+      score += 25;
+      reasons.push(
+        s.warns_retrogress && s.warns_unavailable
+          ? "This month's bulletin warns this category may retrogress or become unavailable before the fiscal year ends."
+          : s.warns_retrogress
+            ? "This month's bulletin warns this category may retrogress before the fiscal year ends."
+            : "This month's bulletin warns this category may become unavailable before the fiscal year ends.",
+      );
+    }
+    if (s.retrogressed && !alreadyUnavailable) {
+      score += 10;
+      reasons.push("The Visa Office has already moved this category back this year.");
+    }
   }
 
   // 3. Base rate of retrogression for this specific pair.

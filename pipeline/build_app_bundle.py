@@ -70,6 +70,12 @@ def main() -> int:
             elif kind == "unavailable":
                 series[key][index] = "U"
 
+    # Narrative sections, keyed by month. Small enough to ship whole, and the
+    # model needs history to know whether a warning is unusual for this pair.
+    sections = {
+        b["month"]: b["sections"] for b in bulletins if b.get("sections")
+    }
+
     limits = json.loads((DATA_DIR / "limits.json").read_text())
     historical = json.loads((DATA_DIR / "limits-historical.json").read_text())
     payload = {
@@ -80,6 +86,7 @@ def main() -> int:
         "months": span,
         "missing_months": archive["months_missing"],
         "series": series,
+        "sections": sections,
         # Employment limit per fiscal year, so the model can discount an advance
         # made in a year with far more visa numbers than today. Years absent
         # here fall back to the statutory base.
@@ -104,6 +111,7 @@ def main() -> int:
     raw = (DATA_DIR / "bulletins.json").stat().st_size
     size = out.stat().st_size
     print(f"series      : {len(series)}")
+    print(f"months w/ sections: {len(sections)}")
     print(f"months      : {span}  ({start} .. {end})")
     print(f"bundle size : {size/1024:.0f} KB  (from {raw/1_048_576:.1f} MB raw, {raw/size:.0f}x smaller)")
     print(f"written     : {out}")

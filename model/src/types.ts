@@ -36,6 +36,8 @@ export interface Bundle {
   employment_limit_by_fy: Record<string, number>;
   /** Statutory base used when a year is absent from the map above. */
   statutory_base: number;
+  /** Per-category narrative sections by month, the Visa Office's own guidance. */
+  sections?: Record<string, BulletinSection[]>;
   limits: Array<{
     fiscal_year: number;
     employment_worldwide: number | null;
@@ -43,6 +45,24 @@ export interface Bundle {
     per_country: number | null;
     determined: boolean;
   }>;
+}
+
+export interface SectionSignals {
+  retrogressed: boolean;
+  unavailable: boolean;
+  warns_retrogress: boolean;
+  warns_unavailable: boolean;
+  signals_advance: boolean;
+}
+
+export interface BulletinSection {
+  letter: string;
+  title: string;
+  body: string;
+  category: string | null;
+  /** null means the section speaks to the category in every column. */
+  column: string | null;
+  signals: SectionSignals;
 }
 
 export interface EstimateInput {

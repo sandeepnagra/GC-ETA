@@ -312,19 +312,36 @@ Two required fields beyond the sketch above. Every event needs a **`verified_aga
   - *Medical exam.* An I-693 signed on or after 1 November 2023 does not expire, **but only while the application it was filed with remains pending.** State the condition.
   - *Retrogression.* A retrogression pauses the case rather than killing it. This one stands.
 - **A CSPA caution wherever the filing window is shown, for users with children.** USCIS reverted to the **Final Action Dates** chart for calculating a child's Child Status Protection Act age for requests filed on or after 15 August 2025. So being able to *file* under the Dates for Filing chart has **no** age-freezing effect. Telling a parent "you can file now" without this is a common and costly misunderstanding, and the app must not create it.
+- A dedicated **"How this works"** explainer, reachable from the help icon on the results screen (§7.5).
 - Always-visible note: unofficial estimate, not legal advice, based on public data as of a shown date.
 - Wordmark: "GC ETA" in the display serif; the tagline under it is the store subtitle above.
 
 ### 7.3 Design system (decided 2026-09-17, reaffirmed after a rejected iOS-native variant)
 - **Look:** warm paper ground (#F3EFE6) with off-white cards (#FFFDF8, 1 px #D9D3C5 border, 14 to 16 px radius), Fraunces for display text and IBM Plex Sans for body, teal accent #0E6B63 for advance and rust #A8401F for retrogression, amber #8A5A00 for hold. Secondary text #5B5850. Uppercase 12 px section labels on cards.
-- **Structure:** a three-step input (one question per screen), a results screen with a teal timeline hero, two "right now" tiles, a pill-tab flash-card carousel with eight cards (Outlook, Queue, Supply, Season, History, Events, EB-2 or EB-3, Changes), a bottom-sheet detail view per card, a Disruptions screen with an events timeline and status chips, and a methodology screen.
+- **Structure:** a three-step input (one question per screen), a results screen with a teal timeline hero, two "right now" tiles, a pill-tab flash-card carousel with eight cards (Outlook, Queue, Supply, Season, History, Events, EB-2 or EB-3, Changes), a bottom-sheet detail view per card, an explainer screen (§7.5), a Disruptions screen with an events timeline and status chips, and a data-and-accuracy screen that also carries the appearance control.
+- **Dark mode.** The app follows the phone's light or dark setting by default and updates live when it changes, including on a schedule. An Appearance control on the data-and-accuracy screen offers System, Light and Dark, where System is the default and the other two override it for this app only. The choice is a per-device convenience and is the one thing stored locally; it never leaves the device and needs no account.
+  - Dark tokens, chosen to keep the warm paper character rather than going to pure black: background `#14130F`, card `#1F1D18`, border `#35322A`, primary text `#F2EEE4`, secondary text `#A8A294`, accent `#5CBFA8`, hero fill `#12564E` with `#EAF5F2` on it, negative `#E8927A`, hold `#D9A22E`, muted fill `#2A2721`.
+  - Two rules that are easy to get wrong. The accent must **lighten** on dark rather than reuse `#0E6B63`, which fails contrast against `#14130F`. And status colours still need an icon and a text label in both themes, per the colour-deficiency rule below; dark mode does not excuse colour-only encoding.
+  - Implement as one token set resolved at the root, not two copies of every screen. The mockup shows dark as separate artboards only because a static canvas cannot switch at runtime.
 - **Accessibility constraints that override the "fits without scrolling" goal.** Screens fit a phone height *at the default text size*. They must still scroll, because iOS Dynamic Type and Android font scaling will overflow any fixed layout at accessibility sizes, and opting out of text scaling to preserve the layout fails review. Design for scroll with no scrolling needed at default. Separately, Advance, Hold and Retrogress must never be carried by colour alone: teal, amber and rust are indistinguishable for the roughly 8% of men with red-green colour deficiency, so every status needs an icon and a text label as well. Check teal #0E6B63 and rust #A8401F against the #F3EFE6 ground for 4.5:1 contrast and darken if they fail.
 - **Rejected on 2026-09-17:** an Apple HIG-native variant (grouped inset lists, tab bar, system font, iOS gray palette, a document-style I-797-like summary card). Do not reintroduce it without asking.
 - **Icon and background artwork (kept):** an original line-art card in the teal accent: photo box, dotted row, text lines, chip square, and a third line drawn as a progress bar with a marker, the one detail that says "ETA". Files: `design/assets/gc-eta-icon.svg` (1024 px app icon) and `design/assets/card-outline.svg` (stroke-only, uses currentColor, for faint decorative backgrounds at about 8% opacity, as behind the results header). Never reproduce the DHS seal, the eagle, the Statue of Liberty, "Permanent Resident" or "United States of America" wording, or the card's security patterns: they are the government card's design and are also present in third-party stock art. Imitating a government identity document risks App Store rejection and misleads users. Likewise, USCIS does not send a "final action notice" (Final Action Date is a Visa Bulletin term), and the I-797 Notice of Action layout is not to be copied.
 - **Mockup source:** `design/project/` (Design canvas artifact https://claude.ai/artifact/GvFq5PSSkjz3TUAbd7Kvbd). Cards are separate components mounted inside the results screen, which maps to one view per card in the app.
 
-### 7.4 Non-goals for v1
-Push notifications (needs device tokens on a server), case tracking, accounts, ads, analytics. A "remember my inputs on this device" toggle can exist, default off, stored only locally.
+### 7.4 The "How this works" explainer
+
+A dedicated screen answering "how is this calculated" in plain language, separate from the data-and-accuracy screen, which stays a reference sheet. Reached from the help icon on the results screen; it links onward to the reference.
+
+Four blocks, in this order:
+1. **The basic idea**, with a small diagram: each month the government publishes one cutoff date for your category and country, and when it passes your priority date you are current. The diagram shows the cutoff to the left of the user's date with the gap between them labelled as the thing being estimated.
+2. **What we look at**, as three numbered items: how fast the cutoff has moved over ten years of bulletins, how many people are ahead with earlier dates against the numbers the country can expect, and what could interrupt it.
+3. **Why a range, not a single date**, stating plainly that the cutoff moves in monthly steps and leaps a few times a year, so a single day would look precise and be wrong.
+4. **A link to data sources and accuracy**, so the curious can go deeper without this screen becoming dense.
+
+The writing rule for this screen: no statute citations, no section numbers, no jargon beyond "priority date" and "cutoff", both of which the audience already uses. If a sentence needs a citation to be credible, it belongs on the reference screen instead.
+
+### 7.5 Non-goals for v1
+Push notifications (needs device tokens on a server), case tracking, accounts, ads, analytics. A "remember my inputs on this device" toggle can exist, default off, stored only locally. The appearance preference (§7.3) is the one setting stored by default, since a theme that resets every launch is a bug rather than a privacy feature; it is a single enum on the device and is covered by the same promise that nothing is transmitted.
 
 ---
 

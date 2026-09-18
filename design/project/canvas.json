@@ -28,7 +28,7 @@
       "is_interactive": true
     },
     "Detail.dc.html": {
-      "x": 940,
+      "x": 1410,
       "y": 0,
       "w": 390,
       "h": 844,
@@ -36,7 +36,7 @@
       "is_interactive": true
     },
     "Disruptions.dc.html": {
-      "x": 1410,
+      "x": 1880,
       "y": 0,
       "w": 390,
       "h": 844,
@@ -44,11 +44,11 @@
       "is_interactive": true
     },
     "Methodology.dc.html": {
-      "x": 1880,
+      "x": 2350,
       "y": 0,
       "w": 390,
-      "h": 844,
-      "title": "4 · How this is computed",
+      "h": 940,
+      "title": "5 · Data, accuracy, appearance",
       "is_interactive": true
     },
     "Icon.dc.html": {
@@ -128,15 +128,48 @@
       "w": 326,
       "h": 330,
       "title": "Card · Your I-485 (filed state only)"
+    },
+    "Explain.dc.html": {
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "is_interactive": true,
+      "x": 940,
+      "title": "2d · How this works (explainer)"
+    },
+    "MainDark.dc.html": {
+      "x": 0,
+      "y": 1900,
+      "w": 390,
+      "h": 844,
+      "title": "Dark · Enter your case",
+      "is_interactive": true
+    },
+    "ResultsDark.dc.html": {
+      "x": 470,
+      "y": 1900,
+      "w": 390,
+      "h": 844,
+      "title": "Dark · Your estimate",
+      "is_interactive": true
+    },
+    "ExplainDark.dc.html": {
+      "x": 940,
+      "y": 1900,
+      "w": 390,
+      "h": 844,
+      "title": "Dark · How this works",
+      "is_interactive": true
     }
   },
   "order": [
     "Main.dc.html",
     "Results.dc.html",
-    "ResultsFiled.dc.html",
+    "Explain.dc.html",
     "Detail.dc.html",
     "Disruptions.dc.html",
     "Methodology.dc.html",
+    "ResultsFiled.dc.html",
     "Icon.dc.html",
     "CardOutlook.dc.html",
     "CardQueue.dc.html",
@@ -146,7 +179,10 @@
     "CardEvents.dc.html",
     "CardCompare.dc.html",
     "CardChanges.dc.html",
-    "CardStage.dc.html"
+    "CardStage.dc.html",
+    "MainDark.dc.html",
+    "ResultsDark.dc.html",
+    "ExplainDark.dc.html"
   ],
   "notes": {
     "flow-title": {
@@ -169,8 +205,16 @@
       "x": 3300,
       "y": 0,
       "w": 300,
-      "text": "Bulletin cutoffs and event dates are real September 2026 values. Estimate ranges, the risk score, the dot grid split and the history line are illustrative model outputs. Screen 2 uses the sample case India, EB-2, PD 10 Mar 2015 (not filed). Screen 2c uses a second sample, India, EB-3, PD 15 Dec 2013, I-485 filed 3 Feb 2026, whose date is current against the real 1 Jan 2014 cutoff; its dates are illustrative. Bracketed values are filled by the model. Press Play on screen 1 to step through; on step 3 tick the optional I-485 box to reveal the receipt date.",
+      "text": "Bulletin cutoffs and event dates are real September 2026 values. Estimate ranges, the risk score, the dot grid split and the history line are illustrative model outputs for the sample case (India, EB-2, PD 10 Mar 2015). Bracketed values are filled by the model. Press Play on screen 1 to step through; the help icon on screen 2 opens the explainer; the appearance control lives on screen 5. Dark screens are the same designs on the dark palette, shown here as separate artboards because the real app switches at runtime rather than having two sets of screens.",
       "color": "orange"
+    },
+    "dark-title": {
+      "x": 0,
+      "y": 1660,
+      "w": 240,
+      "kind": "title1",
+      "maxW": 1330,
+      "text": "Dark mode — follows the phone, overridable in the app"
     }
   },
   "designSystems": []

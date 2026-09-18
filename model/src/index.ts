@@ -20,3 +20,7 @@ export { expectedLatestMonth, freshness } from "./freshness.js";
 export type { Freshness } from "./freshness.js";
 export { currentStanding } from "./current.js";
 export type { CurrentStanding, CurrentSpell } from "./current.js";
+export { seasonalPattern } from "./season.js";
+export type { Season, SeasonMonth } from "./season.js";
+export { supplyPicture } from "./supply.js";
+export type { SupplyPicture } from "./supply.js";

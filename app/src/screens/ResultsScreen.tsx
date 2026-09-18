@@ -1,15 +1,17 @@
 /** The estimate, its outlook, and what is acting on it. */
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Pressable, ScrollView, View, useWindowDimensions } from "react-native";
 import { Text } from "../components/Text";
 import type { CaseAssessment } from "@gc-eta/model";
-import { dayToIso, historyPoints } from "@gc-eta/model";
+import { dayToIso, historyPoints, seasonalPattern, supplyPicture } from "@gc-eta/model";
 import { categoryLabel, columnLabel, prettyDate, shortDate } from "../data";
 import { HistoryChart } from "../components/HistoryChart";
 import { CardCarousel, type CarouselItem } from "../components/CardCarousel";
 import { BackIcon, CardWatermark, HelpIcon } from "../components/Icons";
 import { EstimateTimeline } from "../components/EstimateTimeline";
+import { SeasonCard } from "../components/SeasonCard";
+import { SupplyCard } from "../components/SupplyCard";
 
 import { prettyMonth } from "../data";
 import { directionStyle, type Theme } from "../theme";
@@ -37,6 +39,15 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
   // The hero card sits inside the screen's 20pt padding and its own 16pt, so
   // the drawing has to be told how much room it really has.
   const { width: screenWidth } = useWindowDimensions();
+  // Both depend only on the bundle and the pair, so they are cheap and stable.
+  const season = useMemo(
+    () => seasonalPattern(bundle, draft.category, draft.column),
+    [bundle, draft.category, draft.column],
+  );
+  const supply = useMemo(
+    () => supplyPicture(bundle, draft.column, draft.category),
+    [bundle, draft.column, draft.category],
+  );
   const heroWidth = Math.max(240, screenWidth - 20 * 2 - 16 * 2);
   const blockers = assessment.events.filter((e) => e.relevance === "blocks");
   const context = assessment.events.filter((e) => e.relevance === "context");
@@ -74,8 +85,19 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
     });
   }
 
-  cards.push(
+  cards.push({
+    key: "supply",
+    title: "Supply",
+    node: <SupplyCard theme={theme} picture={supply} column={draft.column} category={draft.category} />,
+  });
 
+  cards.push({
+    key: "season",
+    title: "Season",
+    node: <SeasonCard theme={theme} season={season} />,
+  });
+
+  cards.push(
     {
       key: "history",
       title: "History",

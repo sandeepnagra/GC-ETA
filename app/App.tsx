@@ -108,6 +108,9 @@ export default function App() {
           onExplain={() => setScreen("explain")}
           onNews={() => setScreen("news")}
           onCompare={comparison ? () => setScreen("compare") : undefined}
+          comparison={comparison}
+          suggestion={suggestion}
+          events={events}
           bundle={bundle}
           stale={stale}
           newsCount={timeline.filter((i) => i.direct).length}

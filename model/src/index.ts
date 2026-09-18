@@ -24,3 +24,5 @@ export { seasonalPattern } from "./season.js";
 export type { Season, SeasonMonth } from "./season.js";
 export { supplyPicture } from "./supply.js";
 export type { SupplyPicture } from "./supply.js";
+export { whatWouldChange } from "./changes.js";
+export type { Change } from "./changes.js";

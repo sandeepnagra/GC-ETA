@@ -30,6 +30,10 @@ export interface Theme {
   accentFill: string;
   /** Neutral track for bars and dials. */
   track: string;
+  /** Tinted row backgrounds, for cards that group items by direction. */
+  cautionFill: string;
+  negativeFill: string;
+  neutralFill: string;
 }
 
 export const light: Theme = {
@@ -46,6 +50,9 @@ export const light: Theme = {
   caution: "#8A5A00",
   accentFill: "#E9F2F0",
   track: "#E1D9C4",
+  cautionFill: "#F6E9C9",
+  negativeFill: "#F5DCD2",
+  neutralFill: "#F3EFE6",
 };
 
 export const dark: Theme = {
@@ -64,6 +71,9 @@ export const dark: Theme = {
   caution: "#D9A22E",
   accentFill: "#17332D",
   track: "#35322A",
+  cautionFill: "#2E2716",
+  negativeFill: "#33201A",
+  neutralFill: "#26241E",
 };
 
 export function resolveTheme(mode: ThemeMode, system: "light" | "dark" | null): Theme {

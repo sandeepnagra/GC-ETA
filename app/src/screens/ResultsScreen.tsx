@@ -4,19 +4,22 @@ import React, { useMemo } from "react";
 import { Pressable, ScrollView, View, useWindowDimensions } from "react-native";
 import { Text } from "../components/Text";
 import type { CaseAssessment } from "@gc-eta/model";
-import { dayToIso, historyPoints, seasonalPattern, supplyPicture } from "@gc-eta/model";
+import { dayToIso, historyPoints, seasonalPattern, supplyPicture, whatWouldChange } from "@gc-eta/model";
 import { categoryLabel, columnLabel, prettyDate, shortDate } from "../data";
 import { HistoryChart } from "../components/HistoryChart";
 import { CardCarousel, type CarouselItem } from "../components/CardCarousel";
 import { BackIcon, CardWatermark, HelpIcon } from "../components/Icons";
 import { EstimateTimeline } from "../components/EstimateTimeline";
 import { QueueCard } from "../components/QueueCard";
+import { EventsCard } from "../components/EventsCard";
+import { ChangesCard } from "../components/ChangesCard";
+import { CompareCard } from "../components/CompareCard";
 import { SeasonCard } from "../components/SeasonCard";
 import { SupplyCard } from "../components/SupplyCard";
 
 import { prettyMonth } from "../data";
 import { directionStyle, type Theme } from "../theme";
-import type { Bundle } from "@gc-eta/model";
+import type { Bundle, Comparison, EventsFile, SwitchSuggestion } from "@gc-eta/model";
 import type { Freshness } from "../updates";
 import type { CaseDraft } from "../types";
 
@@ -29,13 +32,16 @@ interface Props {
   onNews: () => void;
   /** Absent when the category has no comparable alternative. */
   onCompare?: () => void;
+  comparison?: Comparison | null;
+  suggestion?: SwitchSuggestion | null;
+  events: EventsFile;
   /** The live bundle, which may be newer than the one compiled into the app. */
   bundle: Bundle;
   stale: Freshness;
   newsCount: number;
 }
 
-export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, onCompare, bundle, stale, newsCount }: Props) {
+export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, onCompare, comparison, suggestion, events, bundle, stale, newsCount }: Props) {
   const { finalAction, filing, outlook } = assessment;
   // The hero card sits inside the screen's 20pt padding and its own 16pt, so
   // the drawing has to be told how much room it really has.
@@ -48,6 +54,10 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
   const supply = useMemo(
     () => supplyPicture(bundle, draft.column, draft.category),
     [bundle, draft.column, draft.category],
+  );
+  const changes = useMemo(
+    () => whatWouldChange(bundle, events, { ...draft }),
+    [bundle, events, draft],
   );
   const heroWidth = Math.max(240, screenWidth - 20 * 2 - 16 * 2);
   const blockers = assessment.events.filter((e) => e.relevance === "blocks");
@@ -98,8 +108,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
     node: <SeasonCard theme={theme} season={season} />,
   });
 
-  cards.push(
-    {
+  cards.push({
       key: "history",
       title: "History",
       node: (
@@ -112,62 +121,53 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
           />
         </Card>
       ),
-    },
-    {
-      key: "drivers",
-      title: "Drivers",
-      node: (
-        <Card theme={theme}>
-          <Row theme={theme} title="What drives this" />
-          {finalAction.drivers.map((driver) => (
-            <Text key={driver} style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
-              · {driver}
-            </Text>
-          ))}
-        </Card>
-      ),
-    },
-  );
+  });
 
-  if (blockers.length > 0) {
+  if (assessment.events.length > 0) {
     cards.push({
-      key: "blockers",
+      key: "events",
       title: "Events",
+      node: <EventsCard theme={theme} events={assessment.events} onAll={onNews} />,
+    });
+  }
+
+  if (comparison && suggestion) {
+    cards.push({
+      key: "compare",
+      title: "EB-2 or EB-3?",
       node: (
-        <Card theme={theme}>
-          <Row theme={theme} title="Affects you directly" trailing={String(blockers.length)} />
-          {blockers.map((item) => (
-            <View key={item.event.id} style={{ gap: 2 }}>
-              <Text style={{ fontSize: 15, fontWeight: "600", color: theme.text }}>
-                {item.event.title}
-                {item.upcoming ? ` (from ${prettyDate(item.event.start!)})` : ""}
-              </Text>
-              <Text style={{ fontSize: 13, lineHeight: 18, color: theme.secondary }}>
-                {item.event.summary}
-              </Text>
-            </View>
-          ))}
-        </Card>
+        <CompareCard
+          theme={theme}
+          comparison={comparison}
+          suggestion={suggestion}
+          draft={draft}
+          width={heroWidth}
+          onOpen={onCompare ?? (() => {})}
+        />
       ),
     });
   }
 
-  if (context.length > 0) {
-    cards.push({
-      key: "context",
-      title: "Behind you",
-      node: (
-        <Card theme={theme}>
-          <Row theme={theme} title="Moving the numbers behind you" trailing={String(context.length)} />
-          {context.slice(0, 4).map((item) => (
-            <Text key={item.event.id} style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
-              · {item.event.title}
-            </Text>
-          ))}
-        </Card>
-      ),
-    });
-  }
+  cards.push({
+    key: "changes",
+    title: "Changes",
+    node: <ChangesCard theme={theme} changes={changes} />,
+  });
+
+  cards.push({
+    key: "drivers",
+    title: "Drivers",
+    node: (
+      <Card theme={theme}>
+        <Row theme={theme} title="What drives this" />
+        {finalAction.drivers.map((driver) => (
+          <Text key={driver} style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
+            · {driver}
+          </Text>
+        ))}
+      </Card>
+    ),
+  });
 
   return (
     <ScrollView
@@ -245,28 +245,6 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
       </View>
 
       <CardCarousel theme={theme} items={cards} />
-
-      {onCompare ? (
-        <Pressable
-          accessibilityRole="button"
-          onPress={onCompare}
-          style={{
-            flexDirection: "row", alignItems: "center", gap: 12,
-            backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1,
-            borderRadius: 16, padding: 16, minHeight: 44,
-          }}
-        >
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 15, fontWeight: "600", color: theme.text }}>
-              Compare EB-2 and EB-3
-            </Text>
-            <Text style={{ fontSize: 13, lineHeight: 18, color: theme.secondary }}>
-              Both categories side by side for your date
-            </Text>
-          </View>
-          <Text style={{ fontSize: 17, color: theme.secondary }}>›</Text>
-        </Pressable>
-      ) : null}
 
       <Pressable
         accessibilityRole="button"

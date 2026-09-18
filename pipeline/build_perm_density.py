@@ -91,7 +91,8 @@ FILES = {
     2022: "PERM_Disclosure_Data_FY2022_Q4.xlsx",
     2023: "PERM_Disclosure_Data_FY2023_Q4.xlsx",
     2024: "PERM_Disclosure_Data_FY2024_Q4.xlsx",
-    2025: "PERM_Disclosure_Data_FY2025_Q4.xlsx",
+    # FY2025 is deliberately absent: see NO_WORKER_COUNTRY below. Downloading it
+    # costs 83 MB to produce a year with zero usable rows.
 }
 # Decision-date-only schema, so no priority date can be derived. Not a gap that
 # further searching will close.

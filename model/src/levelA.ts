@@ -346,9 +346,48 @@ export function estimate(
     `The cutoff is about ${gapYears.toFixed(1)} years behind your priority date.`,
   );
 
-  if (crossedFraction < HORIZON_CONFIDENCE) {
+  crossings.sort((a, b) => a - b);
+  const probabilityWithin = [12, 24, 60].map((months) => ({
+    months,
+    probability: crossings.filter((m) => m <= months).length / iterations,
+  }));
+  const base = monthToAbsolute(asOfMonth);
+
+  /**
+   * A quantile of the WHOLE distribution, not of the runs that happened to
+   * finish.
+   *
+   * `crossings` holds only the simulations that reached the date inside the
+   * horizon. Asking `percentile(crossings, 0.9)` treats that subset as if it
+   * were everything, so when 80% of runs crossed it returns the 72nd percentile
+   * of the real distribution and calls it the 90th. Every range came out too
+   * early and too narrow, and the more backlogged the case the worse it got,
+   * because fewer runs finished.
+   *
+   * Rescaling by `crossedFraction` puts it back: the q-th quantile overall is
+   * the (q / crossedFraction)-th of the subset. Above that fraction the
+   * quantile genuinely lies past the horizon and there is no month to give, so
+   * it returns undefined rather than a number that is wrong.
+   */
+  const quantileMonth = (q: number): string | undefined => {
+    if (crossedFraction <= 0 || q >= crossedFraction) return undefined;
+    const within = q / crossedFraction;
+    return absoluteToMonth(base + Math.round(percentile(crossings, within)));
+  };
+
+  const p10 = quantileMonth(0.1);
+  const p50 = quantileMonth(0.5);
+  const p90 = quantileMonth(0.9);
+  const horizonMonth = absoluteToMonth(base + HORIZON_MONTHS);
+
+  // "Beyond the horizon" now means only that the MIDPOINT is past it. The
+  // earlier version threw away p10 and the probabilities too, so a case where
+  // three runs in ten finished inside twenty-five years was shown as though
+  // nothing at all were known about it. That is what made the app look like it
+  // had no model behind it.
+  if (!p50) {
     drivers.push(
-      `At the pace of the last ten years, fewer than half of simulations reach your date within ${HORIZON_MONTHS / 12} years.`,
+      `At the pace of the last ten years, ${Math.round(crossedFraction * 100)}% of simulations reach your date within ${HORIZON_MONTHS / 12} years.`,
     );
     return {
       status: "not_current",
@@ -356,25 +395,17 @@ export function estimate(
       asOfMonth,
       beyondHorizon: true,
       crossedFraction,
+      horizonMonth,
+      p10,
+      probabilityWithin,
       confidence: "low",
       drivers,
     };
   }
 
-  crossings.sort((a, b) => a - b);
-  const probabilityWithin = [12, 24, 60].map((months) => ({
-    months,
-    probability:
-      crossings.filter((m) => m <= months).length / iterations,
-  }));
-  const base = monthToAbsolute(asOfMonth);
-  const toMonth = (q: number) =>
-    absoluteToMonth(base + Math.round(percentile(crossings, q)));
-
-  const p10 = toMonth(0.1);
-  const p90 = toMonth(0.9);
-  const spreadYears =
-    (monthToAbsolute(p90) - monthToAbsolute(p10)) / 12;
+  const spreadYears = p90
+    ? (monthToAbsolute(p90) - monthToAbsolute(p10!)) / 12
+    : Number.POSITIVE_INFINITY;
   const confidence: Estimate["confidence"] =
     spreadYears <= 2 ? "high" : spreadYears <= 5 ? "medium" : "low";
 
@@ -387,9 +418,10 @@ export function estimate(
     currentCutoff: latest,
     asOfMonth,
     p10,
-    p50: toMonth(0.5),
+    p50,
     p90,
     crossedFraction,
+    horizonMonth,
     probabilityWithin,
     confidence,
     drivers,

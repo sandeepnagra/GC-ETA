@@ -175,9 +175,9 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
         <Text display style={{ fontSize: 28, lineHeight: 34, color: theme.heroText, letterSpacing: -0.5 }}>
           {headline(assessment)}
         </Text>
-        {finalAction.p50 && !finalAction.beyondHorizon ? (
+        {heroSubtitle(finalAction) ? (
           <Text style={{ fontSize: 14, color: theme.heroText, opacity: 0.9 }}>
-            Most likely {prettyMonth(finalAction.p50)} · confidence {finalAction.confidence}
+            {heroSubtitle(finalAction)}
           </Text>
         ) : null}
       </View>
@@ -245,13 +245,49 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
   );
 }
 
+/**
+ * The headline, which must describe the reader's case rather than the model.
+ *
+ * "Beyond this model's horizon" was the old answer whenever the midpoint fell
+ * past twenty-five years, and it was wrong twice over. It is jargon about the
+ * implementation, and it threw away everything that WAS known: for a 2018
+ * Indian EB-2 date the model still had an earliest plausible month, the odds of
+ * finishing inside one, two and five years, and a count of 187,000 people
+ * ahead. Saying "no estimate" on top of all that is what makes the app look
+ * like it has no model behind it.
+ *
+ * Now a case whose midpoint is past the horizon says so as a date: "after
+ * September 2051". A case with an earliest month but no midpoint leads with
+ * that month. Only a case where nothing at all crossed says so plainly.
+ */
 function headline(assessment: CaseAssessment): string {
   const fa = assessment.finalAction;
   if (fa.status === "current") return "You are current";
   if (fa.status === "insufficient_data") return "Not enough published data";
-  if (fa.beyondHorizon) return "Beyond this model's horizon";
   if (fa.p10 && fa.p90) return `${prettyMonth(fa.p10)} to ${prettyMonth(fa.p90)}`;
+  if (fa.p10 && fa.p50) return `${prettyMonth(fa.p10)} to beyond ${prettyMonth(fa.horizonMonth ?? "")}`;
+  if (fa.p10) return `${prettyMonth(fa.p10)} at the earliest`;
+  if (fa.horizonMonth) return `Later than ${prettyMonth(fa.horizonMonth)}`;
   return "No estimate";
+}
+
+/**
+ * The line under the headline. Always says something: the midpoint when there
+ * is one, otherwise how few simulations finished at all, which is the honest
+ * shape of a very long wait.
+ */
+function heroSubtitle(fa: CaseAssessment["finalAction"]): string | null {
+  if (fa.status === "current") return null;
+  if (fa.p50 && !fa.beyondHorizon) {
+    return `Most likely ${prettyMonth(fa.p50)} · confidence ${fa.confidence}`;
+  }
+  if (fa.crossedFraction !== undefined && fa.horizonMonth) {
+    const pct = Math.round(fa.crossedFraction * 100);
+    return pct >= 1
+      ? `${pct} in 100 chance of reaching it by ${prettyMonth(fa.horizonMonth)}`
+      : `Under 1 in 100 chance of reaching it by ${prettyMonth(fa.horizonMonth)}`;
+  }
+  return null;
 }
 
 function cutoffText(estimate: CaseAssessment["finalAction"]): string {

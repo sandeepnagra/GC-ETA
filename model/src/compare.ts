@@ -360,10 +360,23 @@ export function suggestSwitch(
   // A gain inside the noise of two wide ranges is not a gain. Requiring the
   // pessimistic end to improve too is what separates a real difference from
   // two overlapping guesses.
-  const pessimisticGain =
-    mine.estimate.p90 && other.estimate.p90
-      ? monthsBetween(other.estimate.p90, mine.estimate.p90)
-      : 0;
+  //
+  // A MISSING p90 IS NOT A ZERO. It means the slow end of that category runs
+  // past the twenty-five year horizon, which is worse than any date, not
+  // neutral. Treating it as zero made India EB-2 against EB-3 read "too close
+  // to call" when EB-3 finishes in 99% of simulations and EB-2 in 63%.
+  const minePessimistic = mine.estimate.p90;
+  const otherPessimistic = other.estimate.p90;
+  let pessimisticGain: number;
+  if (minePessimistic && otherPessimistic) {
+    pessimisticGain = monthsBetween(otherPessimistic, minePessimistic);
+  } else if (otherPessimistic && !minePessimistic) {
+    pessimisticGain = Number.POSITIVE_INFINITY; // yours never finishes; theirs does
+  } else if (minePessimistic && !otherPessimistic) {
+    pessimisticGain = Number.NEGATIVE_INFINITY; // theirs never finishes; yours does
+  } else {
+    pessimisticGain = 0; // neither finishes, so the slow end cannot separate them
+  }
 
   if (gainMonths < 12 || pessimisticGain <= 0) {
     because.push(
@@ -383,7 +396,9 @@ export function suggestSwitch(
   }
 
   because.push(
-    `Estimated about ${gainMonths} months earlier in ${label}, and still earlier on the slower end of both ranges.`,
+    Number.isFinite(pessimisticGain)
+      ? `Estimated about ${gainMonths} months earlier in ${label}, and still earlier on the slower end of both ranges.`
+      : `Estimated about ${gainMonths} months earlier in ${label}. On the slow end the difference is larger still: ${label} finishes inside the model's twenty-five year horizon in most simulations and ${yourCategory.replace("EB", "EB-")} does not.`,
   );
   if (mine.queue.ok && other.queue.ok && other.queue.peopleAhead && mine.queue.peopleAhead) {
     const fewer = Math.round(mine.queue.peopleAhead.mid - other.queue.peopleAhead.mid);

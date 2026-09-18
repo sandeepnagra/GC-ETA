@@ -73,7 +73,11 @@ export function CaseScreen({ theme, draft, onChange, onSubmit }: Props) {
       >
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={`Priority date, currently ${prettyDate(draft.priorityDate)}. Opens a date picker.`}
+          accessibilityLabel={
+            valid
+              ? `Priority date, currently ${prettyDate(draft.priorityDate)}. Opens a date picker.`
+              : "Priority date, not set yet. Opens a date picker."
+          }
           onPress={() => setPicking((open) => !open)}
           style={{
             minHeight: 52, paddingHorizontal: 16, justifyContent: "center",
@@ -83,11 +87,11 @@ export function CaseScreen({ theme, draft, onChange, onSubmit }: Props) {
           }}
         >
           <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-            <Text style={{ flex: 1, fontSize: 17, color: theme.text }}>
-              {prettyDate(draft.priorityDate)}
+            <Text style={{ flex: 1, fontSize: 17, color: valid ? theme.text : theme.secondary }}>
+              {valid ? prettyDate(draft.priorityDate) : "Choose your priority date"}
             </Text>
             <Text style={{ fontSize: 14, color: theme.accent }}>
-              {picking ? "Done" : "Change"}
+              {picking ? "Done" : valid ? "Change" : "Choose"}
             </Text>
           </View>
         </Pressable>

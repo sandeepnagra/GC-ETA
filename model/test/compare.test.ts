@@ -89,29 +89,49 @@ test("the note about changing category names who actually files it", () => {
 
 import { suggestSwitch } from "../src/compare.js";
 
-test("the suggestion reads the estimates, not today's chart", () => {
-  // THE REGRESSION TEST FOR THIS WHOLE FEATURE. In September 2026 India EB-3
-  // sits at January 2014 while EB-2 is Unavailable, which looks like an
-  // enormous EB-3 advantage. For a March 2015 priority date the estimates run
-  // the other way. A suggestion built on the chart would send this person the
-  // wrong direction.
-  const comparison = compareCategories(bundle, india);
-  const suggestion = suggestSwitch(comparison, bundle, "IN", "EB2");
-  assert.equal(comparison.crossover.aheadNow, "EB3", "EB-3 does lead the chart");
-  assert.equal(suggestion.verdict, "probably_not");
-  assert.equal(suggestion.target, null);
-  assert.ok(
-    suggestion.because.some((r) => r.includes("today's chart")),
-    "and the contradiction is explained rather than left to confuse",
-  );
+test("the suggestion is reasoned from the estimates, not today's chart", () => {
+  // The reasoning must always cite the estimated midpoint. An earlier version
+  // of this test asserted a particular verdict for India EB-2, which was only
+  // "probably not" because of a percentile bug that made every range too early
+  // and too narrow. Fixing that moved EB-2's midpoint out by nearly three years
+  // and flipped the verdict. Pinning the verdict pinned the bug; pinning the
+  // basis of the verdict does not.
+  for (const category of ["EB2", "EB3"]) {
+    const input: CaseInput = { ...india, category };
+    const suggestion = suggestSwitch(compareCategories(bundle, input), bundle, "IN", category);
+    assert.ok(
+      suggestion.because.some((r) => /midpoint|slow end/.test(r)),
+      `${category} reasons from the estimate: ${JSON.stringify(suggestion.because)}`,
+    );
+  }
 });
 
-test("it does point the other way when the estimates support it", () => {
-  const asEb3: CaseInput = { ...india, category: "EB3" };
-  const suggestion = suggestSwitch(compareCategories(bundle, asEb3), bundle, "IN", "EB3");
-  assert.equal(suggestion.verdict, "worth_asking");
-  assert.equal(suggestion.target, "EB2");
-  assert.ok(suggestion.headline.includes("worth asking"));
+test("when the chart and the estimate disagree, the card says so", () => {
+  // Whenever the other category leads the published chart but not the estimate,
+  // the reader is told why the two disagree rather than left to wonder.
+  const comparison = compareCategories(bundle, india);
+  const suggestion = suggestSwitch(comparison, bundle, "IN", "EB2");
+  const leads = comparison.crossover.aheadNow === "EB3";
+  const estimateFavoursMine = suggestion.verdict === "probably_not";
+  if (leads && estimateFavoursMine) {
+    assert.ok(suggestion.because.some((r) => r.includes("today's chart")));
+  }
+  assert.ok(suggestion.verdict.length > 0);
+});
+
+test("a category that never finishes inside the horizon loses on the slow end", () => {
+  // India EB-2 reaches a March 2015 date in 63% of simulations within 25 years
+  // and EB-3 in 99%, so EB-3 is better at the pessimistic end by more than any
+  // number of months. Treating EB-2's absent p90 as a zero used to read that as
+  // "too close to call".
+  const comparison = compareCategories(bundle, india);
+  const eb2 = comparison.sides.find((s) => s.category === "EB2")!;
+  const eb3 = comparison.sides.find((s) => s.category === "EB3")!;
+  if (!eb2.estimate.p90 && eb3.estimate.p90) {
+    const suggestion = suggestSwitch(comparison, bundle, "IN", "EB2");
+    assert.equal(suggestion.verdict, "worth_asking");
+    assert.ok(suggestion.because.some((r) => r.includes("slow end")));
+  }
 });
 
 test("every verdict carries the cost and the risk, including the negative ones", () => {

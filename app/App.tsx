@@ -23,7 +23,10 @@ export default function App() {
     column: "IN",
     birthCountry: "IN",
     category: "EB2",
-    priorityDate: "2015-03-10",
+    // Empty on purpose. A hardcoded date was a developer's convenience that
+    // reached the screen: the app opened on 10 March 2015 and produced a full
+    // estimate for a case nobody had entered, which reads as a real answer.
+    priorityDate: "",
     path: "adjustment",
   });
 
@@ -50,23 +53,30 @@ export default function App() {
 
   const theme = resolveTheme(mode, system ?? null);
   const today = new Date().toISOString().slice(0, 10);
+
+  // NOTHING IS COMPUTED UNTIL THERE IS A DATE TO COMPUTE FROM. Clearing the
+  // hardcoded default exposed that every derived value ran on whatever was in
+  // the draft, so an empty priority date reached date arithmetic and the app
+  // died on launch with "Date value out of bounds". The case screen is the only
+  // screen reachable without one.
+  const ready = /^\d{4}-\d{2}-\d{2}$/.test(draft.priorityDate);
   const stale = useMemo(() => freshness(bundle), [bundle]);
 
   // Recomputed only when the case changes. The simulation is seeded, so the
   // same case always yields the same range rather than shifting on each render.
   const assessment = useMemo(
-    () => assessCase(bundle, events, { ...draft }, today),
-    [bundle, events, draft, today],
+    () => (ready ? assessCase(bundle, events, { ...draft }, today) : null),
+    [ready, bundle, events, draft, today],
   );
   const timeline = useMemo(
-    () => caseTimeline(bundle, events, { ...draft }, today),
-    [bundle, events, draft, today],
+    () => (ready ? caseTimeline(bundle, events, { ...draft }, today) : []),
+    [ready, bundle, events, draft, today],
   );
   // Only EB-2 and EB-3 are comparable this way. EB-1 needs a different petition
   // entirely rather than a re-filing, and EB-4 and EB-5 are not alternatives to
   // either, so offering the comparison there would imply a choice that is not
   // available.
-  const comparable = draft.category === "EB2" || draft.category === "EB3";
+  const comparable = ready && (draft.category === "EB2" || draft.category === "EB3");
   const comparison = useMemo(
     () => (comparable ? compareCategories(bundle, { ...draft }) : null),
     [bundle, draft, comparable],
@@ -89,7 +99,7 @@ export default function App() {
       <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.bg} />
       {screen === "case" ? (
         <CaseScreen theme={theme} draft={draft} onChange={setDraft} onSubmit={() => setScreen("results")} />
-      ) : screen === "results" ? (
+      ) : screen === "results" && assessment ? (
         <ResultsScreen
           theme={theme}
           draft={draft}

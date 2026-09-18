@@ -109,11 +109,20 @@ test("EB-2 India 2015 is not current and is ordered p10 <= p50 <= p90", () => {
   });
   assert.equal(result.status, "not_current");
   assert.equal(result.currentCutoff.kind, "unavailable");
+  // A percentile is absent when it lies past the horizon, which for a deeply
+  // backlogged case is the p90 and sometimes the p50. Whatever is present must
+  // still be ordered and must still be in the future.
+  const present = [result.p10, result.p50, result.p90].filter(Boolean) as string[];
+  assert.ok(present.length > 0, "something is known about this case");
+  for (let i = 1; i < present.length; i += 1) {
+    assert.ok(monthToAbsolute(present[i - 1]!) <= monthToAbsolute(present[i]!));
+  }
+  assert.ok(monthToAbsolute(present[0]!) > monthToAbsolute(bundle.end_month));
+  // A missing p90 has to mean the top of the distribution ran past the horizon,
+  // never that it was silently dropped.
+  if (!result.p90) assert.ok((result.crossedFraction ?? 1) < 0.9);
   if (!result.beyondHorizon) {
-    assert.ok(result.p10 && result.p50 && result.p90);
-    assert.ok(monthToAbsolute(result.p10!) <= monthToAbsolute(result.p50!));
-    assert.ok(monthToAbsolute(result.p50!) <= monthToAbsolute(result.p90!));
-    assert.ok(monthToAbsolute(result.p10!) > monthToAbsolute(bundle.end_month));
+    assert.ok(result.p50, "a usable midpoint is what not-beyond-horizon means");
   }
 });
 

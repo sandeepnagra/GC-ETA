@@ -110,6 +110,14 @@ export interface Estimate {
   beyondHorizon?: boolean;
   crossedFraction?: number;
   /**
+   * The last month the simulation looks at, as "YYYY-MM".
+   *
+   * Present so the app can say "after March 2051" rather than "beyond this
+   * model's horizon", which tells the reader about the implementation instead
+   * of about their case.
+   */
+  horizonMonth?: string;
+  /**
    * Probability of becoming current within N months, for a few horizons.
    * More honest than a percentile alone: a P10 of "next month" can reflect a
    * single unusual historical jump rather than a likely outcome, and this says

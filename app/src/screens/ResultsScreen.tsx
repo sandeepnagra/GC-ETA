@@ -1,7 +1,7 @@
 /** The estimate, its outlook, and what is acting on it. */
 
 import React from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View, useWindowDimensions } from "react-native";
 import { Text } from "../components/Text";
 import type { CaseAssessment } from "@gc-eta/model";
 import { dayToIso, historyPoints } from "@gc-eta/model";
@@ -9,6 +9,7 @@ import { categoryLabel, columnLabel, prettyDate, shortDate } from "../data";
 import { HistoryChart } from "../components/HistoryChart";
 import { CardCarousel, type CarouselItem } from "../components/CardCarousel";
 import { BackIcon, CardWatermark, HelpIcon } from "../components/Icons";
+import { EstimateTimeline } from "../components/EstimateTimeline";
 
 import { prettyMonth } from "../data";
 import { directionStyle, type Theme } from "../theme";
@@ -33,6 +34,10 @@ interface Props {
 
 export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, onCompare, bundle, stale, newsCount }: Props) {
   const { finalAction, filing, outlook } = assessment;
+  // The hero card sits inside the screen's 20pt padding and its own 16pt, so
+  // the drawing has to be told how much room it really has.
+  const { width: screenWidth } = useWindowDimensions();
+  const heroWidth = Math.max(240, screenWidth - 20 * 2 - 16 * 2);
   const blockers = assessment.events.filter((e) => e.relevance === "blocks");
   const context = assessment.events.filter((e) => e.relevance === "context");
 
@@ -199,6 +204,15 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
             {heroSubtitle(finalAction)}
           </Text>
         ) : null}
+        {finalAction.status === "not_current" ? (
+          <EstimateTimeline
+            theme={theme}
+            asOfMonth={assessment.asOfMonth}
+            finalAction={finalAction}
+            filing={filing}
+            width={heroWidth}
+          />
+        ) : null}
       </View>
 
       {/* Right now */}
@@ -284,7 +298,10 @@ function headline(assessment: CaseAssessment): string {
   if (fa.status === "current") return "You are current";
   if (fa.status === "insufficient_data") return "Not enough published data";
   if (fa.p10 && fa.p90) return `${prettyMonth(fa.p10)} to ${prettyMonth(fa.p90)}`;
-  if (fa.p10 && fa.p50) return `${prettyMonth(fa.p10)} to beyond ${prettyMonth(fa.horizonMonth ?? "")}`;
+  // With no late end, a range reading "October 2026 to beyond September 2051"
+  // is technically true and says almost nothing. The midpoint is the useful
+  // number, and the open tail is stated underneath instead.
+  if (fa.p50) return `Around ${prettyMonth(fa.p50)}`;
   if (fa.p10) return `${prettyMonth(fa.p10)} at the earliest`;
   if (fa.horizonMonth) return `Later than ${prettyMonth(fa.horizonMonth)}`;
   return "No estimate";
@@ -298,7 +315,9 @@ function headline(assessment: CaseAssessment): string {
 function heroSubtitle(fa: CaseAssessment["finalAction"]): string | null {
   if (fa.status === "current") return null;
   if (fa.p50 && !fa.beyondHorizon) {
-    return `Most likely ${prettyMonth(fa.p50)} · confidence ${fa.confidence}`;
+    return fa.p90
+      ? `Most likely ${prettyMonth(fa.p50)} · confidence ${fa.confidence}`
+      : `Earliest ${prettyMonth(fa.p10!)}, with a slow tail running past ${prettyMonth(fa.horizonMonth ?? "")}`;
   }
   if (fa.crossedFraction !== undefined && fa.horizonMonth) {
     const pct = Math.round(fa.crossedFraction * 100);

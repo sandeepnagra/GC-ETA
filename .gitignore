@@ -1,0 +1,50 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Node / Expo / TypeScript  (app/ and model/)
+node_modules/
+.expo/
+.expo-shared/
+dist/
+build/
+web-build/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Python  (pipeline/)
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Secrets and local config
+# Pipeline needs an api.data.gov key (Congress.gov) and a CourtListener token.
+# Those live in GitHub Actions secrets, never in the repo.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Pipeline working files
+# Raw downloads are reproducible from source and can be large; the parsed,
+# versioned JSON under data/ is what gets committed.
+pipeline/cache/
+pipeline/raw/
+*.xlsx.tmp
+
+# Editor
+.idea/workspace.xml
+.idea/shelf/
+.vscode/
+*.swp

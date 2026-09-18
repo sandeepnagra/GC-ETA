@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Card — Next 3 to 6 months</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;color:#1C1B18}</style>
+</helmet>
+<div style="width: 326px; height: 330px; box-sizing: border-box; padding: 16px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 16px; color: #1C1B18; font-family: 'IBM Plex Sans', system-ui, sans-serif; display: flex; flex-direction: column; gap: 8px;">
+  <div style="display: flex; justify-content: space-between; align-items: baseline;">
+    <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; color: #5B5850;">Next 3 to 6 months</div>
+    <div style="font-size: 12px; color: #5B5850;">Risk 18 / 100</div>
+  </div>
+  <svg width="294" height="132" viewBox="0 0 294 132" role="img" aria-label="Outlook dial pointing to Advance">
+    <path d="M42 120 A105 105 0 0 1 94.5 29.1" fill="none" stroke="#0E6B63" stroke-width="16" stroke-linecap="round"></path>
+    <path d="M94.5 29.1 A105 105 0 0 1 199.5 29.1" fill="none" stroke="#E1D9C4" stroke-width="16"></path>
+    <path d="M199.5 29.1 A105 105 0 0 1 252 120" fill="none" stroke="#EAD3C8" stroke-width="16" stroke-linecap="round"></path>
+    <line x1="147" y1="120" x2="86" y2="72" stroke="#1C1B18" stroke-width="3" stroke-linecap="round"></line>
+    <circle cx="147" cy="120" r="7" fill="#1C1B18"></circle>
+    <text x="42" y="132" font-size="11" text-anchor="middle" fill="#0E6B63" font-weight="600" font-family="IBM Plex Sans, sans-serif">Advance</text>
+    <text x="147" y="14" font-size="11" text-anchor="middle" fill="#5B5850" font-family="IBM Plex Sans, sans-serif">Hold</text>
+    <text x="252" y="132" font-size="11" text-anchor="middle" fill="#A8401F" font-family="IBM Plex Sans, sans-serif">Retrogress</text>
+  </svg>
+  <div style="font-family: 'Fraunces', Georgia, serif; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; color: #0E6B63; text-align: center;">Strong advance in October</div>
+  <div style="font-size: 13px; line-height: 18px; text-align: center; color: #1C1B18;">New fiscal-year numbers on 1 Oct, family spillover near 73,000, and State signaled EB-2 India reopens at or after 15 Jul 2014. Risk returns Jul to Sep 2027.</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":326,"height":330}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

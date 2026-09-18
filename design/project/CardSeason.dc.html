@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Card — A typical fiscal year</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;color:#1C1B18}</style>
+</helmet>
+<div style="width: 326px; height: 330px; box-sizing: border-box; padding: 16px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 16px; color: #1C1B18; font-family: 'IBM Plex Sans', system-ui, sans-serif; display: flex; flex-direction: column; gap: 12px;">
+  <div style="display: flex; justify-content: space-between; align-items: baseline;">
+    <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; color: #5B5850;">A typical fiscal year</div>
+    <div style="font-size: 12px; color: #5B5850;">Oct to Sep</div>
+  </div>
+  <div style="display: flex; gap: 4px;">
+    <sc-for list="{{months}}" as="m" hint-placeholder-count="12">
+      <div style="flex-grow: 1; flex-basis: 0; display: flex; flex-direction: column; align-items: center; gap: 5px;">
+        <div style="{{m.style}}"></div>
+        <div style="font-size: 10px; color: #5B5850;">{{m.label}}</div>
+      </div>
+    </sc-for>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 6px;">
+    <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><div style="width: 12px; height: 12px; border-radius: 3px; background: #0E6B63; flex-shrink: 0;"></div><div><span style="font-weight: 600;">October.</span> New numbers and spillover arrive; the biggest jumps.</div></div>
+    <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><div style="width: 12px; height: 12px; border-radius: 3px; background: #9CCBC3; flex-shrink: 0;"></div><div><span style="font-weight: 600;">Nov to Mar.</span> Steady advances; USCIS often allows filing on the later chart.</div></div>
+    <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><div style="width: 12px; height: 12px; border-radius: 3px; background: #E1D9C4; flex-shrink: 0;"></div><div><span style="font-weight: 600;">Apr to Jun.</span> Dates hold while State checks the pace.</div></div>
+    <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><div style="width: 12px; height: 12px; border-radius: 3px; background: #D98B70; flex-shrink: 0;"></div><div><span style="font-weight: 600;">Jul to Sep.</span> Limits hit; retrogression and Unavailable. You are here.</div></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":326,"height":330}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const labels = ['O', 'N', 'D', 'J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S'];
+    const colors = ['#0E6B63', '#9CCBC3', '#9CCBC3', '#9CCBC3', '#9CCBC3', '#9CCBC3', '#E1D9C4', '#E1D9C4', '#E1D9C4', '#D98B70', '#D98B70', '#D98B70'];
+    const months = labels.map((l, i) => ({
+      label: l,
+      style: 'width:100%;height:40px;border-radius:6px;background:' + colors[i] + ';' + (i === 11 ? 'outline:2px solid #1C1B18;outline-offset:2px;' : '')
+    }));
+    return { months: months };
+  }
+}
+</script>
+</body>
+</html>

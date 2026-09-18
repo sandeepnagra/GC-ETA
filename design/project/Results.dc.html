@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GC ETA — Your estimate</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;background:#F3EFE6;color:#1C1B18}
+a{color:#0E6B63}a:hover{color:#0A524C}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F3EFE6; color: #1C1B18; font-family: 'IBM Plex Sans', system-ui, sans-serif; display: flex; flex-direction: column;">
+
+  <div style="position: relative; z-index: 0; padding: 22px 20px 10px 20px; display: flex; align-items: center; gap: 10px;">
+    <svg style="position: absolute; z-index: -1; right: 44px; top: -30px; width: 190px; color: {{accent}}; opacity: 0.08; pointer-events: none;" viewBox="0 0 100 60" aria-hidden="true">
+      <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="94" height="54" rx="8" stroke-width="3"></rect>
+        <rect x="12" y="18" width="22" height="26" rx="3" stroke-width="2.5"></rect>
+        <circle cx="23" cy="27" r="4.5" stroke-width="2.5"></circle>
+        <path d="M15 42c0-5 3.5-8.5 8-8.5s8 3.5 8 8.5" stroke-width="2.5"></path>
+        <line x1="42" y1="22" x2="80" y2="22" stroke-width="2.5"></line>
+        <line x1="42" y1="31" x2="70" y2="31" stroke-width="2.5"></line>
+        <line x1="42" y1="40" x2="80" y2="40" stroke-width="2.5"></line>
+        <rect x="78" y="9" width="10" height="7" rx="1.5" stroke-width="2"></rect>
+      </g>
+      <g fill="currentColor"><circle cx="14" cy="11" r="1.6"></circle><circle cx="20" cy="11" r="1.6"></circle><circle cx="26" cy="11" r="1.6"></circle><circle cx="32" cy="11" r="1.6"></circle><circle cx="38" cy="11" r="1.6"></circle><circle cx="66" cy="40" r="3"></circle></g>
+    </svg>
+    <a href="Main.dc.html" aria-label="Edit your case" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-left: -10px; border-radius: 22px; text-decoration: none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1C1B18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+    </a>
+    <div style="display: flex; flex-direction: column; gap: 1px; flex-grow: 1;">
+      <div style="font-family: 'Fraunces', Georgia, serif; font-size: 19px; font-weight: 600; letter-spacing: -0.01em;">India · EB-2 · 10 Mar 2015</div>
+      <div style="font-size: 12px; color: #5B5850;">Bulletin Sep 2026 · Inventory 5 Aug 2026</div>
+    </div>
+    <a href="Methodology.dc.html" aria-label="How this is computed" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 22px; text-decoration: none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1C1B18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"></path></svg>
+    </a>
+  </div>
+
+  <div style="padding: 0 20px; display: flex; flex-direction: column; gap: 12px;">
+
+    <div style="padding: 16px; background: {{accent}}; color: #FFFFFF; border-radius: 16px; display: flex; flex-direction: column; gap: 8px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; opacity: 0.85;">Final Action likely</div>
+        <div style="font-size: 11px; font-weight: 600; padding: 3px 9px; border: 1px solid rgba(255,255,255,0.6); border-radius: 10px;">Medium confidence</div>
+      </div>
+      <div style="font-family: 'Fraunces', Georgia, serif; font-size: 30px; font-weight: 600; line-height: 34px; letter-spacing: -0.02em;">Late 2028 to mid 2030</div>
+      <svg width="326" height="104" viewBox="0 0 326 104" role="img" aria-label="Timeline from now to 2031 showing the likely Final Action window and the Dates for Filing window">
+        <text x="20" y="22" font-size="11" fill="#FFFFFF" fill-opacity="0.85" font-family="IBM Plex Sans, sans-serif">Filing window</text>
+        <rect x="23" y="27" width="28" height="8" rx="4" fill="#FFFFFF" fill-opacity="0.55"></rect>
+        <text x="58" y="35" font-size="11" fill="#FFFFFF" font-family="IBM Plex Sans, sans-serif">Oct 2026 to early 2027</text>
+        <rect x="150" y="52" width="105" height="14" rx="7" fill="#FFFFFF" fill-opacity="0.35"></rect>
+        <line x1="20" y1="59" x2="316" y2="59" stroke="#FFFFFF" stroke-opacity="0.5" stroke-width="1.5"></line>
+        <circle cx="20" cy="59" r="5" fill="#FFFFFF"></circle>
+        <circle cx="193" cy="59" r="7" fill="#FFFFFF"></circle>
+        <circle cx="193" cy="59" r="3" fill="#0E6B63"></circle>
+        <text x="20" y="84" font-size="11" fill="#FFFFFF" font-family="IBM Plex Sans, sans-serif">Now</text>
+        <text x="100" y="84" font-size="11" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.85" font-family="IBM Plex Sans, sans-serif">2028</text>
+        <text x="162" y="84" font-size="11" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.85" font-family="IBM Plex Sans, sans-serif">2029</text>
+        <text x="224" y="84" font-size="11" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.85" font-family="IBM Plex Sans, sans-serif">2030</text>
+        <text x="285" y="84" font-size="11" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.85" font-family="IBM Plex Sans, sans-serif">2031</text>
+        <text x="193" y="100" font-size="11" text-anchor="middle" fill="#FFFFFF" font-weight="600" font-family="IBM Plex Sans, sans-serif">Most likely mid 2029 · about 2 yr 9 mo</text>
+      </svg>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+      <div style="flex-grow: 1; flex-basis: 0; padding: 12px 14px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 14px; display: flex; flex-direction: column; gap: 2px;">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; color: #5B5850;">Final Action now</div>
+        <div style="font-family: 'Fraunces', Georgia, serif; font-size: 17px; font-weight: 600; color: #A8401F;">Unavailable</div>
+        <div style="font-size: 11px; color: #5B5850;">Reopens 1 Oct 2026</div>
+      </div>
+      <div style="flex-grow: 1; flex-basis: 0; padding: 12px 14px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 14px; display: flex; flex-direction: column; gap: 2px;">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; color: #5B5850;">Filing now</div>
+        <div style="font-family: 'Fraunces', Georgia, serif; font-size: 17px; font-weight: 600;">15 Jan 2015</div>
+        <div style="font-size: 11px; color: #A8401F;">54 days before you · FAD chart in use</div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+      <sc-for list="{{tabs}}" as="tab" hint-placeholder-count="8">
+        <button type="button" onClick="{{tab.pick}}" style="{{tab.style}}">{{tab.label}}</button>
+      </sc-for>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <sc-if value="{{show0}}" hint-placeholder-val="{{true}}"><dc-import name="CardOutlook" hint-size="326px,330px"></dc-import></sc-if>
+      <sc-if value="{{show1}}" hint-placeholder-val="{{false}}"><dc-import name="CardQueue" hint-size="326px,330px"></dc-import></sc-if>
+      <sc-if value="{{show2}}" hint-placeholder-val="{{false}}"><dc-import name="CardSupply" hint-size="326px,330px"></dc-import></sc-if>
+      <sc-if value="{{show3}}" hint-placeholder-val="{{false}}"><dc-import name="CardSeason" hint-size="326px,330px"></dc-import></sc-if>
+      <sc-if value="{{show4}}" hint-placeholder-val="{{false}}"><dc-import name="CardHistory" hint-size="326px,330px"></dc-import></sc-if>
+      <sc-if value="{{show5}}" hint-placeholder-val="{{false}}"><dc-import name="CardEvents" hint-size="326px,330px"></dc-import></sc-if>
+      <sc-if value="{{show6}}" hint-placeholder-val="{{false}}"><dc-import name="CardCompare" hint-size="326px,330px"></dc-import></sc-if>
+      <sc-if value="{{show7}}" hint-placeholder-val="{{false}}"><dc-import name="CardChanges" hint-size="326px,330px"></dc-import></sc-if>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 12px; color: #5B5850;">Swipe for the next card</div>
+        <a href="Detail.dc.html" style="font-size: 13px; font-weight: 600; text-decoration: none;">Read the full note</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin-top: auto; padding: 8px 20px 20px 20px; font-size: 11px; line-height: 15px; text-align: center; color: #5B5850;">Unofficial estimate from public data. Not legal advice.</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#0E6B63","options":["#0E6B63","#1F4E79","#6B3FA0"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { card: 0 };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? '#0E6B63';
+    const cur = this.state.card ?? 0;
+    const names = ['Outlook', 'Queue', 'Supply', 'Season', 'History', 'Events', 'EB-3?', 'Changes'];
+    const base = 'height:32px;padding:0 12px;font-family:inherit;font-size:13px;border-radius:16px;';
+    const on = base + 'font-weight:600;color:#FFFFFF;background:#1C1B18;border:1px solid #1C1B18;';
+    const off = base + 'font-weight:500;color:#1C1B18;background:#FFFDF8;border:1px solid #D9D3C5;';
+    const vals = {
+      accent: accent,
+      tabs: names.map((n, i) => ({ label: n, pick: () => this.setState({ card: i }), style: i === cur ? on : off }))
+    };
+    for (let i = 0; i < 8; i++) vals['show' + i] = cur === i;
+    return vals;
+  }
+}
+</script>
+</body>
+</html>

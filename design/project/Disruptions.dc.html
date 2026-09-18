@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GC ETA — Disruptions</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;background:#F3EFE6;color:#1C1B18}
+a{color:#0E6B63}a:hover{color:#0A524C}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F3EFE6; color: #1C1B18; font-family: 'IBM Plex Sans', system-ui, sans-serif; display: flex; flex-direction: column;">
+
+  <div style="padding: 22px 20px 10px 20px; display: flex; align-items: center; gap: 10px;">
+    <a href="Results.dc.html" aria-label="Back to your estimate" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-left: -10px; border-radius: 22px; text-decoration: none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1C1B18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+    </a>
+    <div style="display: flex; flex-direction: column; gap: 1px;">
+      <div style="font-family: 'Fraunces', Georgia, serif; font-size: 19px; font-weight: 600; letter-spacing: -0.01em;">Disruptions</div>
+      <div style="font-size: 12px; color: #5B5850;">Pauses, bans, rules and court orders</div>
+    </div>
+  </div>
+
+  <div style="padding: 0 20px; display: flex; flex-direction: column; gap: 12px;">
+
+    <div style="padding: 14px 16px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 16px; display: flex; flex-direction: column; gap: 8px;">
+      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; color: #5B5850;">Jun 2025 to now</div>
+      <svg width="294" height="150" viewBox="0 0 294 150" role="img" aria-label="Timeline of disruptions from June 2025 to September 2026">
+        <line x1="90" y1="8" x2="90" y2="128" stroke="#E8E2D5" stroke-width="1"></line>
+        <line x1="184" y1="8" x2="184" y2="128" stroke="#E8E2D5" stroke-width="1"></line>
+        <line x1="278" y1="8" x2="278" y2="128" stroke="#1C1B18" stroke-width="1" stroke-dasharray="3 3"></line>
+        <text x="4" y="20" font-size="10" fill="#5B5850" font-family="IBM Plex Sans, sans-serif">Travel bans</text>
+        <rect x="70" y="24" width="220" height="8" rx="4" fill="#D98B70"></rect>
+        <text x="4" y="44" font-size="10" fill="#5B5850" font-family="IBM Plex Sans, sans-serif">USCIS pause</text>
+        <rect x="150" y="48" width="78" height="8" rx="4" fill="#9CCBC3"></rect>
+        <text x="4" y="68" font-size="10" fill="#5B5850" font-family="IBM Plex Sans, sans-serif">75-country IV pause</text>
+        <rect x="160" y="72" width="94" height="8" rx="4" fill="#9CCBC3"></rect>
+        <text x="4" y="92" font-size="10" fill="#5B5850" font-family="IBM Plex Sans, sans-serif">Interview pause</text>
+        <rect x="255" y="96" width="35" height="8" rx="4" fill="#C98A1A"></rect>
+        <text x="4" y="116" font-size="10" fill="#5B5850" font-family="IBM Plex Sans, sans-serif">Gold Card</text>
+        <rect x="150" y="120" width="140" height="8" rx="4" fill="#D9D3C5"></rect>
+        <text x="90" y="144" font-size="10" text-anchor="middle" fill="#5B5850" font-family="IBM Plex Sans, sans-serif">Oct 2025</text>
+        <text x="184" y="144" font-size="10" text-anchor="middle" fill="#5B5850" font-family="IBM Plex Sans, sans-serif">Mar 2026</text>
+        <text x="278" y="144" font-size="10" text-anchor="middle" fill="#1C1B18" font-weight="600" font-family="IBM Plex Sans, sans-serif">Now</text>
+      </svg>
+    </div>
+
+    <div style="display: flex; gap: 8px;">
+      <button type="button" aria-pressed="true" style="height: 36px; padding: 0 14px; font-family: inherit; font-size: 13px; font-weight: 600; color: #FFFFFF; background: #1C1B18; border: 1px solid #1C1B18; border-radius: 18px;">Affects me</button>
+      <button type="button" style="height: 36px; padding: 0 14px; font-family: inherit; font-size: 13px; font-weight: 500; color: #1C1B18; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 18px;">Active</button>
+      <button type="button" style="height: 36px; padding: 0 14px; font-family: inherit; font-size: 13px; font-weight: 500; color: #1C1B18; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 18px;">All</button>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <div style="display: flex; gap: 12px; align-items: center; padding: 12px 14px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 14px;">
+        <div style="width: 10px; height: 10px; flex-shrink: 0; border-radius: 5px; background: #C98A1A;"></div>
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 1px;">
+          <div style="font-size: 14px; font-weight: 600; line-height: 18px;">Immigrant visa interviews paused worldwide</div>
+          <div style="font-size: 12px; line-height: 16px; color: #5B5850;">State, since ~25 Aug 2026, no end date. Consular only; public charge training.</div>
+        </div>
+        <div style="font-size: 11px; font-weight: 600; padding: 3px 8px; color: #8A5A00; background: #F6E9C9; border-radius: 10px; white-space: nowrap;">Active</div>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center; padding: 12px 14px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 14px;">
+        <div style="width: 10px; height: 10px; flex-shrink: 0; border-radius: 5px; background: #D98B70;"></div>
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 1px;">
+          <div style="font-size: 14px; font-weight: 600; line-height: 18px;">Travel bans, Proclamations 10949 and 10998</div>
+          <div style="font-size: 12px; line-height: 16px; color: #5B5850;">Jun and Dec 2025. Full on 19 countries, partial on 20. Entry from abroad.</div>
+        </div>
+        <div style="font-size: 11px; font-weight: 600; padding: 3px 8px; color: #A8401F; background: #F5DCD2; border-radius: 10px; white-space: nowrap;">In force</div>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center; padding: 12px 14px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 14px;">
+        <div style="width: 10px; height: 10px; flex-shrink: 0; border-radius: 5px; background: #9CCBC3;"></div>
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 1px;">
+          <div style="font-size: 14px; font-weight: 600; line-height: 18px;">Immigrant visa pause, 75 countries</div>
+          <div style="font-size: 12px; line-height: 16px; color: #5B5850;">21 Jan to 21 Aug 2026. All classes at consulates. Unused numbers went to other countries.</div>
+        </div>
+        <div style="font-size: 11px; font-weight: 600; padding: 3px 8px; color: #0E6B63; background: #D6EBE6; border-radius: 10px; white-space: nowrap;">Ended by court</div>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center; padding: 12px 14px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 14px;">
+        <div style="width: 10px; height: 10px; flex-shrink: 0; border-radius: 5px; background: #9CCBC3;"></div>
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 1px;">
+          <div style="font-size: 14px; font-weight: 600; line-height: 18px;">USCIS adjudication pause, travel-ban nationals</div>
+          <div style="font-size: 12px; line-height: 16px; color: #5B5850;">Dec 2025 (19), expanded 1 Jan 2026 (39), vacated 5 Jun 2026. Covered I-485, EAD, parole.</div>
+        </div>
+        <div style="font-size: 11px; font-weight: 600; padding: 3px 8px; color: #0E6B63; background: #D6EBE6; border-radius: 10px; white-space: nowrap;">Vacated</div>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center; padding: 12px 14px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 14px;">
+        <div style="width: 10px; height: 10px; flex-shrink: 0; border-radius: 5px; background: #5B5850;"></div>
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 1px;">
+          <div style="font-size: 14px; font-weight: 600; line-height: 18px;">Cap reform: EAGLE Act, IVES Act</div>
+          <div style="font-size: 12px; line-height: 16px; color: #5B5850;">Would phase out the 7% per-country limit. Tracked from Congress.gov.</div>
+        </div>
+        <div style="font-size: 11px; font-weight: 600; padding: 3px 8px; color: #5B5850; background: #E8E2D5; border-radius: 10px; white-space: nowrap;">Pending</div>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center; padding: 12px 14px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 14px;">
+        <div style="width: 10px; height: 10px; flex-shrink: 0; border-radius: 5px; background: #D9D3C5;"></div>
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 1px;">
+          <div style="font-size: 14px; font-weight: 600; line-height: 18px;">Gold Card draws on EB-1 and EB-2</div>
+          <div style="font-size: 12px; line-height: 16px; color: #5B5850;">Since Dec 2025. A few hundred requests, one approval. Lawsuit pending.</div>
+        </div>
+        <div style="font-size: 11px; font-weight: 600; padding: 3px 8px; color: #5B5850; background: #E8E2D5; border-radius: 10px; white-space: nowrap;">Minor</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: auto; padding: 8px 20px 20px 20px; font-size: 11px; line-height: 15px; text-align: center; color: #5B5850;">Curated from the Federal Register, USCIS alerts, State notices and court dockets. Tap a row for the full note.</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

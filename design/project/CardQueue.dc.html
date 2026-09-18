@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Card — People ahead of you</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;color:#1C1B18}</style>
+</helmet>
+<div style="width: 326px; height: 330px; box-sizing: border-box; padding: 16px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 16px; color: #1C1B18; font-family: 'IBM Plex Sans', system-ui, sans-serif; display: flex; flex-direction: column; gap: 10px;">
+  <div style="display: flex; justify-content: space-between; align-items: baseline;">
+    <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; color: #5B5850;">People ahead of you</div>
+    <div style="font-size: 12px; color: #5B5850;">EB-2 India, earlier dates</div>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; padding: 0 14px;">
+    <sc-for list="{{dots}}" as="dot" hint-placeholder-count="100">
+      <div style="{{dot.style}}"></div>
+    </sc-for>
+  </div>
+  <div style="display: flex; gap: 14px; justify-content: center;">
+    <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #5B5850;"><div style="width: 10px; height: 10px; border-radius: 5px; background: #0E6B63;"></div>Could clear in FY2027</div>
+    <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #5B5850;"><div style="width: 10px; height: 10px; border-radius: 5px; background: #D9D3C5;"></div>Still waiting after</div>
+  </div>
+  <div style="font-size: 13px; line-height: 18px; text-align: center;">Each dot is 1% of the applicants with an earlier date, spouses and children included. About a third could clear next year at the expected supply.</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":326,"height":330}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dots = [];
+    for (let i = 0; i < 100; i++) {
+      dots.push({ style: 'height:18px;border-radius:9px;background:' + (i < 33 ? '#0E6B63' : '#D9D3C5') + ';' });
+    }
+    return { dots: dots };
+  }
+}
+</script>
+</body>
+</html>

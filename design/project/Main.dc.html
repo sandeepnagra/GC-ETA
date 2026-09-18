@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GC ETA — Enter your case</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;background:#F3EFE6;color:#1C1B18}
+a{color:#0E6B63}a:hover{color:#0A524C}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F3EFE6; color: #1C1B18; font-family: 'IBM Plex Sans', system-ui, sans-serif; display: flex; flex-direction: column;">
+
+  <div style="padding: 28px 20px 8px 20px; display: flex; justify-content: space-between; align-items: center;">
+    <div style="font-family: 'Fraunces', Georgia, serif; font-size: 24px; font-weight: 600; letter-spacing: -0.02em; color: {{accent}};">GC ETA</div>
+    <div style="display: flex; gap: 6px;">
+      <div style="{{dot1}}"></div>
+      <div style="{{dot2}}"></div>
+      <div style="{{dot3}}"></div>
+    </div>
+  </div>
+
+  <sc-if value="{{showStep1}}" hint-placeholder-val="{{true}}">
+  <div style="flex-grow: 1; padding: 24px 20px 0 20px; display: flex; flex-direction: column; gap: 20px;">
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; color: #5B5850;">Step 1 of 3</div>
+      <div style="font-family: 'Fraunces', Georgia, serif; font-size: 34px; font-weight: 500; line-height: 40px; letter-spacing: -0.02em;">Where were you born?</div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <label for="country" style="font-size: 13px; font-weight: 600; color: #5B5850;">Country of birth</label>
+      <div style="display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 16px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 14px;">
+        <select id="country" style="flex-grow: 1; font-family: inherit; font-size: 18px; color: #1C1B18; background: transparent; border: 0; appearance: none;"><option>India</option><option>China (mainland-born)</option><option>Mexico</option><option>Philippines</option><option>All other countries</option></select>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B5850" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 14px;">
+      <input id="cross" type="checkbox" style="width: 22px; height: 22px; margin: 0; accent-color: #0E6B63;">
+      <label for="cross" style="font-size: 15px; line-height: 20px;">Use my spouse's birth country instead</label>
+    </div>
+    <div style="display: flex; gap: 12px; padding: 14px 16px; background: #E9F2F0; border-radius: 14px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0E6B63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+      <div style="font-size: 14px; line-height: 20px; color: #1C1B18;">Birth country sets your column, not citizenship. Hong Kong, Macau and Taiwan count separately from mainland China. A spouse's birth country can be used instead; a child's cannot.</div>
+    </div>
+  </div>
+  <div style="padding: 16px 20px 24px 20px;">
+    <button type="button" onClick="{{next}}" style="width: 100%; height: 56px; font-family: inherit; font-size: 17px; font-weight: 600; color: #FFFFFF; background: {{accent}}; border: 0; border-radius: 14px;">Continue</button>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{showStep2}}" hint-placeholder-val="{{false}}">
+  <div style="flex-grow: 1; padding: 24px 20px 0 20px; display: flex; flex-direction: column; gap: 20px;">
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; color: #5B5850;">Step 2 of 3</div>
+      <div style="font-family: 'Fraunces', Georgia, serif; font-size: 34px; font-weight: 500; line-height: 40px; letter-spacing: -0.02em;">What is your priority date?</div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <label for="pd" style="font-size: 13px; font-weight: 600; color: #5B5850;">Priority date</label>
+      <div style="display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 16px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 14px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B5850" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
+        <input id="pd" type="text" value="10 Mar 2015" style="flex-grow: 1; font-family: inherit; font-size: 18px; color: #1C1B18; background: transparent; border: 0;">
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 14px;">
+      <input id="retained" type="checkbox" style="width: 22px; height: 22px; margin: 0; accent-color: #0E6B63;">
+      <label for="retained" style="font-size: 15px; line-height: 20px;">I keep an earlier date from a previous I-140</label>
+    </div>
+    <div style="display: flex; gap: 12px; padding: 14px 16px; background: #E9F2F0; border-radius: 14px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0E6B63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+      <div style="font-size: 14px; line-height: 20px;">Printed on your I-140 approval notice. For PERM cases it is the day the Labor Department received the PERM, not the day it was certified. For EB-1 and NIW cases it is the day USCIS received the I-140.</div>
+    </div>
+  </div>
+  <div style="padding: 16px 20px 24px 20px; display: flex; gap: 12px;">
+    <button type="button" onClick="{{back}}" style="width: 56px; height: 56px; flex-shrink: 0; font-family: inherit; color: #1C1B18; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 14px; display: flex; align-items: center; justify-content: center;" aria-label="Back">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1C1B18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+    </button>
+    <button type="button" onClick="{{next}}" style="flex-grow: 1; height: 56px; font-family: inherit; font-size: 17px; font-weight: 600; color: #FFFFFF; background: {{accent}}; border: 0; border-radius: 14px;">Continue</button>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{showStep3}}" hint-placeholder-val="{{false}}">
+  <div style="flex-grow: 1; padding: 24px 20px 0 20px; display: flex; flex-direction: column; gap: 20px;">
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; color: #5B5850;">Step 3 of 3</div>
+      <div style="font-family: 'Fraunces', Georgia, serif; font-size: 34px; font-weight: 500; line-height: 40px; letter-spacing: -0.02em;">Which I-140 category?</div>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <button type="button" style="height: 44px; padding: 0 16px; font-family: inherit; font-size: 15px; font-weight: 500; color: #1C1B18; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 22px;">EB-1</button>
+      <button type="button" aria-pressed="true" style="height: 44px; padding: 0 16px; font-family: inherit; font-size: 15px; font-weight: 600; color: #FFFFFF; background: {{accent}}; border: 1px solid {{accent}}; border-radius: 22px;">EB-2</button>
+      <button type="button" style="height: 44px; padding: 0 16px; font-family: inherit; font-size: 15px; font-weight: 500; color: #1C1B18; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 22px;">EB-2 NIW</button>
+      <button type="button" style="height: 44px; padding: 0 16px; font-family: inherit; font-size: 15px; font-weight: 500; color: #1C1B18; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 22px;">EB-3</button>
+      <button type="button" style="height: 44px; padding: 0 16px; font-family: inherit; font-size: 15px; font-weight: 500; color: #1C1B18; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 22px;">EB-3 Other Workers</button>
+      <button type="button" style="height: 44px; padding: 0 16px; font-family: inherit; font-size: 15px; font-weight: 500; color: #1C1B18; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 22px;">EB-4</button>
+      <button type="button" style="height: 44px; padding: 0 16px; font-family: inherit; font-size: 15px; font-weight: 500; color: #1C1B18; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 22px;">EB-5</button>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <div style="font-size: 13px; font-weight: 600; color: #5B5850;">Where you will finish</div>
+      <div style="display: flex; gap: 8px;">
+        <div style="flex-grow: 1; display: flex; align-items: center; gap: 10px; height: 50px; padding: 0 14px; background: #FFFDF8; border: 2px solid {{accent}}; border-radius: 14px;">
+          <input id="aos" type="radio" name="path" checked style="width: 18px; height: 18px; margin: 0; accent-color: #0E6B63;">
+          <label for="aos" style="font-size: 14px; font-weight: 500;">In the US</label>
+        </div>
+        <div style="flex-grow: 1; display: flex; align-items: center; gap: 10px; height: 50px; padding: 0 14px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 14px;">
+          <input id="cp" type="radio" name="path" style="width: 18px; height: 18px; margin: 0; accent-color: #0E6B63;">
+          <label for="cp" style="font-size: 14px; font-weight: 500;">Consulate abroad</label>
+        </div>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <div style="font-size: 13px; font-weight: 600; color: #5B5850;">Optional</div>
+      <div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 14px;">
+        <input id="filed" type="checkbox" checked="{{filed}}" onChange="{{toggleFiled}}" style="width: 22px; height: 22px; margin: 0; accent-color: #0E6B63;">
+        <label for="filed" style="font-size: 15px; line-height: 20px;">I have already filed I-485</label>
+      </div>
+      <sc-if value="{{filed}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 16px; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 14px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B5850" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
+          <label for="receipt" style="font-size: 14px; color: #5B5850; white-space: nowrap;">Receipt date</label>
+          <input id="receipt" type="text" value="3 Feb 2026" style="flex-grow: 1; font-family: inherit; font-size: 16px; color: #1C1B18; background: transparent; border: 0; text-align: right;">
+        </div>
+      </sc-if>
+      <div style="font-size: 12px; line-height: 17px; color: #5B5850; padding: 0 4px;">The month is enough. No receipt number is needed and nothing is sent anywhere. With this, the estimate becomes "when will USCIS decide" once your date is current.</div>
+    </div>
+  </div>
+  <div style="padding: 16px 20px 24px 20px; display: flex; flex-direction: column; gap: 10px;">
+    <div style="display: flex; gap: 12px;">
+      <button type="button" onClick="{{back}}" style="width: 56px; height: 56px; flex-shrink: 0; font-family: inherit; color: #1C1B18; background: #FFFDF8; border: 1px solid #D9D3C5; border-radius: 14px; display: flex; align-items: center; justify-content: center;" aria-label="Back">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1C1B18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+      </button>
+      <a href="Results.dc.html" style="flex-grow: 1; display: flex; align-items: center; justify-content: center; height: 56px; font-size: 17px; font-weight: 600; color: #FFFFFF; background: {{accent}}; border-radius: 14px; text-decoration: none;">Show my estimate</a>
+    </div>
+    <div style="font-size: 12px; line-height: 17px; text-align: center; color: #5B5850;">Nothing you enter leaves this phone. Not legal advice.</div>
+  </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#0E6B63","options":["#0E6B63","#1F4E79","#6B3FA0"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { step: 1, filed: false };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? '#0E6B63';
+    const step = this.state.step ?? 1;
+    const filed = this.state.filed ?? false;
+    const on = 'width:22px;height:8px;border-radius:4px;background:' + accent + ';';
+    const off = 'width:8px;height:8px;border-radius:4px;background:#D9D3C5;';
+    return {
+      accent: accent,
+      showStep1: step === 1,
+      showStep2: step === 2,
+      showStep3: step === 3,
+      dot1: step === 1 ? on : off,
+      dot2: step === 2 ? on : off,
+      dot3: step === 3 ? on : off,
+      filed: filed,
+      toggleFiled: () => this.setState({ filed: !filed }),
+      next: () => this.setState({ step: Math.min(3, step + 1) }),
+      back: () => this.setState({ step: Math.max(1, step - 1) })
+    };
+  }
+}
+</script>
+</body>
+</html>

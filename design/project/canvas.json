@@ -1,0 +1,177 @@
+{
+  "v": 3,
+  "attachments": {},
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-09-17T20:30:00Z"
+  },
+  "title": "GC ETA App Mockup",
+  "launch": {
+    "view": "canvas"
+  },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "1 · Enter your case (3 steps)",
+      "is_interactive": true
+    },
+    "Results.dc.html": {
+      "x": 470,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "2 · Your estimate (card carousel)",
+      "is_interactive": true
+    },
+    "Detail.dc.html": {
+      "x": 940,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "2b · Card detail sheet",
+      "is_interactive": true
+    },
+    "Disruptions.dc.html": {
+      "x": 1410,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "3 · Disruptions",
+      "is_interactive": true
+    },
+    "Methodology.dc.html": {
+      "x": 1880,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "4 · How this is computed",
+      "is_interactive": true
+    },
+    "Icon.dc.html": {
+      "x": 3300,
+      "y": 460,
+      "w": 640,
+      "h": 320,
+      "title": "App icon and background outline"
+    },
+    "CardOutlook.dc.html": {
+      "x": 0,
+      "y": 1200,
+      "w": 326,
+      "h": 330,
+      "title": "Card · Outlook"
+    },
+    "CardQueue.dc.html": {
+      "x": 406,
+      "y": 1200,
+      "w": 326,
+      "h": 330,
+      "title": "Card · Queue"
+    },
+    "CardSupply.dc.html": {
+      "x": 812,
+      "y": 1200,
+      "w": 326,
+      "h": 330,
+      "title": "Card · Supply"
+    },
+    "CardSeason.dc.html": {
+      "x": 1218,
+      "y": 1200,
+      "w": 326,
+      "h": 330,
+      "title": "Card · Season"
+    },
+    "CardHistory.dc.html": {
+      "x": 1624,
+      "y": 1200,
+      "w": 326,
+      "h": 330,
+      "title": "Card · History"
+    },
+    "CardEvents.dc.html": {
+      "x": 2030,
+      "y": 1200,
+      "w": 326,
+      "h": 330,
+      "title": "Card · Events"
+    },
+    "CardCompare.dc.html": {
+      "x": 2436,
+      "y": 1200,
+      "w": 326,
+      "h": 330,
+      "title": "Card · EB-2 or EB-3"
+    },
+    "CardChanges.dc.html": {
+      "x": 2842,
+      "y": 1200,
+      "w": 326,
+      "h": 330,
+      "title": "Card · What would change this"
+    },
+    "ResultsFiled.dc.html": {
+      "x": 2820,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "2c · Your estimate, I-485 filed and date current",
+      "is_interactive": true
+    },
+    "CardStage.dc.html": {
+      "x": 3248,
+      "y": 1200,
+      "w": 326,
+      "h": 330,
+      "title": "Card · Your I-485 (filed state only)"
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Results.dc.html",
+    "ResultsFiled.dc.html",
+    "Detail.dc.html",
+    "Disruptions.dc.html",
+    "Methodology.dc.html",
+    "Icon.dc.html",
+    "CardOutlook.dc.html",
+    "CardQueue.dc.html",
+    "CardSupply.dc.html",
+    "CardSeason.dc.html",
+    "CardHistory.dc.html",
+    "CardEvents.dc.html",
+    "CardCompare.dc.html",
+    "CardChanges.dc.html",
+    "CardStage.dc.html"
+  ],
+  "notes": {
+    "flow-title": {
+      "x": 0,
+      "y": -300,
+      "w": 240,
+      "text": "GC ETA — screens, every one fits a phone without scrolling",
+      "kind": "title1",
+      "maxW": 2270
+    },
+    "cards-title": {
+      "x": 0,
+      "y": 900,
+      "w": 240,
+      "text": "Flash cards — the carousel on screen 2, spread out",
+      "kind": "title1",
+      "maxW": 3574
+    },
+    "sample-data": {
+      "x": 3300,
+      "y": 0,
+      "w": 300,
+      "text": "Bulletin cutoffs and event dates are real September 2026 values. Estimate ranges, the risk score, the dot grid split and the history line are illustrative model outputs. Screen 2 uses the sample case India, EB-2, PD 10 Mar 2015 (not filed). Screen 2c uses a second sample, India, EB-3, PD 15 Dec 2013, I-485 filed 3 Feb 2026, whose date is current against the real 1 Jan 2014 cutoff; its dates are illustrative. Bracketed values are filled by the model. Press Play on screen 1 to step through; on step 3 tick the optional I-485 box to reveal the receipt date.",
+      "color": "orange"
+    }
+  },
+  "designSystems": []
+}

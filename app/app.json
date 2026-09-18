@@ -7,6 +7,8 @@
     "userInterfaceStyle": "automatic",
     "scheme": "gceta",
     "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
       "backgroundColor": "#F3EFE6"
     },
     "ios": {
@@ -14,7 +16,11 @@
       "bundleIdentifier": "com.gceta.app"
     },
     "android": {
-      "package": "com.gceta.app"
+      "package": "com.gceta.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0E6B63"
+      }
     },
     "assetBundlePatterns": [
       "**/*"
@@ -38,6 +44,7 @@
         }
       ],
       "expo-font"
-    ]
+    ],
+    "icon": "./assets/icon.png"
   }
 }

@@ -79,8 +79,14 @@ export function EstimateTimeline({ theme, asOfMonth, finalAction, filing, width 
   if (!p10 && !p50) return null;
 
   const openEnded = !p90;
-  const far = p90 ?? (p50 ? start + Math.round((p50 - start) * 1.6) : start + 60);
-  const end = Math.max(far, start + 12);
+  // THE AXIS HAS TO CONTAIN EVERY MARK IT DRAWS. An earlier version fell back
+  // to five years when there was no midpoint, so a case whose earliest month
+  // was 2032 drew an axis ending in 2031: the band clamped to the right edge
+  // and disappeared, and the filing marker sat at the far end labelled with a
+  // date a decade past it.
+  const furthest = p90 ?? p50 ?? p10!;
+  const headroom = Math.max(6, Math.round((furthest - start) * (p90 ? 0.08 : 0.45)));
+  const end = Math.max(furthest + headroom, start + 12);
   const span = end - start;
 
   const innerWidth = width - PAD_LEFT - PAD_RIGHT;
@@ -104,6 +110,9 @@ export function EstimateTimeline({ theme, asOfMonth, finalAction, filing, width 
   const filingLow = filing.p10 ? monthToAbsolute(filing.p10) : null;
   const filingHigh = filing.p90 ? monthToAbsolute(filing.p90) : filing.p50 ? monthToAbsolute(filing.p50) : null;
   const filingCurrent = filing.status === "current";
+  // A filing date past the end of the axis cannot be drawn on it. Clamping it
+  // to the right edge put a marker at 2031 labelled April 2041.
+  const filingFits = filingLow !== null && filingLow <= end;
 
   return (
     <View accessible accessibilityLabel={timelineLabel(asOfMonth, finalAction, filing)}>
@@ -125,7 +134,7 @@ export function EstimateTimeline({ theme, asOfMonth, finalAction, filing, width 
           <SvgText x={PAD_LEFT} y={FILING_Y + 10} fontSize={11} fill={ink} fontFamily="IBMPlexSans_600SemiBold">
             Open now
           </SvgText>
-        ) : filingLow ? (
+        ) : filingLow && filingFits ? (
           <G>
             <Rect
               x={x(filingLow)}
@@ -149,8 +158,8 @@ export function EstimateTimeline({ theme, asOfMonth, finalAction, filing, width 
             </SvgText>
           </G>
         ) : (
-          <SvgText x={PAD_LEFT} y={FILING_Y + 10} fontSize={11} fill={ink} fillOpacity={0.75} fontFamily="IBMPlexSans_400Regular">
-            Not chartable yet
+          <SvgText x={PAD_LEFT} y={FILING_Y + 10} fontSize={11} fill={ink} fillOpacity={0.8} fontFamily="IBMPlexSans_400Regular">
+            {filingLow ? `Not until about ${label(filing.p10!)}, past the end of this chart` : "Not chartable yet"}
           </SvgText>
         )}
 

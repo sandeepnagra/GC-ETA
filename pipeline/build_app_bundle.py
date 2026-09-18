@@ -82,6 +82,11 @@ def main() -> int:
     density_path = DATA_DIR / "perm-density.json"
     density = json.loads(density_path.read_text()) if density_path.exists() else None
 
+    # Visa numbers actually issued per country and category, which replaces the
+    # invented spillover constant in the queue model. See build_issuance.py.
+    issuance_path = DATA_DIR / "issuance.json"
+    issuance = json.loads(issuance_path.read_text()) if issuance_path.exists() else None
+
     limits = json.loads((DATA_DIR / "limits.json").read_text())
     historical = json.loads((DATA_DIR / "limits-historical.json").read_text())
     payload = {
@@ -94,6 +99,8 @@ def main() -> int:
         "series": series,
         "sections": sections,
         "density": (density or {}).get("density", {}),
+        "issuance": (issuance or {}).get("issuance", {}),
+        "issuance_years": sorted((issuance or {}).get("issuance", {}).keys()),
         "density_coverage": {
             "decision_years": sorted((density or {}).get("years", {}).keys()),
             "missing_years": (density or {}).get("years_missing", []),
@@ -123,6 +130,9 @@ def main() -> int:
     size = out.stat().st_size
     print(f"series      : {len(series)}")
     print(f"months w/ sections: {len(sections)}")
+    if issuance:
+        years = sorted(issuance.get("issuance", {}).keys())
+        print(f"issuance years    : {len(years)}  ({years[0]}..{years[-1]})" if years else "issuance years    : none")
     if density:
         cols = density.get("density", {})
         print(f"density columns   : {sorted(cols.keys())}")

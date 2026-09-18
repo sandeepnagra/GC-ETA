@@ -67,6 +67,16 @@ export function bundleAsOf(bundle: Bundle, month: string): Bundle {
     density[column] = visible;
   }
 
+  // Issuance leaks the same way limits do, and further. The Report of the Visa
+  // Office publishes six to nine months after a fiscal year ends, so a run
+  // standing in March 2019 could not have read FY2018's Table V. Treating a
+  // fiscal year as known from July of the following year matches the rule
+  // already used for annual limits and errs on the late side.
+  const issuance: NonNullable<Bundle["issuance"]> = {};
+  for (const [fy, value] of Object.entries(bundle.issuance ?? {})) {
+    if (`${Number(fy) + 1}-07` <= month) issuance[fy] = value;
+  }
+
   const sections: NonNullable<Bundle["sections"]> = {};
   for (const [key, value] of Object.entries(bundle.sections ?? {})) {
     if (key <= month) sections[key] = value;
@@ -80,6 +90,8 @@ export function bundleAsOf(bundle: Bundle, month: string): Bundle {
     employment_limit_by_fy: limits,
     sections,
     density,
+    issuance,
+    issuance_years: Object.keys(issuance).sort(),
   };
 }
 

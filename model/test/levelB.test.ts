@@ -47,14 +47,46 @@ test("EB2 reads the advanced-degree bucket, EB3 the bachelor's bucket", () => {
   assert.equal(peopleBetween(b, "IN" as Column, "EB1", from, to).principals, 12000);
 });
 
-test("supply uses the per-country, per-category share, not the combined limit", () => {
+test("with no issuance history, supply falls back to the per-country floor", () => {
   // The bulletin's per-country figure spans family and employment across every
   // preference and is roughly eight times too large. PLAN.md finding 22.
-  const s = annualSupply(flatBundle(), "EB2")!;
+  const s = annualSupply(flatBundle(), "IN" as Column, "EB2")!;
+  assert.equal(s.basis, "statutory");
   const floor = 0.07 * 0.286 * 140000; // about 2,803
-  assert.ok(Math.abs(s.mid / floor - 3.0) < 1e-6, `mid should be 3x the floor, got ${s.mid / floor}`);
+  assert.ok(Math.abs(s.low - floor) < 1e-6, `low should be the floor, got ${s.low}`);
   assert.ok(s.low < s.mid && s.mid < s.high);
   assert.ok(s.high < 28862, "supply must stay far below the combined per-country limit");
+});
+
+test("with issuance history, supply is measured rather than derived", () => {
+  const b = flatBundle();
+  b.issuance = {};
+  for (let i = 0; i < 8; i += 1) {
+    b.issuance[String(2015 + i)] = { IN: { EB2: 1000 * (i + 1) } };
+  }
+  const s = annualSupply(b, "IN" as Column, "EB2")!;
+  assert.equal(s.basis, "issued");
+  assert.equal(s.years, 8);
+  assert.equal(s.mid, 4500); // median of 1000..8000
+  assert.ok(s.low < s.mid && s.mid < s.high);
+});
+
+test("supply reads the median, so two record years cannot set the expectation", () => {
+  // India's real EB-2 issuance runs 2,599 to 59,431 across thirteen years. Its
+  // mean is 13,845 and its median 4,301, because FY2021 and FY2022 combined a
+  // record 281,507 limit with unused family numbers falling across. A mean here
+  // would quietly promise every applicant a repeat of the best years on record.
+  const india = [2599, 2879, 2908, 3916, 3930, 4096, 4301, 7235, 17193, 19726, 23527, 28246, 59431];
+  const b = flatBundle();
+  b.issuance = {};
+  india.forEach((value, i) => {
+    b.issuance![String(2012 + i)] = { IN: { EB2: value } };
+  });
+  const s = annualSupply(b, "IN" as Column, "EB2")!;
+  const mean = india.reduce((a, c) => a + c, 0) / india.length;
+  assert.equal(s.mid, 4301);
+  assert.ok(s.mid < mean / 3, `median ${s.mid} must sit far below the mean ${Math.round(mean)}`);
+  assert.ok(s.high < 25000, "the upper quartile must not reach the record years");
 });
 
 test("a longer queue takes longer, monotonically", () => {

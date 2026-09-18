@@ -18,9 +18,18 @@
  * That per-category number is a FLOOR, not a ceiling. INA 202(a)(5) lifts the
  * per-country cap in any quarter where a category's supply exceeds qualified
  * demand, which is how India takes far more than seven percent of EB-2 in a
- * good year. How much more is the single largest unknown here, and it is not
- * resolvable from the bulletin. It needs Department of State Table V issuance
- * by country and category, which is not yet ingested.
+ * good year. That used to be the single largest unknown here, carried as an
+ * invented multiplier of 3. It is now measured: Table V of the Report of the
+ * Visa Office records visa numbers issued per country and category, including
+ * adjustments of status and dependents, and thirteen years of it are ingested.
+ *
+ * The measurement showed a single multiplier was never going to work. India in
+ * FY2024 took 8,809 EB-1 numbers and 3,916 EB-2 numbers against the same 3,219
+ * floor: 2.7 times it in one category and 1.2 in another, in the same year.
+ * Spillover is not a property of a country. It depends on whether the rest of
+ * the world is Current in that specific category, which decides whether there
+ * are unused numbers to fall across at all. So supply is read as a distribution
+ * per country and category rather than scaled from a floor.
  *
  * SO THE OUTPUT IS A BOUND, NOT A DISTRIBUTION. The fields are named low, mid
  * and high rather than p10, p50 and p90 on purpose. Pairing the smallest queue
@@ -68,28 +77,48 @@ const DERIVATIVES = { low: 1.7, mid: 2.0, high: 2.4 };
 const MATERIALISATION = { low: 0.6, mid: 0.8, high: 1.0 };
 
 /**
- * How many times the per-country floor a heavily oversubscribed country
- * actually receives, once other countries' unused numbers fall across.
- *
- * UNCALIBRATED, and the widest source of error in the whole estimate.
- *
- * Exactly one year can be read from the data. Inverting how far India EB-2
- * moved in FY2022, from September 2011 to December 2014, gives 20,591
- * principals, about 33,000 visa numbers after dependents and materialisation,
- * against a per-country floor near 5,600. That is 5.8 times the floor. Every
- * other year is unreadable: the cutoff moved through priority dates the labour
- * certification record cannot see, so the inversion returns ratios of 0.1 that
- * are artifacts of missing data rather than measurements. And FY2022 carried
- * the highest employment limit ever recorded, 281,507, so it belongs at the top
- * of the range rather than at its centre. Calibrating the centre needs
- * Department of State Table V issuance by country and category.
+ * Years of issuance history required before trusting it over the floor formula.
  */
-const SPILL = { low: 1.5, mid: 3.0, high: 6.0 };
+const MIN_ISSUANCE_YEARS = 5;
+
+/** Which Table V column stands for each category. */
+const ISSUANCE_FIELD: Record<string, string> = {
+  EB1: "EB1",
+  EB2: "EB2",
+  EB3: "EB3",
+  EB3_OTHER_WORKERS: "EB3_OTHER_WORKERS",
+  EB4: "EB4_TOTAL",
+  EB4_CERTAIN_RELIGIOUS_WORKERS: "EB4_CERTAIN_RELIGIOUS_WORKERS",
+};
+
+/**
+ * MEDIAN AND QUARTILES, NOT MEAN AND RANGE, and the difference is not cosmetic.
+ * India's thirteen years of EB-2 issuance run from 2,599 to 59,431, and the
+ * mean of that is 13,845 against a median of 4,301. Two extraordinary years,
+ * FY2021 and FY2022, when the pandemic pushed unused family numbers into the
+ * employment pool and the annual limit hit a record 281,507, drag the mean more
+ * than three times above the typical year. A mean here would quietly promise
+ * every applicant a repeat of the best years on record.
+ */
+function quantile(sorted: number[], q: number): number {
+  if (sorted.length === 1) return sorted[0]!;
+  const position = (sorted.length - 1) * q;
+  const lower = Math.floor(position);
+  const upper = Math.ceil(position);
+  if (lower === upper) return sorted[lower]!;
+  return sorted[lower]! + (sorted[upper]! - sorted[lower]!) * (position - lower);
+}
 
 export interface QueueBounds {
   low: number;
   mid: number;
   high: number;
+}
+
+export interface SupplyBounds extends QueueBounds {
+  /** "issued" means measured from Table V; "statutory" means the floor formula. */
+  basis: "issued" | "statutory";
+  years?: number;
 }
 
 export interface QueueEstimate {
@@ -115,7 +144,7 @@ export interface QueueEstimate {
    */
   countedFromMonth?: string;
   /** Visa numbers the column can expect in this category each year. */
-  annualSupply?: QueueBounds;
+  annualSupply?: SupplyBounds;
   waitYears?: QueueBounds;
   coverage?: { monthsCovered: number; monthsNeeded: number };
   notes: string[];
@@ -236,19 +265,44 @@ export function peopleBetween(
  * happens to start in. Anchoring on FY2026's 186,317 would overstate supply by
  * a third if the limit reverts toward the 140,000 statutory base.
  */
-export function annualSupply(bundle: Bundle, category: string): QueueBounds | null {
+export function annualSupply(
+  bundle: Bundle,
+  column: Column,
+  category: string,
+): (QueueBounds & { basis: "issued" | "statutory"; years?: number }) | null {
+  // What this country and category has actually been given, year by year.
+  const field = ISSUANCE_FIELD[category];
+  const observed: number[] = [];
+  if (field && bundle.issuance) {
+    for (const year of Object.keys(bundle.issuance)) {
+      const value = bundle.issuance[year]?.[column]?.[field];
+      if (typeof value === "number" && value > 0) observed.push(value);
+    }
+  }
+
+  if (observed.length >= MIN_ISSUANCE_YEARS) {
+    observed.sort((a, b) => a - b);
+    return {
+      low: quantile(observed, 0.25),
+      mid: quantile(observed, 0.5),
+      high: quantile(observed, 0.75),
+      basis: "issued",
+      years: observed.length,
+    };
+  }
+
+  // Not enough history, so fall back to the statutory floor. EB-5 unreserved is
+  // the main case: it sits in a different part of Table V that is not ingested.
   const share = CATEGORY_SHARE[category];
   if (!share) return null;
-
   const known = Object.values(bundle.employment_limit_by_fy ?? {}).filter(
     (v) => typeof v === "number" && v > 0,
   );
   const meanLimit = known.length
     ? known.reduce((a, b) => a + b, 0) / known.length
     : (bundle.statutory_base ?? 140000);
-
   const floor = PER_COUNTRY_SHARE * share * meanLimit;
-  return { low: floor * SPILL.low, mid: floor * SPILL.mid, high: floor * SPILL.high };
+  return { low: floor, mid: floor * 2, high: floor * 4, basis: "statutory" };
 }
 
 export function estimateQueue(
@@ -310,7 +364,7 @@ export function estimateQueue(
     };
   }
 
-  const supply = annualSupply(bundle, category);
+  const supply = annualSupply(bundle, column, category);
   if (!supply) return { ok: false, reason: "no_supply_model", coverage, notes };
 
   const horizon = densityHorizon(bundle, column);
@@ -337,7 +391,9 @@ export function estimateQueue(
     `About ${Math.round(people.mid).toLocaleString("en-US")} people are ahead of you, counting spouses and children.`,
   );
   notes.push(
-    `That country and category can expect very roughly ${Math.round(supply.mid).toLocaleString("en-US")} visa numbers a year, but how much falls across from other countries is not measurable from public data, so treat the range as wide.`,
+    supply.basis === "issued"
+      ? `Over ${supply.years} recorded years this country and category received a typical ${Math.round(supply.mid).toLocaleString("en-US")} visa numbers a year, ranging from about ${Math.round(supply.low).toLocaleString("en-US")} in a poor year to ${Math.round(supply.high).toLocaleString("en-US")} in a good one.`
+      : `No issuance history is recorded for this category, so supply falls back to the statutory per-country floor of about ${Math.round(supply.low).toLocaleString("en-US")} a year.`,
   );
 
   return {

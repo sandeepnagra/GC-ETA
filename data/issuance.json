@@ -1,0 +1,777 @@
+{
+ "schema_version": 1,
+ "generated_at": "2026-09-18T15:40:26.242011+00:00",
+ "source": "Department of State, Report of the Visa Office, Table V Part 2",
+ "note": "Immigrant visas issued AND adjustments of status subject to numerical limitations, by foreign state of chargeability. Includes dependents, so these are visa numbers rather than principals. ROW is the grand total less India, mainland-born China, Mexico and the Philippines. A figure is supply only where the category was oversubscribed; where a column was Current it reflects demand.",
+ "years": {
+  "2012": {
+   "countries_parsed": 236,
+   "grand_total_eb2": 50593,
+   "eb2_share_of_expected": null,
+   "source": "https://adoption.state.gov/content/dam/visas/Statistics/AnnualReports/FY2012AnnualReport/FY12AnnualReport-TableV-PartII.pdf",
+   "layout": "part2"
+  },
+  "2013": {
+   "countries_parsed": 236,
+   "grand_total_eb2": 63461,
+   "eb2_share_of_expected": null,
+   "source": "https://adoption.state.gov/content/dam/visas/Statistics/AnnualReports/FY2013AnnualReport/FY13AnnualReport-TableV-PartII.pdf",
+   "layout": "part2"
+  },
+  "2014": {
+   "countries_parsed": 230,
+   "grand_total_eb2": 49071,
+   "eb2_share_of_expected": null,
+   "source": "https://adoption.state.gov/content/dam/visas/Statistics/AnnualReports/FY2014AnnualReport/FY14AnnualReport-TableV-PartII.pdf",
+   "layout": "part2"
+  },
+  "2015": {
+   "countries_parsed": 230,
+   "grand_total_eb2": 44479,
+   "eb2_share_of_expected": null,
+   "source": "https://adoption.state.gov/content/dam/visas/Statistics/AnnualReports/FY2015AnnualReport/FY15AnnualReport-TableV-Part2.pdf",
+   "layout": "part2"
+  },
+  "2016": {
+   "countries_parsed": 230,
+   "grand_total_eb2": 39111,
+   "eb2_share_of_expected": null,
+   "source": "https://adoption.state.gov/content/dam/visas/Statistics/AnnualReports/FY2016AnnualReport/FY16AnnualReport-TableV-Part2.pdf",
+   "layout": "part2"
+  },
+  "2017": {
+   "countries_parsed": 229,
+   "grand_total_eb2": 39961,
+   "eb2_share_of_expected": null,
+   "source": "https://adoption.state.gov/content/dam/visas/Statistics/AnnualReports/FY2017AnnualReport/FY17AnnualReport -TableV-PartII.pdf",
+   "layout": "part2"
+  },
+  "2018": {
+   "countries_parsed": 230,
+   "grand_total_eb2": 40641,
+   "eb2_share_of_expected": null,
+   "source": "https://adoption.state.gov/content/dam/visas/Statistics/AnnualReports/FY2018AnnualReport/FY18AnnualReport - TableV-Part2.pdf",
+   "layout": "part2"
+  },
+  "2019": {
+   "countries_parsed": 159,
+   "grand_total_eb2": 40052,
+   "eb2_share_of_expected": null,
+   "source": "https://adoption.state.gov/content/dam/visas/Statistics/AnnualReports/FY2019AnnualReport/FY19AnnualReport%20-%20TableV.pdf",
+   "layout": "whole"
+  },
+  "2020": {
+   "countries_parsed": 230,
+   "grand_total_eb2": 43127,
+   "eb2_share_of_expected": null,
+   "source": "https://adoption.state.gov/content/dam/visas/Statistics/AnnualReports/FY2020AnnualReport/FY20AnnualReport-TableV-Part2.pdf",
+   "layout": "part2"
+  },
+  "2021": {
+   "countries_parsed": 230,
+   "grand_total_eb2": 59741,
+   "eb2_share_of_expected": 0.796,
+   "source": "https://adoption.state.gov/content/dam/visas/Statistics/AnnualReports/FY2021AnnualReport/FY21_TableV_Part2.pdf",
+   "layout": "part2"
+  },
+  "2022": {
+   "countries_parsed": 230,
+   "grand_total_eb2": 109309,
+   "eb2_share_of_expected": 1.358,
+   "source": "https://adoption.state.gov/content/dam/visas/Statistics/AnnualReports/FY2022AnnualReport/FY22_TableV_Part2.pdf",
+   "layout": "part2"
+  },
+  "2023": {
+   "countries_parsed": 230,
+   "grand_total_eb2": 56917,
+   "eb2_share_of_expected": 1.01,
+   "source": "https://adoption.state.gov/content/dam/visas/Statistics/AnnualReports/FY2023AnnualReport/FY2023_AR_TableV_Part2.pdf",
+   "layout": "part2"
+  },
+  "2024": {
+   "countries_parsed": 230,
+   "grand_total_eb2": 46314,
+   "eb2_share_of_expected": 1.007,
+   "source": "https://adoption.state.gov/content/dam/visas/Statistics/AnnualReports/FY2024AnnualReport/Table%20V_PartII.pdf",
+   "layout": "part2"
+  }
+ },
+ "issuance": {
+  "2012": {
+   "CN": {
+    "EB1": 6183,
+    "EB2": 5858,
+    "EB3": 2426,
+    "EB3_OTHER_WORKERS": 401,
+    "EB3_TOTAL": 2827,
+    "EB4": 91,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 26,
+    "EB4_TOTAL": 117
+   },
+   "IN": {
+    "EB1": 9506,
+    "EB2": 19726,
+    "EB3": 2758,
+    "EB3_OTHER_WORKERS": 46,
+    "EB3_TOTAL": 2804,
+    "EB4": 472,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 128,
+    "EB4_TOTAL": 600
+   },
+   "PH": {
+    "EB1": 266,
+    "EB2": 2408,
+    "EB3": 5875,
+    "EB3_OTHER_WORKERS": 604,
+    "EB3_TOTAL": 6479,
+    "EB4": 245,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 105,
+    "EB4_TOTAL": 350
+   },
+   "MX": {
+    "EB1": 2054,
+    "EB2": 823,
+    "EB3": 3125,
+    "EB3_OTHER_WORKERS": 623,
+    "EB3_TOTAL": 3748,
+    "EB4": 791,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 90,
+    "EB4_TOTAL": 881
+   },
+   "ROW": {
+    "EB1": 21378,
+    "EB2": 21778,
+    "EB3": 21273,
+    "EB3_OTHER_WORKERS": 2418,
+    "EB3_TOTAL": 23691,
+    "EB4": 4262,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 1268,
+    "EB4_TOTAL": 5530
+   }
+  },
+  "2013": {
+   "CN": {
+    "EB1": 6249,
+    "EB2": 3627,
+    "EB3": 2725,
+    "EB3_OTHER_WORKERS": 504,
+    "EB3_TOTAL": 3229,
+    "EB4": 65,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 13,
+    "EB4_TOTAL": 78
+   },
+   "IN": {
+    "EB1": 9640,
+    "EB2": 17193,
+    "EB3": 7763,
+    "EB3_OTHER_WORKERS": 53,
+    "EB3_TOTAL": 7816,
+    "EB4": 460,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 102,
+    "EB4_TOTAL": 562
+   },
+   "PH": {
+    "EB1": 236,
+    "EB2": 4439,
+    "EB3": 5249,
+    "EB3_OTHER_WORKERS": 387,
+    "EB3_TOTAL": 5636,
+    "EB4": 176,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 45,
+    "EB4_TOTAL": 221
+   },
+   "MX": {
+    "EB1": 1888,
+    "EB2": 1717,
+    "EB3": 2770,
+    "EB3_OTHER_WORKERS": 467,
+    "EB3_TOTAL": 3237,
+    "EB4": 839,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 44,
+    "EB4_TOTAL": 883
+   },
+   "ROW": {
+    "EB1": 21045,
+    "EB2": 36485,
+    "EB3": 22267,
+    "EB3_OTHER_WORKERS": 1555,
+    "EB3_TOTAL": 23822,
+    "EB4": 4075,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 627,
+    "EB4_TOTAL": 4702
+   }
+  },
+  "2014": {
+   "CN": {
+    "EB1": 6167,
+    "EB2": 3561,
+    "EB3": 3530,
+    "EB3_OTHER_WORKERS": 146,
+    "EB3_TOTAL": 3676,
+    "EB4": 95,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 14,
+    "EB4_TOTAL": 109
+   },
+   "IN": {
+    "EB1": 12978,
+    "EB2": 23527,
+    "EB3": 3465,
+    "EB3_OTHER_WORKERS": 61,
+    "EB3_TOTAL": 3526,
+    "EB4": 591,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 141,
+    "EB4_TOTAL": 732
+   },
+   "PH": {
+    "EB1": 262,
+    "EB2": 1972,
+    "EB3": 5456,
+    "EB3_OTHER_WORKERS": 229,
+    "EB3_TOTAL": 5685,
+    "EB4": 202,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 49,
+    "EB4_TOTAL": 251
+   },
+   "MX": {
+    "EB1": 1522,
+    "EB2": 750,
+    "EB3": 3139,
+    "EB3_OTHER_WORKERS": 599,
+    "EB3_TOTAL": 3738,
+    "EB4": 907,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 58,
+    "EB4_TOTAL": 965
+   },
+   "ROW": {
+    "EB1": 19679,
+    "EB2": 19261,
+    "EB3": 24838,
+    "EB3_OTHER_WORKERS": 1236,
+    "EB3_TOTAL": 26074,
+    "EB4": 5375,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 857,
+    "EB4_TOTAL": 6232
+   }
+  },
+  "2015": {
+   "CN": {
+    "EB1": 6239,
+    "EB2": 4202,
+    "EB3": 2770,
+    "EB3_OTHER_WORKERS": 441,
+    "EB3_TOTAL": 3211,
+    "EB4": 75,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 6,
+    "EB4_TOTAL": 81
+   },
+   "IN": {
+    "EB1": 12253,
+    "EB2": 7235,
+    "EB3": 7003,
+    "EB3_OTHER_WORKERS": 23,
+    "EB3_TOTAL": 7026,
+    "EB4": 596,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 113,
+    "EB4_TOTAL": 709
+   },
+   "PH": {
+    "EB1": 225,
+    "EB2": 2220,
+    "EB3": 7424,
+    "EB3_OTHER_WORKERS": 234,
+    "EB3_TOTAL": 7658,
+    "EB4": 205,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 44,
+    "EB4_TOTAL": 249
+   },
+   "MX": {
+    "EB1": 1439,
+    "EB2": 1365,
+    "EB3": 2162,
+    "EB3_OTHER_WORKERS": 318,
+    "EB3_TOTAL": 2480,
+    "EB4": 962,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 60,
+    "EB4_TOTAL": 1022
+   },
+   "ROW": {
+    "EB1": 21834,
+    "EB2": 29457,
+    "EB3": 16062,
+    "EB3_OTHER_WORKERS": 1013,
+    "EB3_TOTAL": 17075,
+    "EB4": 7367,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 841,
+    "EB4_TOTAL": 8208
+   }
+  },
+  "2016": {
+   "CN": {
+    "EB1": 6711,
+    "EB2": 2837,
+    "EB3": 2177,
+    "EB3_OTHER_WORKERS": 638,
+    "EB3_TOTAL": 2815,
+    "EB4": 94,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 13,
+    "EB4_TOTAL": 107
+   },
+   "IN": {
+    "EB1": 10985,
+    "EB2": 3930,
+    "EB3": 4583,
+    "EB3_OTHER_WORKERS": 34,
+    "EB3_TOTAL": 4617,
+    "EB4": 637,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 83,
+    "EB4_TOTAL": 720
+   },
+   "PH": {
+    "EB1": 173,
+    "EB2": 1985,
+    "EB3": 6366,
+    "EB3_OTHER_WORKERS": 213,
+    "EB3_TOTAL": 6579,
+    "EB4": 131,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 33,
+    "EB4_TOTAL": 164
+   },
+   "MX": {
+    "EB1": 1720,
+    "EB2": 1449,
+    "EB3": 1778,
+    "EB3_OTHER_WORKERS": 280,
+    "EB3_TOTAL": 2058,
+    "EB4": 740,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 25,
+    "EB4_TOTAL": 765
+   },
+   "ROW": {
+    "EB1": 24134,
+    "EB2": 28910,
+    "EB3": 18765,
+    "EB3_OTHER_WORKERS": 2706,
+    "EB3_TOTAL": 21471,
+    "EB4": 7478,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 795,
+    "EB4_TOTAL": 8273
+   }
+  },
+  "2017": {
+   "CN": {
+    "EB1": 6337,
+    "EB2": 2559,
+    "EB3": 2348,
+    "EB3_OTHER_WORKERS": 176,
+    "EB3_TOTAL": 2524,
+    "EB4": 99,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 17,
+    "EB4_TOTAL": 116
+   },
+   "IN": {
+    "EB1": 13082,
+    "EB2": 2879,
+    "EB3": 6608,
+    "EB3_OTHER_WORKERS": 33,
+    "EB3_TOTAL": 6641,
+    "EB4": 680,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 110,
+    "EB4_TOTAL": 790
+   },
+   "PH": {
+    "EB1": 136,
+    "EB2": 1785,
+    "EB3": 6492,
+    "EB3_OTHER_WORKERS": 183,
+    "EB3_TOTAL": 6675,
+    "EB4": 202,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 26,
+    "EB4_TOTAL": 228
+   },
+   "MX": {
+    "EB1": 1553,
+    "EB2": 1411,
+    "EB3": 1511,
+    "EB3_OTHER_WORKERS": 283,
+    "EB3_TOTAL": 1794,
+    "EB4": 670,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 37,
+    "EB4_TOTAL": 707
+   },
+   "ROW": {
+    "EB1": 20720,
+    "EB2": 31327,
+    "EB3": 17979,
+    "EB3_OTHER_WORKERS": 2157,
+    "EB3_TOTAL": 20136,
+    "EB4": 7346,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 768,
+    "EB4_TOTAL": 8114
+   }
+  },
+  "2018": {
+   "CN": {
+    "EB1": 6582,
+    "EB2": 2681,
+    "EB3": 4312,
+    "EB3_OTHER_WORKERS": 80,
+    "EB3_TOTAL": 4392,
+    "EB4": 139,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 19,
+    "EB4_TOTAL": 158
+   },
+   "IN": {
+    "EB1": 10967,
+    "EB2": 4096,
+    "EB3": 6050,
+    "EB3_OTHER_WORKERS": 62,
+    "EB3_TOTAL": 6112,
+    "EB4": 671,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 93,
+    "EB4_TOTAL": 764
+   },
+   "PH": {
+    "EB1": 176,
+    "EB2": 1532,
+    "EB3": 6588,
+    "EB3_OTHER_WORKERS": 471,
+    "EB3_TOTAL": 7059,
+    "EB4": 171,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 29,
+    "EB4_TOTAL": 200
+   },
+   "MX": {
+    "EB1": 1211,
+    "EB2": 1468,
+    "EB3": 1713,
+    "EB3_OTHER_WORKERS": 339,
+    "EB3_TOTAL": 2052,
+    "EB4": 766,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 21,
+    "EB4_TOTAL": 787
+   },
+   "ROW": {
+    "EB1": 20585,
+    "EB2": 30864,
+    "EB3": 18275,
+    "EB3_OTHER_WORKERS": 2076,
+    "EB3_TOTAL": 20351,
+    "EB4": 7165,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 679,
+    "EB4_TOTAL": 7844
+   }
+  },
+  "2019": {
+   "CN": {
+    "EB1": 5284,
+    "EB2": 3369,
+    "EB3": 3643,
+    "EB3_OTHER_WORKERS": 39,
+    "EB3_TOTAL": 3682,
+    "EB4": 72,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 17,
+    "EB4_TOTAL": 89
+   },
+   "IN": {
+    "EB1": 9008,
+    "EB2": 2908,
+    "EB3": 5048,
+    "EB3_OTHER_WORKERS": 35,
+    "EB3_TOTAL": 5083,
+    "EB4": 565,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 94,
+    "EB4_TOTAL": 659
+   },
+   "PH": {
+    "EB1": 350,
+    "EB2": 1356,
+    "EB3": 4773,
+    "EB3_OTHER_WORKERS": 360,
+    "EB3_TOTAL": 5133,
+    "EB4": 204,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 15,
+    "EB4_TOTAL": 219
+   },
+   "MX": {
+    "EB1": 1470,
+    "EB2": 1424,
+    "EB3": 1984,
+    "EB3_OTHER_WORKERS": 795,
+    "EB3_TOTAL": 2779,
+    "EB4": 801,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 33,
+    "EB4_TOTAL": 834
+   },
+   "ROW": {
+    "EB1": 23980,
+    "EB2": 30995,
+    "EB3": 21118,
+    "EB3_OTHER_WORKERS": 3081,
+    "EB3_TOTAL": 24199,
+    "EB4": 7771,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 516,
+    "EB4_TOTAL": 8287
+   }
+  },
+  "2020": {
+   "CN": {
+    "EB1": 4766,
+    "EB2": 3118,
+    "EB3": 3477,
+    "EB3_OTHER_WORKERS": 22,
+    "EB3_TOTAL": 3499,
+    "EB4": 232,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 24,
+    "EB4_TOTAL": 256
+   },
+   "IN": {
+    "EB1": 17014,
+    "EB2": 2599,
+    "EB3": 3174,
+    "EB3_OTHER_WORKERS": 20,
+    "EB3_TOTAL": 3194,
+    "EB4": 637,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 97,
+    "EB4_TOTAL": 734
+   },
+   "PH": {
+    "EB1": 271,
+    "EB2": 1079,
+    "EB3": 3090,
+    "EB3_OTHER_WORKERS": 321,
+    "EB3_TOTAL": 3411,
+    "EB4": 195,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 41,
+    "EB4_TOTAL": 236
+   },
+   "MX": {
+    "EB1": 1413,
+    "EB2": 1613,
+    "EB3": 2712,
+    "EB3_OTHER_WORKERS": 1084,
+    "EB3_TOTAL": 3796,
+    "EB4": 861,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 45,
+    "EB4_TOTAL": 906
+   },
+   "ROW": {
+    "EB1": 23739,
+    "EB2": 34718,
+    "EB3": 24819,
+    "EB3_OTHER_WORKERS": 4102,
+    "EB3_TOTAL": 28921,
+    "EB4": 7394,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 880,
+    "EB4_TOTAL": 8274
+   }
+  },
+  "2021": {
+   "CN": {
+    "EB1": 9118,
+    "EB2": 6091,
+    "EB3": 5086,
+    "EB3_OTHER_WORKERS": 27,
+    "EB3_TOTAL": 5113,
+    "EB4": 173,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 9,
+    "EB4_TOTAL": 182
+   },
+   "IN": {
+    "EB1": 30825,
+    "EB2": 28246,
+    "EB3": 14912,
+    "EB3_OTHER_WORKERS": 42,
+    "EB3_TOTAL": 14954,
+    "EB4": 529,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 40,
+    "EB4_TOTAL": 569
+   },
+   "PH": {
+    "EB1": 245,
+    "EB2": 546,
+    "EB3": 7303,
+    "EB3_OTHER_WORKERS": 190,
+    "EB3_TOTAL": 7493,
+    "EB4": 139,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 11,
+    "EB4_TOTAL": 150
+   },
+   "MX": {
+    "EB1": 1285,
+    "EB2": 939,
+    "EB3": 1813,
+    "EB3_OTHER_WORKERS": 605,
+    "EB3_TOTAL": 2418,
+    "EB4": 1655,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 45,
+    "EB4_TOTAL": 1700
+   },
+   "ROW": {
+    "EB1": 20023,
+    "EB2": 23919,
+    "EB3": 21241,
+    "EB3_OTHER_WORKERS": 4021,
+    "EB3_TOTAL": 25262,
+    "EB4": 13170,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 310,
+    "EB4_TOTAL": 13480
+   }
+  },
+  "2022": {
+   "CN": {
+    "EB1": 11425,
+    "EB2": 8523,
+    "EB3": 6334,
+    "EB3_OTHER_WORKERS": 118,
+    "EB3_TOTAL": 6452,
+    "EB4": 261,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 19,
+    "EB4_TOTAL": 280
+   },
+   "IN": {
+    "EB1": 21437,
+    "EB2": 59431,
+    "EB3": 12571,
+    "EB3_OTHER_WORKERS": 29,
+    "EB3_TOTAL": 12600,
+    "EB4": 1135,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 97,
+    "EB4_TOTAL": 1232
+   },
+   "PH": {
+    "EB1": 149,
+    "EB2": 687,
+    "EB3": 17547,
+    "EB3_OTHER_WORKERS": 528,
+    "EB3_TOTAL": 18075,
+    "EB4": 186,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 15,
+    "EB4_TOTAL": 201
+   },
+   "MX": {
+    "EB1": 1245,
+    "EB2": 1735,
+    "EB3": 2780,
+    "EB3_OTHER_WORKERS": 1379,
+    "EB3_TOTAL": 4159,
+    "EB4": 1149,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 25,
+    "EB4_TOTAL": 1174
+   },
+   "ROW": {
+    "EB1": 19881,
+    "EB2": 38933,
+    "EB3": 32872,
+    "EB3_OTHER_WORKERS": 6840,
+    "EB3_TOTAL": 39712,
+    "EB4": 16665,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 369,
+    "EB4_TOTAL": 17034
+   }
+  },
+  "2023": {
+   "CN": {
+    "EB1": 7007,
+    "EB2": 6371,
+    "EB3": 4039,
+    "EB3_OTHER_WORKERS": 179,
+    "EB3_TOTAL": 4218,
+    "EB4": 97,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 44,
+    "EB4_TOTAL": 141
+   },
+   "IN": {
+    "EB1": 16604,
+    "EB2": 4301,
+    "EB3": 4765,
+    "EB3_OTHER_WORKERS": 17,
+    "EB3_TOTAL": 4782,
+    "EB4": 642,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 67,
+    "EB4_TOTAL": 709
+   },
+   "PH": {
+    "EB1": 367,
+    "EB2": 793,
+    "EB3": 13131,
+    "EB3_OTHER_WORKERS": 486,
+    "EB3_TOTAL": 13617,
+    "EB4": 134,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 17,
+    "EB4_TOTAL": 151
+   },
+   "MX": {
+    "EB1": 2059,
+    "EB2": 1802,
+    "EB3": 2351,
+    "EB3_OTHER_WORKERS": 1682,
+    "EB3_TOTAL": 4033,
+    "EB4": 681,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 29,
+    "EB4_TOTAL": 710
+   },
+   "ROW": {
+    "EB1": 31176,
+    "EB2": 43650,
+    "EB3": 22660,
+    "EB3_OTHER_WORKERS": 6951,
+    "EB3_TOTAL": 29611,
+    "EB4": 11444,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 565,
+    "EB4_TOTAL": 12009
+   }
+  },
+  "2024": {
+   "CN": {
+    "EB1": 6952,
+    "EB2": 6556,
+    "EB3": 5964,
+    "EB3_OTHER_WORKERS": 177,
+    "EB3_TOTAL": 6141,
+    "EB4": 58,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 20,
+    "EB4_TOTAL": 78
+   },
+   "IN": {
+    "EB1": 8809,
+    "EB2": 3916,
+    "EB3": 3643,
+    "EB3_OTHER_WORKERS": 12,
+    "EB3_TOTAL": 3655,
+    "EB4": 379,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 49,
+    "EB4_TOTAL": 428
+   },
+   "PH": {
+    "EB1": 331,
+    "EB2": 379,
+    "EB3": 9111,
+    "EB3_OTHER_WORKERS": 1047,
+    "EB3_TOTAL": 10158,
+    "EB4": 65,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 13,
+    "EB4_TOTAL": 78
+   },
+   "MX": {
+    "EB1": 2059,
+    "EB2": 1314,
+    "EB3": 1684,
+    "EB3_OTHER_WORKERS": 2207,
+    "EB3_TOTAL": 3891,
+    "EB4": 437,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 26,
+    "EB4_TOTAL": 463
+   },
+   "ROW": {
+    "EB1": 29311,
+    "EB2": 34149,
+    "EB3": 18164,
+    "EB3_OTHER_WORKERS": 5281,
+    "EB3_TOTAL": 23445,
+    "EB4": 10152,
+    "EB4_CERTAIN_RELIGIOUS_WORKERS": 473,
+    "EB4_TOTAL": 10625
+   }
+  }
+ }
+}

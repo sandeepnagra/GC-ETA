@@ -44,6 +44,13 @@ export interface Bundle {
    */
   density?: Record<string, Record<string, { total: number; advanced?: number; bachelors?: number }>>;
   density_coverage?: { decision_years: string[]; missing_years: number[] };
+  /**
+   * Visa numbers actually issued, by fiscal year, chargeability column and
+   * category, from Table V of the Report of the Visa Office. These already
+   * include dependents, so they are visa numbers rather than principals.
+   */
+  issuance?: Record<string, Record<string, Record<string, number>>>;
+  issuance_years?: string[];
   limits: Array<{
     fiscal_year: number;
     employment_worldwide: number | null;

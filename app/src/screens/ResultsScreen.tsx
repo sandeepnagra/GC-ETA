@@ -10,6 +10,7 @@ import { HistoryChart } from "../components/HistoryChart";
 import { CardCarousel, type CarouselItem } from "../components/CardCarousel";
 import { BackIcon, CardWatermark, HelpIcon } from "../components/Icons";
 import { EstimateTimeline } from "../components/EstimateTimeline";
+import { QueueCard } from "../components/QueueCard";
 import { SeasonCard } from "../components/SeasonCard";
 import { SupplyCard } from "../components/SupplyCard";
 
@@ -384,134 +385,6 @@ function Row({ theme, title, trailing }: { theme: Theme; title: string; trailing
   );
 }
 
-/**
- * The count of people ahead, which is the best-grounded number in the app.
- *
- * It comes from a million certified labour certifications, not from a model.
- * The wait it implies is shown underneath and deliberately made secondary: the
- * head-to-head backtest found the queue division worse than the velocity model
- * at picking a date, and the supply figure it divides by cannot yet be
- * calibrated. So the count leads and the years follow, hedged in words rather
- * than presented as a second opinion of equal weight. PLAN.md, Phase 2 results.
- */
-/** The reasons QueueCard has something on screen for. */
-function queueCardRenders(queue: CaseAssessment["queue"]): boolean {
-  if (queue.ok) return true;
-  return (
-    queue.reason === "below_density_floor" ||
-    queue.reason === "density_not_covered" ||
-    queue.reason === "beyond_density_record"
-  );
-}
-
-function QueueCard({
-  theme,
-  assessment,
-  draft,
-}: {
-  theme: Theme;
-  assessment: CaseAssessment;
-  draft: Props["draft"];
-}) {
-  const q = assessment.queue;
-
-  if (!q.ok) {
-    // Silence would be worse than an explanation. A user whose cutoff sits
-    // before the labour certification record begins should be told that is why
-    // no count appears, not left to assume the queue is empty.
-    if (q.reason === "beyond_density_record") {
-      return (
-        <Card theme={theme}>
-          <Row theme={theme} title="People ahead of you" trailing="not countable" />
-          <Text style={{ fontSize: 14, lineHeight: 20, color: theme.secondary }}>
-            The public record of certified labour certifications ends in May 2023. The
-            Labor Department's newer form records the employer's country and the
-            attorney's country but no longer records the applicant's own, and a queue
-            is counted per country. So for a priority date after that there is nothing
-            honest to count.
-          </Text>
-        </Card>
-      );
-    }
-    if (q.reason === "below_density_floor" || q.reason === "density_not_covered") {
-      return (
-        <Card theme={theme}>
-          <Row theme={theme} title="People ahead of you" trailing="not countable" />
-          <Text style={{ fontSize: 14, lineHeight: 20, color: theme.secondary }}>
-            The public record of certified labour certifications only reaches back to
-            2013, and the cutoff for your category sits at or before that. Counting
-            from there would find almost nobody and give a badly wrong answer, so no
-            count is shown.
-          </Text>
-        </Card>
-      );
-    }
-    return null;
-  }
-
-  const people = Math.round(q.peopleAhead!.mid);
-  const w = q.waitYears!;
-  // When the category is Unavailable there is no cutoff today, and the count
-  // runs from the last published one. Writing "today's cutoff" under a tile
-  // that reads Unavailable would contradict the screen itself.
-  const kind = assessment.finalAction.currentCutoff.kind;
-  const live = kind === "date";
-  const fromMonth = prettyMonth(q.countedFromMonth ?? "");
-  const from = live ? "today's cutoff" : fromMonth;
-  const aside = live
-    ? ""
-    : ` ${fromMonth} is the last cutoff published ${kind === "unavailable" ? "before this category went Unavailable" : "for this category"}.`;
-
-  return (
-    <Card theme={theme}>
-      <Row
-        theme={theme}
-        title="People ahead of you"
-        trailing={`${categoryLabel(draft.category)} · ${columnLabel(draft.column)}`}
-      />
-      <Text display style={{ fontSize: 34, color: theme.text, letterSpacing: -0.5 }}>
-        {people.toLocaleString("en-US")}
-      </Text>
-      <Text style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
-        Roughly this many people hold an earlier priority date than yours, counting
-        spouses and children. That comes from{" "}
-        {(q.principalsAhead ?? 0).toLocaleString("en-US")} certified labour
-        certifications with priority dates between {from} and your own.{aside}
-      </Text>
-      <Text style={{ fontSize: 13, lineHeight: 19, color: theme.secondary }}>
-        This counts labour certification cases only. People applying through a
-        national interest waiver or an extraordinary ability petition never file one,
-        so they are ahead of you too and are not in this number.
-      </Text>
-      <View style={{ height: 1, backgroundColor: theme.border, marginVertical: 4 }} />
-      <Text style={{ fontSize: 13, lineHeight: 19, color: theme.secondary }}>
-        {supplyLine(q)}
-      </Text>
-    </Card>
-  );
-}
-
-/**
- * What the country actually receives, stated rather than divided into a date.
- *
- * This card used to end with "that queue implies somewhere between X and Y
- * years". It does not any more, and the reason is measured rather than
- * cautionary. Dividing the count by a supply figure assumes the cutoff moves as
- * numbers are consumed. Across every year where both the queue and the issuance
- * can be observed, the numbers issued per person the cutoff passed ran from
- * 0.36 to 19.3. The Visa Office moves a cutoff to manage how many people file,
- * not to record how many were admitted, so no divisor reconciles the two. The
- * count and the issuance are both facts. The quotient was not.
- */
-function supplyLine(q: CaseAssessment["queue"]): string {
-  const s = q.annualSupply;
-  if (!s) return "";
-  const n = (v: number) => Math.round(v).toLocaleString("en-US");
-  if (s.basis === "statutory") {
-    return `No issuance history is recorded for this category, so the only guide is the guaranteed per-country minimum of roughly ${n(s.low)} a year. The bulletin cutoff moves to manage how many people file rather than to track that number.`;
-  }
-  return `Across ${s.years} recorded years this country and category received about ${n(s.mid)} visa numbers in a typical year, ranging from ${n(s.low)} in a poor one to ${n(s.high)} in a good one. The cutoff moves to manage how many people file rather than to record those numbers, so the two can diverge for years at a time.`;
-}
 
 /**
  * What is scheduled to change, rather than a guess at what will.
@@ -609,5 +482,15 @@ function CurrentCard({
           : `It has been current for ${duration}. Since 2009 this category has closed and reopened ${standing.timesClosed} ${standing.timesClosed === 1 ? "time" : "times"}${standing.medianClosedMonths ? `, and past stretches of being current lasted about ${standing.medianClosedMonths} months` : ""}. Being current is a state, not a milestone, and it can end.`}
       </Text>
     </Card>
+  );
+}
+
+/** The reasons QueueCard has something on screen for. */
+function queueCardRenders(queue: CaseAssessment["queue"]): boolean {
+  if (queue.ok) return true;
+  return (
+    queue.reason === "below_density_floor" ||
+    queue.reason === "density_not_covered" ||
+    queue.reason === "beyond_density_record"
   );
 }

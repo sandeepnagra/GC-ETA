@@ -105,6 +105,15 @@ export interface QueueEstimate {
   principalsAhead?: number;
   /** Visa numbers consumed by those principals and their families. */
   peopleAhead?: QueueBounds;
+  /**
+   * The priority-date month the count starts from, as "YYYY-MM".
+   *
+   * Not always today's cutoff. When a category is Unavailable there is no
+   * cutoff today, so the count runs from the last published one, and the app
+   * has to say so rather than write "today's cutoff" under a tile reading
+   * Unavailable.
+   */
+  countedFromMonth?: string;
   /** Visa numbers the column can expect in this category each year. */
   annualSupply?: QueueBounds;
   waitYears?: QueueBounds;
@@ -328,6 +337,7 @@ export function estimateQueue(
 
   return {
     ok: true,
+    countedFromMonth: dayToIso(cutoffDay).slice(0, 7),
     principalsAhead: counted.principals,
     peopleAhead: people,
     annualSupply: supply,

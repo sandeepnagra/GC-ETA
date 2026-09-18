@@ -260,6 +260,16 @@ function QueueCard({
 
   const people = Math.round(q.peopleAhead!.mid);
   const w = q.waitYears!;
+  // When the category is Unavailable there is no cutoff today, and the count
+  // runs from the last published one. Writing "today's cutoff" under a tile
+  // that reads Unavailable would contradict the screen itself.
+  const kind = assessment.finalAction.currentCutoff.kind;
+  const live = kind === "date";
+  const fromMonth = prettyMonth(q.countedFromMonth ?? "");
+  const from = live ? "today's cutoff" : fromMonth;
+  const aside = live
+    ? ""
+    : ` ${fromMonth} is the last cutoff published ${kind === "unavailable" ? "before this category went Unavailable" : "for this category"}.`;
 
   return (
     <Card theme={theme}>
@@ -273,8 +283,9 @@ function QueueCard({
       </Text>
       <Text style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
         Roughly this many people hold an earlier priority date than yours, counting
-        spouses and children. Counted from {(q.principalsAhead ?? 0).toLocaleString("en-US")}{" "}
-        certified labour certifications between today's cutoff and your date.
+        spouses and children. That comes from{" "}
+        {(q.principalsAhead ?? 0).toLocaleString("en-US")} certified labour
+        certifications with priority dates between {from} and your own.{aside}
       </Text>
       <View style={{ height: 1, backgroundColor: theme.border, marginVertical: 4 }} />
       <Text style={{ fontSize: 13, lineHeight: 19, color: theme.secondary }}>
@@ -289,7 +300,13 @@ function QueueCard({
 }
 
 function formatYears(years: number): string {
-  if (years < 1) return `${Math.max(1, Math.round(years * 12))} months`;
+  if (years < 1) {
+    const months = Math.max(1, Math.round(years * 12));
+    return `${months} month${months === 1 ? "" : "s"}`;
+  }
   if (years >= 40) return "several decades";
-  return `${years < 10 ? years.toFixed(1) : Math.round(years)} years`;
+  const rounded = years < 10 ? Math.round(years * 10) / 10 : Math.round(years);
+  // "1.0 years" reads like a machine wrote it.
+  const text = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+  return `${text} year${rounded === 1 ? "" : "s"}`;
 }

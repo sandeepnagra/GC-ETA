@@ -4,7 +4,7 @@ import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import type { CaseAssessment } from "@gc-eta/model";
 import { dayToIso, historyPoints } from "@gc-eta/model";
-import { bundle } from "../data";
+import { bundle, categoryLabel, columnLabel, prettyDate } from "../data";
 import { HistoryChart } from "../components/HistoryChart";
 
 import { prettyMonth } from "../data";
@@ -38,10 +38,10 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 17, fontWeight: "600", color: theme.text }}>
-            {draft.category.replace(/_/g, " ")} · {draft.column} · {draft.priorityDate}
+            {categoryLabel(draft.category)} · {columnLabel(draft.column)}
           </Text>
           <Text style={{ fontSize: 12, color: theme.secondary }}>
-            Bulletin {prettyMonth(assessment.asOfMonth)}
+            Priority date {prettyDate(draft.priorityDate)} · bulletin {prettyMonth(assessment.asOfMonth)}
           </Text>
         </View>
         <Pressable accessibilityRole="button" accessibilityLabel="How this works" onPress={onExplain} hitSlop={12}>
@@ -85,7 +85,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
       </Card>
 
       <Card theme={theme}>
-        <Row theme={theme} title="Ten years of movement" trailing={`${draft.category.replace(/_/g, " ")} · ${draft.column}`} />
+        <Row theme={theme} title="Ten years of movement" trailing={columnLabel(draft.column)} />
         <HistoryChart
           theme={theme}
           points={historyPoints(bundle, "final_action", draft.category, draft.column)}
@@ -171,7 +171,7 @@ function headline(assessment: CaseAssessment): string {
 
 function cutoffText(estimate: CaseAssessment["finalAction"]): string {
   const cell = estimate.currentCutoff;
-  if (cell.kind === "date") return dayToIso(cell.day!);
+  if (cell.kind === "date") return prettyDate(dayToIso(cell.day!));
   if (cell.kind === "current") return "Current";
   if (cell.kind === "unavailable") return "Unavailable";
   return "Not published";

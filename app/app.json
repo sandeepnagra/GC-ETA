@@ -6,9 +6,37 @@
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "scheme": "gceta",
-    "splash": { "backgroundColor": "#F3EFE6" },
-    "ios": { "supportsTablet": false, "bundleIdentifier": "com.gceta.app" },
-    "android": { "package": "com.gceta.app" },
-    "assetBundlePatterns": ["**/*"]
+    "splash": {
+      "backgroundColor": "#F3EFE6"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.gceta.app"
+    },
+    "android": {
+      "package": "com.gceta.app"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "16.4"
+          },
+          "android": {
+            "minSdkVersion": 24
+          }
+        }
+      ],
+      [
+        "./plugins/withPodDeploymentTarget",
+        {
+          "target": "16.4"
+        }
+      ]
+    ]
   }
 }

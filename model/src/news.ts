@@ -26,6 +26,17 @@
  */
 
 import { applicableEvents } from "./events.js";
+
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+/** "2026-09" to "September 2026". A month code is a database key, not a date. */
+function monthName(month: string): string {
+  const [y, m] = month.split("-").map(Number) as [number, number];
+  return m >= 1 && m <= 12 ? `${MONTH_NAMES[m - 1]} ${y}` : month;
+}
 import type { Bundle, CaseInput, EventsFile, GcEvent } from "./types.js";
 
 export interface NewsItem {
@@ -108,7 +119,7 @@ export function caseTimeline(
   items.push({
     id: `bulletin-${bundle.end_month}`,
     date: `${bundle.end_month}-01`,
-    title: `Visa Bulletin for ${bundle.end_month} published`,
+    title: `Visa Bulletin for ${monthName(bundle.end_month)} published`,
     summary:
       "The monthly chart of cutoff dates. Every estimate in this app is recomputed from it.",
     meaning: "This is the data your estimate is built on.",

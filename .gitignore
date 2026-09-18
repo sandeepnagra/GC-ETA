@@ -55,3 +55,8 @@ data/bulletins.json
 # Expo / app
 app/assets/data/
 .expo/
+
+# Generated native projects. Recreated by `npx expo prebuild`; the Podfile
+# deployment-target fix is reapplied by app/plugins/withPodDeploymentTarget.js.
+app/ios/
+app/android/

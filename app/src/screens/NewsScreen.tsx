@@ -11,6 +11,7 @@ import React from "react";
 import { Linking, Pressable, ScrollView, Text, View } from "react-native";
 import type { NewsItem } from "@gc-eta/model";
 
+import { prettyDate } from "../data";
 import type { Theme } from "../theme";
 
 interface Props {
@@ -61,7 +62,7 @@ export function NewsScreen({ theme, items, onBack }: Props) {
           >
             <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
               <Text style={{ fontSize: 13, color }}>{toneGlyph(item.tone)}</Text>
-              <Text style={{ fontSize: 12, color: theme.secondary, flex: 1 }}>{item.date}</Text>
+              <Text style={{ fontSize: 12, color: theme.secondary, flex: 1 }}>{prettyDate(item.date)}</Text>
               {item.direct ? (
                 <Text style={{ fontSize: 11, fontWeight: "700", color: theme.heroText, backgroundColor: color, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 10, overflow: "hidden" }}>
                   AFFECTS YOU

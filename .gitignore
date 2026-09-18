@@ -48,3 +48,6 @@ pipeline/raw/
 .idea/shelf/
 .vscode/
 *.swp
+
+# Parsed archive output is large and fully reproducible from pipeline/
+data/bulletins.json

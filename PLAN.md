@@ -401,6 +401,64 @@ So the event layer runs as **detect automatically, confirm manually**:
 5. How many usable **filing-chart opening events** exist since 2016 per (category, country)? This sets whether the materialisation rate in §6.2 can be estimated at all, or has to ship as a prior. Count them from the bulletin archive before scoping Phase 2.
 6. Record, for every file, both its **snapshot date and its publication date** (§10 leakage rule).
 
+### Phase 0 results (built 2026-09-17)
+
+Phase 0 is implemented in `pipeline/`. What the data spike actually found, as
+distinct from what this plan assumed:
+
+**Archive coverage.** 201 months parse cleanly, December 2009 through September
+2026, with zero warnings and zero unmapped labels. Three months are absent from
+the mirror: October and November 2009, which predate it, and **October 2012**,
+which is a genuine hole with no alternate URL. Treat FY2013 as having an
+11-month series.
+
+**Dates for Filing starts exactly 2015-10**, 132 months, no gaps after that.
+Finding 25 asserted this from the policy history; it is now confirmed from the
+data. Final Action covers all 201 months.
+
+**Column churn, measured rather than estimated.** The five main columns run the
+whole archive. El Salvador/Guatemala/Honduras ran 2016-05 to 2023-03 (83
+months), not "roughly 2016 to 2022". Vietnam ran 2018-05 to 2021-09 (41 months),
+not "around 2018 to 2020". And a **separate Dominican Republic column ran
+2010-06 to 2011-03**, which this plan did not know about at all. Category churn
+likewise: EB-5 set-asides begin 2022-05, regional/non-regional centre rows ran
+2015-09 to 2022-04, and targeted employment areas ran to 2015-10.
+
+**The materialisation estimator is feasible for the pairs that matter.** Phase 0
+item 5 asked how many filing-chart opening events exist per pair. Counting
+forward moves of the filing chart: EB-2 China 33, EB-2 India 24, EB-3 India 22,
+EB-3 Other Workers Philippines 24. That is enough to fit a curve for the main
+columns. Thin pairs, such as EB-5 unreserved India with 2, ship as a prior.
+
+**Freeze risk is now quantified.** Over 201 months, EB-2 India retrogressed 12
+times and was Unavailable in 7. EB-3 China retrogressed 9 times, EB-3
+Philippines 10. These are the base rates the §6.4 risk score should be
+calibrated against rather than hand-tuned.
+
+**A correction with modelling consequences: the bulletin does not carry
+historical annual limits.** For FY2010 through FY2024 every bulletin states only
+the statutory floor, "the worldwide level for annual employment-based preference
+immigrants is **at least 140,000**". Only FY2025 and FY2026 state determined
+figures (150,037 and 186,317). A naive regex over the archive would therefore
+have fed 140,000 into the supply model for fifteen years and understated FY2026
+supply by a third. `build_limits.py` now classifies floor-only statements
+explicitly. **Consequence for §6.1:** the regime-normalisation fix, dividing each
+year's advance by that year's employment limit, cannot be built from the
+bulletin archive. It needs the separate Annual Numerical Limits PDFs, which are
+on the same mirror. That dependency was not previously identified.
+
+**Parser lessons worth keeping.** Bulletins before October 2015 say "cut-off
+date" where later ones say "final action date"; missing that produced 136
+unparsed tables. Sixteen months label family categories with bare ordinals
+rather than F-codes. One month splits a word across markup, yielding "All Charge
+ability Areas". All three are handled; all three would have been invisible
+without running the full backfill rather than spot-checking.
+
+**Phase 0 items still open.** The inventory spreadsheet parser, the seeded event
+registry, and gate questions 3, 4 and 7 (the consular waiting-list report, OFLC
+date fields, and the operative Other Workers sub-limit, though the bulletin now
+gives the NACARA reduction directly: 116 for FY2026, 106 for FY2025).
+
 **Phase 1 — MVP (2–3 weeks).** Level A model, regression-risk heuristic, event flags, the three input screens, results screen, history chart, methodology page. Ship to TestFlight and internal Android track. Definition of done: for any (country, PD, category) the app shows both estimated windows, the outlook, and active events, with a visible "data as of" date, and works offline after first load.
 
 **Phase 2 — queue model (3–4 weeks).** Level B from inventory + waiting list + I-140 data, spillover forecaster from family issuance data, backtest harness, EB-2 vs EB-3 comparison, "current to approved" add-on.

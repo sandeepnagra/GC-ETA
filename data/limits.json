@@ -1,0 +1,441 @@
+{
+ "schema_version": 1,
+ "generated_at": "2026-09-18T03:11:15.785028+00:00",
+ "source": "Stated in the Department of State Visa Bulletin, read from the archive",
+ "note": "Figures are provisional under INA 203(g) until USCIS supplies immediate-relative and parolee counts mid-year. revised_mid_year flags a fiscal year where the stated numbers changed.",
+ "limits": [
+  {
+   "fiscal_year": 2010,
+   "revisions": [
+    {
+     "employment_worldwide": 140000,
+     "employment_is_floor_only": true,
+     "per_country": 25620,
+     "dependent_area": 7320,
+     "stated_in": "2009-12"
+    }
+   ],
+   "final": {
+    "employment_worldwide": 140000,
+    "employment_is_floor_only": true,
+    "per_country": 25620,
+    "dependent_area": 7320,
+    "stated_in": "2009-12"
+   },
+   "determined": null,
+   "has_determined_figure": false,
+   "revised_mid_year": false,
+   "months_stating_limits": 8
+  },
+  {
+   "fiscal_year": 2011,
+   "revisions": [
+    {
+     "employment_worldwide": 140000,
+     "employment_is_floor_only": true,
+     "per_country": 25620,
+     "dependent_area": 7320,
+     "stated_in": "2010-10"
+    }
+   ],
+   "final": {
+    "employment_worldwide": 140000,
+    "employment_is_floor_only": true,
+    "per_country": 25620,
+    "dependent_area": 7320,
+    "stated_in": "2010-10"
+   },
+   "determined": null,
+   "has_determined_figure": false,
+   "revised_mid_year": false,
+   "months_stating_limits": 10
+  },
+  {
+   "fiscal_year": 2012,
+   "revisions": [
+    {
+     "employment_worldwide": 140000,
+     "employment_is_floor_only": true,
+     "per_country": 25620,
+     "dependent_area": 7320,
+     "stated_in": "2011-10"
+    }
+   ],
+   "final": {
+    "employment_worldwide": 140000,
+    "employment_is_floor_only": true,
+    "per_country": 25620,
+    "dependent_area": 7320,
+    "stated_in": "2011-10"
+   },
+   "determined": null,
+   "has_determined_figure": false,
+   "revised_mid_year": false,
+   "months_stating_limits": 11
+  },
+  {
+   "fiscal_year": 2013,
+   "revisions": [
+    {
+     "employment_worldwide": 140000,
+     "employment_is_floor_only": true,
+     "per_country": 25620,
+     "dependent_area": 7320,
+     "stated_in": "2012-11"
+    }
+   ],
+   "final": {
+    "employment_worldwide": 140000,
+    "employment_is_floor_only": true,
+    "per_country": 25620,
+    "dependent_area": 7320,
+    "stated_in": "2012-11"
+   },
+   "determined": null,
+   "has_determined_figure": false,
+   "revised_mid_year": false,
+   "months_stating_limits": 11
+  },
+  {
+   "fiscal_year": 2014,
+   "revisions": [
+    {
+     "employment_worldwide": 140000,
+     "employment_is_floor_only": true,
+     "per_country": 25620,
+     "dependent_area": 7320,
+     "stated_in": "2013-10"
+    }
+   ],
+   "final": {
+    "employment_worldwide": 140000,
+    "employment_is_floor_only": true,
+    "per_country": 25620,
+    "dependent_area": 7320,
+    "stated_in": "2013-10"
+   },
+   "determined": null,
+   "has_determined_figure": false,
+   "revised_mid_year": false,
+   "months_stating_limits": 11
+  },
+  {
+   "fiscal_year": 2015,
+   "revisions": [
+    {
+     "employment_worldwide": 140000,
+     "employment_is_floor_only": true,
+     "per_country": 25620,
+     "dependent_area": 7320,
+     "stated_in": "2014-10"
+    }
+   ],
+   "final": {
+    "employment_worldwide": 140000,
+    "employment_is_floor_only": true,
+    "per_country": 25620,
+    "dependent_area": 7320,
+    "stated_in": "2014-10"
+   },
+   "determined": null,
+   "has_determined_figure": false,
+   "revised_mid_year": false,
+   "months_stating_limits": 11
+  },
+  {
+   "fiscal_year": 2016,
+   "revisions": [
+    {
+     "employment_worldwide": 140000,
+     "employment_is_floor_only": true,
+     "per_country": 25620,
+     "dependent_area": 7320,
+     "stated_in": "2015-10"
+    }
+   ],
+   "final": {
+    "employment_worldwide": 140000,
+    "employment_is_floor_only": true,
+    "per_country": 25620,
+    "dependent_area": 7320,
+    "stated_in": "2015-10"
+   },
+   "determined": null,
+   "has_determined_figure": false,
+   "revised_mid_year": false,
+   "months_stating_limits": 11
+  },
+  {
+   "fiscal_year": 2017,
+   "revisions": [
+    {
+     "employment_worldwide": 140000,
+     "employment_is_floor_only": true,
+     "per_country": 25620,
+     "dependent_area": 7320,
+     "stated_in": "2016-10"
+    }
+   ],
+   "final": {
+    "employment_worldwide": 140000,
+    "employment_is_floor_only": true,
+    "per_country": 25620,
+    "dependent_area": 7320,
+    "stated_in": "2016-10"
+   },
+   "determined": null,
+   "has_determined_figure": false,
+   "revised_mid_year": false,
+   "months_stating_limits": 11
+  },
+  {
+   "fiscal_year": 2018,
+   "revisions": [
+    {
+     "employment_worldwide": 140000,
+     "employment_is_floor_only": true,
+     "per_country": 25620,
+     "dependent_area": 7320,
+     "stated_in": "2017-10"
+    }
+   ],
+   "final": {
+    "employment_worldwide": 140000,
+    "employment_is_floor_only": true,
+    "per_country": 25620,
+    "dependent_area": 7320,
+    "stated_in": "2017-10"
+   },
+   "determined": null,
+   "has_determined_figure": false,
+   "revised_mid_year": false,
+   "months_stating_limits": 11
+  },
+  {
+   "fiscal_year": 2019,
+   "revisions": [
+    {
+     "employment_worldwide": 140000,
+     "employment_is_floor_only": true,
+     "per_country": 25620,
+     "dependent_area": 7320,
+     "stated_in": "2018-10"
+    }
+   ],
+   "final": {
+    "employment_worldwide": 140000,
+    "employment_is_floor_only": true,
+    "per_country": 25620,
+    "dependent_area": 7320,
+    "stated_in": "2018-10"
+   },
+   "determined": null,
+   "has_determined_figure": false,
+   "revised_mid_year": false,
+   "months_stating_limits": 11
+  },
+  {
+   "fiscal_year": 2020,
+   "revisions": [
+    {
+     "employment_worldwide": 140000,
+     "employment_is_floor_only": true,
+     "per_country": 25620,
+     "dependent_area": 7320,
+     "stated_in": "2019-10"
+    }
+   ],
+   "final": {
+    "employment_worldwide": 140000,
+    "employment_is_floor_only": true,
+    "per_country": 25620,
+    "dependent_area": 7320,
+    "stated_in": "2019-10"
+   },
+   "determined": null,
+   "has_determined_figure": false,
+   "revised_mid_year": false,
+   "months_stating_limits": 11
+  },
+  {
+   "fiscal_year": 2021,
+   "revisions": [
+    {
+     "employment_worldwide": 140000,
+     "employment_is_floor_only": true,
+     "per_country": 25620,
+     "dependent_area": 7320,
+     "stated_in": "2020-10"
+    }
+   ],
+   "final": {
+    "employment_worldwide": 140000,
+    "employment_is_floor_only": true,
+    "per_country": 25620,
+    "dependent_area": 7320,
+    "stated_in": "2020-10"
+   },
+   "determined": null,
+   "has_determined_figure": false,
+   "revised_mid_year": false,
+   "months_stating_limits": 11
+  },
+  {
+   "fiscal_year": 2022,
+   "revisions": [
+    {
+     "employment_worldwide": 140000,
+     "employment_is_floor_only": true,
+     "per_country": 25620,
+     "dependent_area": 7320,
+     "stated_in": "2021-10"
+    }
+   ],
+   "final": {
+    "employment_worldwide": 140000,
+    "employment_is_floor_only": true,
+    "per_country": 25620,
+    "dependent_area": 7320,
+    "stated_in": "2021-10"
+   },
+   "determined": null,
+   "has_determined_figure": false,
+   "revised_mid_year": false,
+   "months_stating_limits": 11
+  },
+  {
+   "fiscal_year": 2023,
+   "revisions": [
+    {
+     "employment_worldwide": 140000,
+     "employment_is_floor_only": true,
+     "per_country": 25620,
+     "dependent_area": 7320,
+     "stated_in": "2022-10"
+    }
+   ],
+   "final": {
+    "employment_worldwide": 140000,
+    "employment_is_floor_only": true,
+    "per_country": 25620,
+    "dependent_area": 7320,
+    "stated_in": "2022-10"
+   },
+   "determined": null,
+   "has_determined_figure": false,
+   "revised_mid_year": false,
+   "months_stating_limits": 11
+  },
+  {
+   "fiscal_year": 2024,
+   "revisions": [
+    {
+     "family_worldwide": 226000,
+     "employment_worldwide": 140000,
+     "employment_is_floor_only": true,
+     "per_country": 25620,
+     "dependent_area": 7320,
+     "stated_in": "2023-10"
+    }
+   ],
+   "final": {
+    "family_worldwide": 226000,
+    "employment_worldwide": 140000,
+    "employment_is_floor_only": true,
+    "per_country": 25620,
+    "dependent_area": 7320,
+    "stated_in": "2023-10"
+   },
+   "determined": null,
+   "has_determined_figure": false,
+   "revised_mid_year": false,
+   "months_stating_limits": 11
+  },
+  {
+   "fiscal_year": 2025,
+   "revisions": [
+    {
+     "family_worldwide": 226000,
+     "employment_worldwide": 140000,
+     "employment_is_floor_only": true,
+     "per_country": 25620,
+     "dependent_area": 7320,
+     "stated_in": "2024-10"
+    },
+    {
+     "family_worldwide": 226000,
+     "employment_worldwide": 150037,
+     "employment_is_floor_only": false,
+     "per_country": 25620,
+     "dependent_area": 7521,
+     "nacara_reduction": 106,
+     "stated_in": "2025-09"
+    }
+   ],
+   "final": {
+    "family_worldwide": 226000,
+    "employment_worldwide": 150037,
+    "employment_is_floor_only": false,
+    "per_country": 25620,
+    "dependent_area": 7521,
+    "nacara_reduction": 106,
+    "stated_in": "2025-09"
+   },
+   "determined": {
+    "family_worldwide": 226000,
+    "employment_worldwide": 150037,
+    "employment_is_floor_only": false,
+    "per_country": 25620,
+    "dependent_area": 7521,
+    "nacara_reduction": 106,
+    "stated_in": "2025-09"
+   },
+   "has_determined_figure": true,
+   "revised_mid_year": true,
+   "months_stating_limits": 12
+  },
+  {
+   "fiscal_year": 2026,
+   "revisions": [
+    {
+     "family_worldwide": 226000,
+     "employment_worldwide": 140000,
+     "employment_is_floor_only": true,
+     "per_country": 25620,
+     "dependent_area": 7320,
+     "stated_in": "2025-10"
+    },
+    {
+     "family_worldwide": 226000,
+     "employment_worldwide": 186317,
+     "employment_is_floor_only": false,
+     "per_country": 28862,
+     "dependent_area": 8247,
+     "nacara_reduction": 116,
+     "stated_in": "2026-09"
+    }
+   ],
+   "final": {
+    "family_worldwide": 226000,
+    "employment_worldwide": 186317,
+    "employment_is_floor_only": false,
+    "per_country": 28862,
+    "dependent_area": 8247,
+    "nacara_reduction": 116,
+    "stated_in": "2026-09"
+   },
+   "determined": {
+    "family_worldwide": 226000,
+    "employment_worldwide": 186317,
+    "employment_is_floor_only": false,
+    "per_country": 28862,
+    "dependent_area": 8247,
+    "nacara_reduction": 116,
+    "stated_in": "2026-09"
+   },
+   "has_determined_figure": true,
+   "revised_mid_year": true,
+   "months_stating_limits": 12
+  }
+ ]
+}

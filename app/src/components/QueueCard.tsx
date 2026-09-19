@@ -20,6 +20,7 @@ import { View } from "react-native";
 import type { CaseAssessment } from "@gc-eta/model";
 
 import { Text } from "./Text";
+import { ReadMore } from "./ReadMore";
 import { CARD_MIN_HEIGHT } from "./Card";
 import { categoryLabel, columnLabel } from "../data";
 import type { Theme } from "../theme";
@@ -28,7 +29,17 @@ import type { CaseDraft } from "../types";
 const DOTS = 100;
 const COLUMNS = 10;
 
-function Shell({ theme, trailing, children }: { theme: Theme; trailing: string; children: React.ReactNode }) {
+function Shell({
+  theme,
+  trailing,
+  onReadMore,
+  children,
+}: {
+  theme: Theme;
+  trailing: string;
+  onReadMore?: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <View style={{ minHeight: CARD_MIN_HEIGHT, backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 10 }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" }}>
@@ -38,6 +49,7 @@ function Shell({ theme, trailing, children }: { theme: Theme; trailing: string; 
         <Text style={{ fontSize: 12, color: theme.secondary }}>{trailing}</Text>
       </View>
       {children}
+      <ReadMore theme={theme} onPress={onReadMore} />
     </View>
   );
 }
@@ -46,10 +58,12 @@ export function QueueCard({
   theme,
   assessment,
   draft,
+  onReadMore,
 }: {
   theme: Theme;
   assessment: CaseAssessment;
   draft: CaseDraft;
+  onReadMore?: () => void;
 }) {
   const q = assessment.queue;
   const pair = `${categoryLabel(draft.category)} ${columnLabel(draft.column)}`;
@@ -57,7 +71,7 @@ export function QueueCard({
   if (!q.ok) {
     if (q.reason === "beyond_density_record") {
       return (
-        <Shell theme={theme} trailing="not countable yet">
+        <Shell theme={theme} trailing="not countable yet" onReadMore={onReadMore}>
           <Text style={{ fontSize: 14, lineHeight: 20, color: theme.secondary }}>
             The public record of certified labour certifications ends in May 2023. The
             Labor Department's newer form records the employer's country and the
@@ -70,7 +84,7 @@ export function QueueCard({
     }
     if (q.reason === "below_density_floor" || q.reason === "density_not_covered") {
       return (
-        <Shell theme={theme} trailing="not countable">
+        <Shell theme={theme} trailing="not countable" onReadMore={onReadMore}>
           <Text style={{ fontSize: 14, lineHeight: 20, color: theme.secondary }}>
             The public record of certified labour certifications only reaches back to
             2013, and the cutoff for your category sits at or before that. Counting from
@@ -96,7 +110,7 @@ export function QueueCard({
   }
 
   return (
-    <Shell theme={theme} trailing={`${pair}, earlier dates`}>
+    <Shell theme={theme} trailing={`${pair}, earlier dates`} onReadMore={onReadMore}>
       <Text display style={{ fontSize: 30, color: theme.text, letterSpacing: -0.5 }}>
         {people.toLocaleString("en-US")}
       </Text>

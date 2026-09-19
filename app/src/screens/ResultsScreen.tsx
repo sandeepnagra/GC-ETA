@@ -46,6 +46,60 @@ interface Props {
   newsCount: number;
 }
 
+const QUEUE_NOTE: CardDetail = {
+        title: "People ahead of you",
+        paragraphs: [
+          "The count is everyone in your category and country holding a priority date earlier than yours, with spouses and children included, because each of them uses a visa number of their own.",
+          "It is built from the Department of Labor's published labour certifications. A certified labour certification carries the date the Department received it, and that date is the priority date, so counting certified cases by receipt month gives the shape of the queue. A little over a million of them are counted here.",
+          "It cannot see everyone. People applying through a national interest waiver or an extraordinary ability petition never file a labour certification at all, and for Indian EB-2 that is a large and growing share. Nor does it know whether a certified case ever became a petition, or whether the person is still pursuing it.",
+          "The filled dots are a rate, not a date. They show how much of the line one year of the visa numbers your country typically receives would cover. They do not say when the cutoff reaches you, because the cutoff moves to manage how many people file rather than working through this line in order.",
+        ],
+        caveat:
+          "The record runs from 2013 to May 2023 and nothing will extend it at either end. Before 2013 the published files carry a decision date but no receipt date, and from mid-2023 the Labor Department's newer form stopped recording the applicant's country.",
+        sources:
+          "Department of Labor, OFLC labour certification disclosure files, FY2015 to FY2024. Department of State, Report of the Visa Office, Table V.",
+      };
+
+const SUPPLY_NOTE: CardDetail = {
+      title: "Where the numbers come from",
+      paragraphs: [
+        "Congress set the employment-based limit at 140,000 a year in 1990 and has not changed it. No year on record has actually been 140,000, because family-sponsored numbers that go unused fall across into the employment pool, and the amount varies enormously.",
+        "That pool is then divided by statute. The first, second and third preferences take 28.6% each; the fourth and fifth take 7.1% each. Within a category, no single country may take more than 7% unless there are numbers nobody else wants, which is why a heavily oversubscribed country can receive several times its nominal share in a good year and barely its floor in a poor one.",
+        "The figures for what your country actually received come from Table V of the Report of the Visa Office, which counts both consular issuance and adjustments of status, and includes dependents. Roughly 85% of employment cases are adjustments, so a table covering only consular issuance would miss most of them.",
+      ],
+      caveat:
+        "Next year's limit is not published until October, so the most recent complete year is shown instead of a projection.",
+      sources:
+        "INA 201 and 203. Department of State annual limits and Report of the Visa Office, Table V, FY2012 to FY2024.",
+    };
+
+const SEASON_NOTE: CardDetail = {
+      title: "A typical year",
+      paragraphs: [
+        "Each bar is how far this category's cutoff has typically moved in that month of the fiscal year, measured across every published bulletin since 2009 rather than assumed from a general rule.",
+        "The general rule is real but not universal. A new year of visa numbers arrives on 1 October, categories often advance steadily through the winter, hold in the spring while the Visa Office checks the pace, and freeze or move backwards in the summer as the annual limit runs out. How strongly any of that applies differs sharply between categories: some creep a few days a month and shut every summer, others advance about a month every month and only stall in September.",
+        "A month the category spent Unavailable counts as a real zero in the average, not a month to skip. Skipping them would make a category that shuts every August look like one that merely advances less, which is a different claim.",
+      ],
+      caveat:
+        "A median over about fifteen observations a month describes what has happened, not what will. A policy change or an unusually large spillover year can break the pattern entirely.",
+      sources:
+        "Department of State Visa Bulletin archive, December 2009 to the current month.",
+    };
+
+const CONFIDENCE_NOTE: CardDetail = {
+      title: "How sure is this",
+      paragraphs: [
+        "The dial counts simulations. The model replays ten years of this category's published movement four thousand times, drawing multi-month blocks at random so a good year and a bad year stay intact rather than being averaged into a single smooth pace, and each run continues until the cutoff reaches your date or twenty-five years pass. The number on the dial is how many runs reached it.",
+        "A small share does not mean the estimate is wrong. It means most simulated futures did not get there inside twenty-five years, which for a deeply backlogged category is the honest answer and is why the headline reads as a bound rather than a date.",
+        "The lines below the dial are about the method rather than your case, and are the same for everyone. They come from replaying the model against the published archive: standing at a past month, making an estimate using only what was known then, and checking it against what actually happened.",
+        "The weakest result is the one worth knowing. Over three to six months this model is no more accurate than assuming the cutoff does not move at all, and its odds of a date becoming current within two years scored no better than always saying fifty percent. The long-range range is where it earns its keep; the short-range precision is not there.",
+      ],
+      caveat:
+        "Every simulation draws on the past ten years. A change in the law, or an unusually large spillover year, is outside anything it has seen.",
+      sources:
+        "Department of State Visa Bulletin archive. Backtest of 393 cases from quarterly origins between October 2016 and September 2023.",
+    };
+
 export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, onCompare, comparison, suggestion, events, onDisruptions, bundle, stale, newsCount }: Props) {
   const { finalAction, filing, outlook } = assessment;
   // The hero card sits inside the screen's 20pt padding and its own 16pt, so
@@ -104,20 +158,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
   cards.push({
     key: "confidence",
     title: "How sure",
-    node: <ConfidenceCard theme={theme} assessment={assessment} />,
-    detail: {
-      title: "How sure is this",
-      paragraphs: [
-        "The dial counts simulations. The model replays ten years of this category's published movement four thousand times, drawing multi-month blocks at random so a good year and a bad year stay intact rather than being averaged into a single smooth pace, and each run continues until the cutoff reaches your date or twenty-five years pass. The number on the dial is how many runs reached it.",
-        "A small share does not mean the estimate is wrong. It means most simulated futures did not get there inside twenty-five years, which for a deeply backlogged category is the honest answer and is why the headline reads as a bound rather than a date.",
-        "The lines below the dial are about the method rather than your case, and are the same for everyone. They come from replaying the model against the published archive: standing at a past month, making an estimate using only what was known then, and checking it against what actually happened.",
-        "The weakest result is the one worth knowing. Over three to six months this model is no more accurate than assuming the cutoff does not move at all, and its odds of a date becoming current within two years scored no better than always saying fifty percent. The long-range range is where it earns its keep; the short-range precision is not there.",
-      ],
-      caveat:
-        "Every simulation draws on the past ten years. A change in the law, or an unusually large spillover year, is outside anything it has seen.",
-      sources:
-        "Department of State Visa Bulletin archive. Backtest of 393 cases from quarterly origins between October 2016 and September 2023.",
-    },
+    node: <ConfidenceCard theme={theme} assessment={assessment} onReadMore={() => setDetail(CONFIDENCE_NOTE)} />,
   });
 
   // Only when it will actually draw something. QueueCard renders nothing for a
@@ -127,57 +168,20 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
     cards.push({
       key: "queue",
       title: "Queue",
-      node: <QueueCard theme={theme} assessment={assessment} draft={draft} />,
-      detail: {
-        title: "People ahead of you",
-        paragraphs: [
-          "The count is everyone in your category and country holding a priority date earlier than yours, with spouses and children included, because each of them uses a visa number of their own.",
-          "It is built from the Department of Labor's published labour certifications. A certified labour certification carries the date the Department received it, and that date is the priority date, so counting certified cases by receipt month gives the shape of the queue. A little over a million of them are counted here.",
-          "It cannot see everyone. People applying through a national interest waiver or an extraordinary ability petition never file a labour certification at all, and for Indian EB-2 that is a large and growing share. Nor does it know whether a certified case ever became a petition, or whether the person is still pursuing it.",
-          "The filled dots are a rate, not a date. They show how much of the line one year of the visa numbers your country typically receives would cover. They do not say when the cutoff reaches you, because the cutoff moves to manage how many people file rather than working through this line in order.",
-        ],
-        caveat:
-          "The record runs from 2013 to May 2023 and nothing will extend it at either end. Before 2013 the published files carry a decision date but no receipt date, and from mid-2023 the Labor Department's newer form stopped recording the applicant's country.",
-        sources:
-          "Department of Labor, OFLC labour certification disclosure files, FY2015 to FY2024. Department of State, Report of the Visa Office, Table V.",
-      },
+      node: <QueueCard theme={theme} assessment={assessment} draft={draft} onReadMore={() => setDetail(QUEUE_NOTE)} />,
     });
   }
 
   cards.push({
     key: "supply",
     title: "Supply",
-    node: <SupplyCard theme={theme} picture={supply} column={draft.column} category={draft.category} />,
-    detail: {
-      title: "Where the numbers come from",
-      paragraphs: [
-        "Congress set the employment-based limit at 140,000 a year in 1990 and has not changed it. No year on record has actually been 140,000, because family-sponsored numbers that go unused fall across into the employment pool, and the amount varies enormously.",
-        "That pool is then divided by statute. The first, second and third preferences take 28.6% each; the fourth and fifth take 7.1% each. Within a category, no single country may take more than 7% unless there are numbers nobody else wants, which is why a heavily oversubscribed country can receive several times its nominal share in a good year and barely its floor in a poor one.",
-        "The figures for what your country actually received come from Table V of the Report of the Visa Office, which counts both consular issuance and adjustments of status, and includes dependents. Roughly 85% of employment cases are adjustments, so a table covering only consular issuance would miss most of them.",
-      ],
-      caveat:
-        "Next year's limit is not published until October, so the most recent complete year is shown instead of a projection.",
-      sources:
-        "INA 201 and 203. Department of State annual limits and Report of the Visa Office, Table V, FY2012 to FY2024.",
-    },
+    node: <SupplyCard theme={theme} picture={supply} column={draft.column} category={draft.category} onReadMore={() => setDetail(SUPPLY_NOTE)} />,
   });
 
   cards.push({
     key: "season",
     title: "Season",
-    node: <SeasonCard theme={theme} season={season} />,
-    detail: {
-      title: "A typical year",
-      paragraphs: [
-        "Each bar is how far this category's cutoff has typically moved in that month of the fiscal year, measured across every published bulletin since 2009 rather than assumed from a general rule.",
-        "The general rule is real but not universal. A new year of visa numbers arrives on 1 October, categories often advance steadily through the winter, hold in the spring while the Visa Office checks the pace, and freeze or move backwards in the summer as the annual limit runs out. How strongly any of that applies differs sharply between categories: some creep a few days a month and shut every summer, others advance about a month every month and only stall in September.",
-        "A month the category spent Unavailable counts as a real zero in the average, not a month to skip. Skipping them would make a category that shuts every August look like one that merely advances less, which is a different claim.",
-      ],
-      caveat:
-        "A median over about fifteen observations a month describes what has happened, not what will. A policy change or an unusually large spillover year can break the pattern entirely.",
-      sources:
-        "Department of State Visa Bulletin archive, December 2009 to the current month.",
-    },
+    node: <SeasonCard theme={theme} season={season} onReadMore={() => setDetail(SEASON_NOTE)} />,
   });
 
   cards.push({
@@ -316,7 +320,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
         <Tile theme={theme} label="Filing chart" value={cutoffText(filing)} tone={theme.text} />
       </View>
 
-      <CardCarousel theme={theme} items={cards} onOpenDetail={setDetail} />
+      <CardCarousel theme={theme} items={cards} />
 
       <DetailSheet theme={theme} detail={detail} onClose={() => setDetail(null)} />
 

@@ -24,6 +24,7 @@ import { View } from "react-native";
 import type { CaseAssessment } from "@gc-eta/model";
 
 import { Text } from "./Text";
+import { ReadMore } from "./ReadMore";
 import { Dial } from "./Dial";
 import { CARD_MIN_HEIGHT } from "./Card";
 import { prettyMonth } from "../data";
@@ -43,9 +44,11 @@ const MEASURED = {
 export function ConfidenceCard({
   theme,
   assessment,
+  onReadMore,
 }: {
   theme: Theme;
   assessment: CaseAssessment;
+  onReadMore?: () => void;
 }) {
   const fa = assessment.finalAction;
   const share = fa.crossedFraction;
@@ -96,6 +99,7 @@ export function ConfidenceCard({
         does not move at all, so read the direction and the reasoning rather than a
         precise month.
       </Text>
+      <ReadMore theme={theme} onPress={onReadMore} />
     </View>
   );
 }

@@ -30,6 +30,11 @@
  * two pages being straddled, recomputed as the scroll moves, which never clips
  * and never leaves a gap once the gesture finishes.
  *
+ * The link to a card's full note is not here. It used to sit above the track and
+ * only appeared for cards that had one, so swiping between them moved the card
+ * up and down. It is inside each card now, anchored to the bottom, where the
+ * uniform height keeps it in one place.
+ *
  * The pills are 32 points tall, as drawn, with hit slop taking the real touch
  * target past the 44 points iOS asks for. A tappable label also solves what the
  * arrows were there for: a horizontal swipe inside a vertically scrolling
@@ -166,19 +171,6 @@ export function CardCarousel({
           );
         })}
       </ScrollView>
-      {items[current]?.detail && onOpenDetail ? (
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => onOpenDetail(items[current]!.detail!)}
-          hitSlop={8}
-          style={{ alignSelf: "flex-end" }}
-        >
-          <Text style={{ fontSize: 13, fontWeight: "600", color: theme.accent }}>
-            Read the full note
-          </Text>
-        </Pressable>
-      ) : null}
-
       <ScrollView
         ref={scroller}
         horizontal

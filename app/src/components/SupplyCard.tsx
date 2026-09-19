@@ -16,7 +16,6 @@ import { View } from "react-native";
 import type { SupplyPicture } from "@gc-eta/model";
 
 import { Text } from "./Text";
-import { ReadMore } from "./ReadMore";
 import { CARD_MIN_HEIGHT } from "./Card";
 import { categoryLabel, columnLabel } from "../data";
 import type { Theme } from "../theme";
@@ -62,13 +61,11 @@ export function SupplyCard({
   picture,
   column,
   category,
-  onReadMore,
 }: {
   theme: Theme;
   picture: SupplyPicture;
   column: string;
   category: string;
-  onReadMore?: () => void;
 }) {
   const { limit, base, spillover, fiscalYear } = picture;
   if (!limit || spillover === null || !fiscalYear) {
@@ -125,7 +122,6 @@ export function SupplyCard({
         The statute sets 140,000 and no year on record has been 140,000. The real limit has run from{" "}
         {n(picture.limitLow ?? 0)} to {n(picture.limitHigh ?? 0)}. Next year's is published in October.
       </Text>
-      <ReadMore theme={theme} onPress={onReadMore} />
     </View>
   );
 }

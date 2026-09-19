@@ -14,7 +14,6 @@ import { View } from "react-native";
 import type { Season } from "@gc-eta/model";
 
 import { Text } from "./Text";
-import { ReadMore } from "./ReadMore";
 import { CARD_MIN_HEIGHT } from "./Card";
 import type { Theme } from "../theme";
 
@@ -22,9 +21,7 @@ const MAX_BAR = 42;
 const MIN_BAR = 5;
 
 export function SeasonCard({ theme, season,
-  onReadMore,
 }: { theme: Theme; season: Season;
-  onReadMore?: () => void;
 }) {
   if (!season.usable) {
     return (
@@ -113,7 +110,6 @@ export function SeasonCard({ theme, season,
           The outlined bar is where the current bulletin sits in the year.
         </Text>
       </View>
-      <ReadMore theme={theme} onPress={onReadMore} />
     </View>
   );
 }

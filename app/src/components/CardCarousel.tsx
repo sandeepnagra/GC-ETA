@@ -54,6 +54,8 @@ import { Text } from "./Text";
 
 import type { Theme } from "../theme";
 import type { CardDetail } from "./DetailSheet";
+import { FlipCard } from "./FlipCard";
+import { NoteBack } from "./NoteBack";
 
 /** Matches the results screen's horizontal padding. */
 const PAGE_PADDING = 20;
@@ -97,6 +99,8 @@ export function CardCarousel({
    * sometimes stayed clipped no matter which card was showing.
    */
   const [measured, setMeasured] = useState(0);
+  /** Only one card is ever face-down, and only the one being looked at. */
+  const [flipped, setFlipped] = useState<string | null>(null);
   const [index, setIndex] = useState(0);
   const [heights, setHeights] = useState<number[]>([]);
   const [offset, setOffset] = useState(0);
@@ -132,6 +136,11 @@ export function CardCarousel({
    * changed, and scrolling only far enough to uncover the pill keeps both ends
    * of the strip reachable.
    */
+  // Turning a card over then swiping away would leave it face-down behind you.
+  useEffect(() => {
+    setFlipped(null);
+  }, [index]);
+
   useEffect(() => {
     const at = offsets.current[index];
     if (!at || stripWidth <= 0) return;
@@ -240,17 +249,19 @@ export function CardCarousel({
             }}
           >
             {item.detail && onOpenDetail ? (
-              // The whole card opens its note, not only the link at the bottom.
-              // The link stays as the visible affordance: a tap target with no
-              // sign it is tappable is not a control. The buttons some cards
-              // carry sit above this one and keep their own taps.
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={`${item.title}. Opens the full note.`}
-                onPress={() => onOpenDetail(item.detail!)}
-              >
-                {item.node}
-              </Pressable>
+              <FlipCard
+                flipped={flipped === item.key}
+                onToggle={() => setFlipped((k) => (k === item.key ? null : item.key))}
+                frontLabel={item.title}
+                front={item.node}
+                back={
+                  <NoteBack
+                    theme={theme}
+                    detail={item.detail}
+                    onReadMore={() => onOpenDetail(item.detail!)}
+                  />
+                }
+              />
             ) : (
               item.node
             )}

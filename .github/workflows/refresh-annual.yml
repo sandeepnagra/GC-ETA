@@ -1,6 +1,6 @@
 # The sources that change once a year and cost most of a gigabyte to read.
 #
-# Labour certification disclosure files run 60 to 90 MB each and the visa
+# Labor certification disclosure files run 60 to 90 MB each and the visa
 # issuance tables are a PDF per fiscal year. Neither changes between releases,
 # so running them daily would download hundreds of megabytes to produce an
 # identical file. Monthly is frequent enough to notice a new publication within

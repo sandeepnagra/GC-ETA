@@ -158,7 +158,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
   cards.push({
     key: "confidence",
     title: "How sure",
-    node: <ConfidenceCard theme={theme} assessment={assessment} onReadMore={() => setDetail(CONFIDENCE_NOTE)} />,
+    node: <ConfidenceCard theme={theme} assessment={assessment} />,
     detail: CONFIDENCE_NOTE,
   });
 
@@ -169,7 +169,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
     cards.push({
       key: "queue",
       title: "Queue",
-      node: <QueueCard theme={theme} assessment={assessment} draft={draft} onReadMore={() => setDetail(QUEUE_NOTE)} />,
+      node: <QueueCard theme={theme} assessment={assessment} draft={draft} />,
     detail: QUEUE_NOTE,
     });
   }
@@ -177,14 +177,14 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
   cards.push({
     key: "supply",
     title: "Supply",
-    node: <SupplyCard theme={theme} picture={supply} column={draft.column} category={draft.category} onReadMore={() => setDetail(SUPPLY_NOTE)} />,
+    node: <SupplyCard theme={theme} picture={supply} column={draft.column} category={draft.category} />,
     detail: SUPPLY_NOTE,
   });
 
   cards.push({
     key: "season",
     title: "Season",
-    node: <SeasonCard theme={theme} season={season} onReadMore={() => setDetail(SEASON_NOTE)} />,
+    node: <SeasonCard theme={theme} season={season} />,
     detail: SEASON_NOTE,
   });
 

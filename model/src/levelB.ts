@@ -129,7 +129,8 @@ export interface QueueEstimate {
     | "below_density_floor"
     | "beyond_density_record"
     | "no_supply_model"
-    | "no_density";
+    | "no_density"
+    | "no_perm_population";
   /** Principals holding a priority date in the span, before any multiplier. */
   principalsAhead?: number;
   /** Visa numbers consumed by those principals and their families. */
@@ -315,6 +316,27 @@ export function estimateQueue(
   const notes: string[] = [];
   const targetDay = isoToDay(priorityDate);
   if (targetDay <= cutoffDay) return { ok: false, reason: "already_current", notes };
+
+  // EB-1, EB-4 and EB-5 unreserved do not require a labour certification at
+  // all, so the record this whole module is built from contains none of
+  // their applicants. bucketFor's default branch is exactly "does not map to
+  // a PERM education bucket", which is the same condition: reuse it rather
+  // than a second list that could drift out of sync. Counting `total` here
+  // used to silently hand these categories the EB-2/EB-3 queue as their own.
+  // What we can say honestly is how many visa numbers the category actually
+  // received per year, which annualSupply already measures independently of
+  // the labour-certification density table.
+  if (bucketFor(category) === "total") {
+    return {
+      ok: false,
+      reason: "no_perm_population",
+      annualSupply: annualSupply(bundle, column, category) ?? undefined,
+      notes: [
+        "This category does not require a labour certification, so the certified-PERM record this count is built from has no record of its applicants at all.",
+      ],
+    };
+  }
+
   if (!bundle.density?.[column]) return { ok: false, reason: "no_density", notes };
 
   const floor = densityFloor(bundle, column);

@@ -30,10 +30,12 @@ const COLUMNS = 10;
 
 function Shell({
   theme,
+  title = "People ahead of you",
   trailing,
   children,
 }: {
   theme: Theme;
+  title?: string;
   trailing: string;
   children: React.ReactNode;
 }) {
@@ -41,7 +43,7 @@ function Shell({
     <View style={{ minHeight: CARD_MIN_HEIGHT, backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 10 }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" }}>
         <Text style={{ fontSize: 12, fontWeight: "600", letterSpacing: 0.3, textTransform: "uppercase", color: theme.secondary }}>
-          People ahead of you
+          {title}
         </Text>
         <Text style={{ fontSize: 12, color: theme.secondary }}>{trailing}</Text>
       </View>
@@ -84,6 +86,31 @@ export function QueueCard({
             2013, and the cutoff for your category sits at or before that. Counting from
             there would find almost nobody and give a badly wrong answer, so no count is
             shown.
+          </Text>
+        </Shell>
+      );
+    }
+    if (q.reason === "no_perm_population") {
+      const supply = q.annualSupply;
+      return (
+        <Shell theme={theme} title="Visa numbers issued a year" trailing={pair}>
+          {supply ? (
+            <Text display style={{ fontSize: 30, color: theme.text, letterSpacing: -0.5 }}>
+              {Math.round(supply.mid).toLocaleString("en-US")}
+            </Text>
+          ) : null}
+          <Text style={{ fontSize: 13, lineHeight: 18, color: theme.text }}>
+            {supply
+              ? supply.basis === "issued"
+                ? `Over ${supply.years} recorded years, ${pair} received a typical ${Math.round(supply.mid).toLocaleString("en-US")} visa numbers a year, ranging from about ${Math.round(supply.low).toLocaleString("en-US")} in a poor year to ${Math.round(supply.high).toLocaleString("en-US")} in a good one.`
+                : "No issuance history is recorded for this category, so this is a statutory estimate, not a measured figure."
+              : "No issuance history is recorded for this category."}
+          </Text>
+          <Text style={{ fontSize: 13, lineHeight: 18, color: theme.secondary }}>
+            This category does not require a labour certification, so there is no public,
+            per-priority-date record of who is ahead of you, the way there is for EB-2 and
+            EB-3. This is a different measurement: the actual visa numbers this country and
+            category received, most years.
           </Text>
         </Shell>
       );

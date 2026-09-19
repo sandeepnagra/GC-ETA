@@ -693,6 +693,7 @@ function queueCardRenders(queue: CaseAssessment["queue"]): boolean {
   return (
     queue.reason === "below_density_floor" ||
     queue.reason === "density_not_covered" ||
-    queue.reason === "beyond_density_record"
+    queue.reason === "beyond_density_record" ||
+    queue.reason === "no_perm_population"
   );
 }

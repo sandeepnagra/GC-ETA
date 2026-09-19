@@ -56,7 +56,7 @@ const LIMITATIONS = [
   {
     title: "Measured accuracy, including where it fails",
     body:
-      "Tested against 405 historical cases. The range contained the true answer 78% of the time, against a target of 80%, so the bands are slightly too narrow. The midpoint was out by about 0.8 years on average.",
+      "Tested against 393 historical cases. The range contained the true answer 78% of the time, against a target of 80%, so the bands are slightly too narrow. The midpoint was out by about 0.8 years on average.",
   },
   {
     title: "The short-term outlook has no proven edge",

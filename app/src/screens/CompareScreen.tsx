@@ -30,7 +30,6 @@ interface Props {
   draft: CaseDraft;
   comparison: Comparison;
   suggestion: SwitchSuggestion;
-  onBack: () => void;
 }
 
 function cellText(cell: { kind: string; day?: number }): string {
@@ -42,7 +41,7 @@ function cellText(cell: { kind: string; day?: number }): string {
   return "Not published";
 }
 
-export function CompareScreen({ theme, draft, comparison, suggestion, onBack }: Props) {
+export function CompareBody({ theme, draft, comparison, suggestion }: Props) {
   const { sides, crossover, notes, startMonth } = comparison;
   const share =
     crossover.monthsCompared > 0
@@ -90,24 +89,7 @@ export function CompareScreen({ theme, draft, comparison, suggestion, onBack }: 
   ];
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: theme.bg }}
-      contentContainerStyle={{ padding: 20, paddingBottom: 48, gap: 16 }}
-    >
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Back to your estimate" onPress={onBack} hitSlop={12}>
-          <Text style={{ fontSize: 17, color: theme.accent }}>Back</Text>
-        </Pressable>
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 17, fontWeight: "600", color: theme.text }}>
-            EB-2 and EB-3 · {columnLabel(draft.column)}
-          </Text>
-          <Text style={{ fontSize: 12, color: theme.secondary }}>
-            Priority date {prettyDate(draft.priorityDate)}
-          </Text>
-        </View>
-      </View>
-
+    <ScrollView contentContainerStyle={{ padding: 20, paddingTop: 14, paddingBottom: 32, gap: 16 }}>
       <SuggestionCard theme={theme} suggestion={suggestion} />
 
       <View style={{ backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 10 }}>

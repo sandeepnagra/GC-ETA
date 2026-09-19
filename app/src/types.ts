@@ -16,4 +16,4 @@ export interface CaseDraft {
   filedOn?: string;
 }
 
-export type Screen = "case" | "results" | "explain" | "news" | "methodology" | "compare" | "disruptions";
+export type Screen = "case" | "results" | "explain" | "news" | "methodology";

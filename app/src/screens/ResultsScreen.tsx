@@ -9,6 +9,9 @@ import { categoryLabel, columnLabel, prettyDate, shortDate } from "../data";
 import { HistoryChart } from "../components/HistoryChart";
 import { CardCarousel, type CarouselItem } from "../components/CardCarousel";
 import { DetailSheet, type CardDetail } from "../components/DetailSheet";
+import { Sheet } from "../components/Sheet";
+import { DisruptionsBody } from "./DisruptionsScreen";
+import { CompareBody } from "./CompareScreen";
 import { CARD_MIN_HEIGHT } from "../components/Card";
 import { BackIcon, CardWatermark, HelpIcon } from "../components/Icons";
 import { EstimateTimeline } from "../components/EstimateTimeline";
@@ -34,17 +37,118 @@ interface Props {
   onBack: () => void;
   onExplain: () => void;
   onNews: () => void;
-  /** Absent when the category has no comparable alternative. */
-  onCompare?: () => void;
   comparison?: Comparison | null;
   suggestion?: SwitchSuggestion | null;
   events: EventsFile;
-  onDisruptions: () => void;
   /** The live bundle, which may be newer than the one compiled into the app. */
   bundle: Bundle;
   stale: Freshness;
   newsCount: number;
 }
+
+const OUTLOOK_NOTE: CardDetail = {
+  title: "What is scheduled",
+  paragraphs: [
+    "This card lists only things with a published source and a date: a rule taking effect, a category expiring, a court order starting or ending, or the Visa Office saying in writing what it intends for this category. The 1 October reset is included because it is the one date that is certain.",
+    "It is not a forecast, and it used to be. A score out of 100 sat here, blending seasonality, how often the category had moved backwards and its recent direction. The backtest measured that kind of reading as no more accurate over six months than assuming the cutoff does not move, so it was removed rather than softened.",
+    "When nothing is scheduled the card says so. That is an answer, not an empty state: knowing that no rule or deadline lands in the next few months is worth as much as knowing that one does.",
+  ],
+  caveat:
+    "A warning about a category closing is withheld once it has already closed, which is why a category that is Unavailable shows the reopening rather than the warning.",
+  sources:
+    "Department of State Visa Bulletin, per-category sections. The tracked event register, checked by a person before it changes anything shown here.",
+};
+
+const HISTORY_NOTE: CardDetail = {
+  title: "Ten years of movement",
+  paragraphs: [
+    "Every published cutoff for this category and country, month by month, against the date on your own petition. Where the line crosses your date is where the category reached you.",
+    "Months the category was Unavailable are drawn as breaks rather than joined up. Interpolating across them would invent movement that did not happen, and those months are exactly when a category is stuck, so smoothing them away would flatter the picture.",
+    "A line that runs backwards is a retrogression: the Visa Office moved the cutoff to an earlier date because more people qualified than there were numbers for. It happens most often between July and September.",
+  ],
+  caveat:
+    "One month is missing from the government archive with no alternate copy, October 2012, so the 2013 fiscal year is drawn from eleven months.",
+  sources:
+    "Department of State Visa Bulletin archive, December 2009 to the current month.",
+};
+
+const EVENTS_NOTE: CardDetail = {
+  title: "Disruptions for you",
+  paragraphs: [
+    "Pauses, bans, rules and court orders that touch employment-based cases. Each is matched against your country of birth, your category and whether you finish inside the United States or at a consulate, so a consular pause does not appear for someone adjusting status.",
+    "Colour carries the status. Amber is acting on your case now, green is something that was stopped, grey is in force elsewhere or not in force at all. Three of the tracked statuses are neither plainly on nor plainly off, and each has its own wording rather than being rounded to the nearest.",
+    "Detecting that something happened can be automatic. Deciding what it means for a queue is not, so every entry is read and classified by a person before it changes anything the app says.",
+  ],
+  caveat:
+    "An entry that has not been re-checked recently is flagged as such. The register is curated, so it lags a fast-moving court docket by days rather than minutes.",
+  sources:
+    "Federal Register, USCIS newsroom, Department of State notices and court dockets. Each entry records what it was verified against and when.",
+};
+
+const COMPARE_NOTE: CardDetail = {
+  title: "EB-2 or EB-3",
+  paragraphs: [
+    "Both categories on one axis for your own priority date, read from the estimates rather than from today's chart. The distinction matters: a category can be far ahead on the published chart because of the queue it has already cleared while being slower for a date like yours.",
+    "The lead changes hands often. EB-3 has been ahead of EB-2 in a third of published months for India and about half for China, swapping eleven and seventeen times. In October 2021 India EB-3 led by two years and four months; by that December it had given back two years, and by August 2022 EB-2 was nearly three years ahead.",
+    "So there is no saving stated in years. The verdict is a direction with its reasoning, and moving needs a new petition your employer files and pays for, which no number here can see.",
+  ],
+  caveat:
+    "This advice works against itself at scale. When many people move to whichever category looks faster, that movement is part of what slows it down, and a crossover is often followed by a retrogression.",
+  sources:
+    "Visa Bulletin archive for both categories. Labour certification counts per category. Report of the Visa Office, Table V, for what each actually received.",
+};
+
+const CHANGES_NOTE: CardDetail = {
+  title: "What would change this",
+  paragraphs: [
+    "The handful of things that would actually move this estimate, derived for your case rather than listed generically. Whether a country pause matters depends on your processing path; whether fall-down from EB-1 matters depends on your category; the size of a good spillover year is a figure from the record.",
+    "Green is sooner, red is later. Each row carries its own numbers so you can judge the size of the lever rather than take the direction on trust.",
+    "Nothing here carries odds. The data supports no probability for any of it, and the card's job is to tell you what to watch rather than what to expect.",
+  ],
+  caveat:
+    "A row appears only when something in the record supports it, so a shorter list means less is known to be in play, not that nothing could happen.",
+  sources:
+    "Published annual limits by fiscal year, Report of the Visa Office issuance by country and category, and the tracked event register.",
+};
+
+const DRIVERS_NOTE: CardDetail = {
+  title: "What drives this",
+  paragraphs: [
+    "The specific things that shaped the date above, in the order they mattered: the state of the category today, how far the cutoff sits behind your priority date, and how much published movement the estimate had to learn from.",
+    "Advances are adjusted for the size of the year they happened in. A year with 281,507 visa numbers moved categories further than a year with 150,037, and treating those as comparable would inflate every estimate built on the larger one.",
+    "The estimate is also adjusted for how many people hold the priority dates ahead of you, which differs sharply across years. Without that, a category that once moved quickly through a thin stretch of dates would be assumed to move as quickly through a dense one.",
+  ],
+  caveat:
+    "Every driver is read from the past ten years. A change in the law is outside anything the estimate has seen.",
+  sources:
+    "Visa Bulletin archive, published annual limits FY2021 onward, and labour certification counts by priority-date month.",
+};
+
+const CURRENT_NOTE: CardDetail = {
+  title: "Your date is current",
+  paragraphs: [
+    "A visa number is available for your priority date now. What stands between you and a decision is a government adjudication rather than the bulletin, which is a different question with a different answer.",
+    "Being current is a state, not a milestone. Categories close and reopen: this card counts how long the present run has lasted, how many times the category has closed before, and how long past runs lasted, so you can see how settled this one is.",
+    "Nine of the thirty category and country pairs are current at any given time, and how durable that is varies enormously. One has been current for the whole published record; another has closed six times.",
+  ],
+  caveat:
+    "A month nobody published does not count as a month the category closed. The archive has gaps, and treating one as a closure would invent an event that never happened.",
+  sources:
+    "Department of State Visa Bulletin archive, December 2009 to the current month.",
+};
+
+const STAGE_NOTE: CardDetail = {
+  title: "Your I-485",
+  paragraphs: [
+    "Where a filed application sits: when it was filed, whether your date has become current, and what is left. The months pending are counted from the filing date you gave.",
+    "The decision is deliberately not estimated. Doing that needs USCIS processing-time data, which is published as service-centre ranges rather than a distribution and has not been assessed closely enough here to put a date on your case. Printing one anyway would invent the number on this card you care about most.",
+    "A pending application does not fail if your date retrogresses. It waits. Keep the work permit and travel document renewed while it does.",
+  ],
+  caveat:
+    "This tracks the bulletin side of your case only. It knows nothing about your own file, and nothing you enter here leaves the phone.",
+  sources:
+    "Your own filing date, and the Visa Bulletin archive for when the category became current.",
+};
 
 const QUEUE_NOTE: CardDetail = {
         title: "People ahead of you",
@@ -100,12 +204,16 @@ const CONFIDENCE_NOTE: CardDetail = {
         "Department of State Visa Bulletin archive. Backtest of 393 cases from quarterly origins between October 2016 and September 2023.",
     };
 
-export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, onCompare, comparison, suggestion, events, onDisruptions, bundle, stale, newsCount }: Props) {
+export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, comparison, suggestion, events, bundle, stale, newsCount }: Props) {
   const { finalAction, filing, outlook } = assessment;
   // The hero card sits inside the screen's 20pt padding and its own 16pt, so
   // the drawing has to be told how much room it really has.
   const { width: screenWidth } = useWindowDimensions();
   const [detail, setDetail] = useState<CardDetail | null>(null);
+  // Both open the same way the card note does: an aside over the estimate,
+  // never a place you navigate to and have to come back from.
+  const [showDisruptions, setShowDisruptions] = useState(false);
+  const [showCompare, setShowCompare] = useState(false);
   // Both depend only on the bundle and the pair, so they are cheap and stable.
   const season = useMemo(
     () => seasonalPattern(bundle, draft.category, draft.column),
@@ -135,6 +243,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
     cards.push({
       key: "stage",
       title: "Your I-485",
+      detail: STAGE_NOTE,
       node: <StageCard theme={theme} draft={draft} assessment={assessment} />,
     });
   }
@@ -145,6 +254,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
     cards.push({
       key: "current",
       title: "Current",
+      detail: CURRENT_NOTE,
       node: <CurrentCard theme={theme} draft={draft} standing={assessment.standing} />,
     });
   }
@@ -152,6 +262,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
   cards.push({
     key: "outlook",
     title: "Outlook",
+    detail: OUTLOOK_NOTE,
     node: <OutlookCard theme={theme} outlook={outlook} />,
   });
 
@@ -191,6 +302,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
   cards.push({
       key: "history",
       title: "History",
+      detail: HISTORY_NOTE,
       node: (
         <Card theme={theme}>
           <Row theme={theme} title="Ten years of movement" trailing={columnLabel(draft.column)} />
@@ -207,7 +319,8 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
     cards.push({
       key: "events",
       title: "Events",
-      node: <EventsCard theme={theme} events={assessment.events} onAll={onDisruptions} />,
+      detail: EVENTS_NOTE,
+      node: <EventsCard theme={theme} events={assessment.events} onAll={() => setShowDisruptions(true)} />,
     });
   }
 
@@ -215,6 +328,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
     cards.push({
       key: "compare",
       title: "EB-2 or EB-3?",
+      detail: COMPARE_NOTE,
       node: (
         <CompareCard
           theme={theme}
@@ -222,7 +336,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
           suggestion={suggestion}
           draft={draft}
           width={heroWidth}
-          onOpen={onCompare ?? (() => {})}
+          onOpen={() => setShowCompare(true)}
         />
       ),
     });
@@ -231,12 +345,14 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
   cards.push({
     key: "changes",
     title: "Changes",
+    detail: CHANGES_NOTE,
     node: <ChangesCard theme={theme} changes={changes} />,
   });
 
   cards.push({
     key: "drivers",
     title: "Drivers",
+    detail: DRIVERS_NOTE,
     node: (
       <Card theme={theme}>
         <Row theme={theme} title="What drives this" />
@@ -327,6 +443,28 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
       <CardCarousel theme={theme} items={cards} onOpenDetail={setDetail} />
 
       <DetailSheet theme={theme} detail={detail} onClose={() => setDetail(null)} />
+
+      <Sheet
+        theme={theme}
+        visible={showDisruptions}
+        title="Disruptions"
+        subtitle="Pauses, bans, rules and court orders"
+        onClose={() => setShowDisruptions(false)}
+      >
+        <DisruptionsBody theme={theme} events={events} applicable={assessment.events} />
+      </Sheet>
+
+      {comparison && suggestion ? (
+        <Sheet
+          theme={theme}
+          visible={showCompare}
+          title="EB-2 or EB-3"
+          subtitle={`Same date, ${columnLabel(draft.column)}`}
+          onClose={() => setShowCompare(false)}
+        >
+          <CompareBody theme={theme} draft={draft} comparison={comparison} suggestion={suggestion} />
+        </Sheet>
+      ) : null}
 
       <Pressable
         accessibilityRole="button"

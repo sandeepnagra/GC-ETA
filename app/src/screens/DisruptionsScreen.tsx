@@ -7,6 +7,10 @@
  * as the ones that do. An event that ended is as much of an answer as one in
  * force.
  *
+ * Opens as a sheet rather than a screen: it is an aside from the estimate, not
+ * a place you navigate to, and everything else of that kind arrives the same
+ * way.
+ *
  * The bars are the point. A list of dates makes a reader build the overlap in
  * their head; drawn against a common axis it is obvious which pauses ran at
  * once, which had ended before another began, and which is still open.
@@ -18,7 +22,6 @@ import Svg, { Line, Rect, Text as SvgText } from "react-native-svg";
 import type { CaseAssessment, EventsFile, GcEvent } from "@gc-eta/model";
 
 import { Text } from "../components/Text";
-import { BackIcon } from "../components/Icons";
 import { prettyDate } from "../data";
 import { kindColours, statusLook } from "../eventStatus";
 import type { Theme } from "../theme";
@@ -31,7 +34,6 @@ interface Props {
   theme: Theme;
   events: EventsFile;
   applicable: CaseAssessment["events"];
-  onBack: () => void;
 }
 
 /** A short line of who, when and what it touches. */
@@ -51,7 +53,7 @@ function meta(event: GcEvent): string {
   return parts.join(" · ");
 }
 
-export function DisruptionsScreen({ theme, events, applicable, onBack }: Props) {
+export function DisruptionsBody({ theme, events, applicable }: Props) {
   const [filter, setFilter] = useState<Filter>("mine");
   const mine = new Set(applicable.map((a) => a.event.id));
 
@@ -79,29 +81,7 @@ export function DisruptionsScreen({ theme, events, applicable, onBack }: Props) 
   const chartHeight = dated.length * rowHeight + 24;
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: theme.bg }}
-      contentContainerStyle={{ padding: 20, paddingBottom: 40, gap: 12 }}
-    >
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Back to your estimate"
-          onPress={onBack}
-          style={{ width: 44, height: 44, marginLeft: -10, alignItems: "center", justifyContent: "center", borderRadius: 22 }}
-        >
-          <BackIcon color={theme.text} />
-        </Pressable>
-        <View style={{ flex: 1, gap: 1 }}>
-          <Text display style={{ fontSize: 19, color: theme.text, letterSpacing: -0.2 }}>
-            Disruptions
-          </Text>
-          <Text style={{ fontSize: 12, color: theme.secondary }}>
-            Pauses, bans, rules and court orders
-          </Text>
-        </View>
-      </View>
-
+    <ScrollView contentContainerStyle={{ padding: 20, paddingTop: 14, paddingBottom: 32, gap: 12 }}>
       <View style={{ backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 14, gap: 8 }}>
         <Text style={{ fontSize: 12, fontWeight: "600", letterSpacing: 0.3, textTransform: "uppercase", color: theme.secondary }}>
           When each one ran

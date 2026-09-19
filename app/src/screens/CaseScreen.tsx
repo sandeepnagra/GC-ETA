@@ -6,6 +6,7 @@ import { Text } from "../components/Text";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 import { CATEGORIES, COLUMNS, prettyDate } from "../data";
+import { AppMark, CardWatermark } from "../components/Icons";
 import type { Theme } from "../theme";
 import type { CaseDraft } from "../types";
 
@@ -48,11 +49,26 @@ export function CaseScreen({ theme, draft, onChange, onSubmit }: Props) {
       contentContainerStyle={{ padding: 20, paddingBottom: 48, gap: 22 }}
       keyboardShouldPersistTaps="handled"
     >
-      <View style={{ gap: 4 }}>
-        <Text display style={{ fontSize: 28, color: theme.accent, letterSpacing: -0.5 }}>
-          GC ETA
-        </Text>
-        <Text style={{ fontSize: 15, lineHeight: 21, color: theme.secondary }}>
+      {/* The green-card watermark moved here from the results header: this is
+          the screen where the user actually fills in the card it depicts,
+          rather than a screen they pass through on every visit. */}
+      <View style={{ position: "relative" }}>
+        <View
+          pointerEvents="none"
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+          style={{ position: "absolute", right: -12, top: -34, opacity: theme.dark ? 0.09 : 0.06 }}
+        >
+          <CardWatermark color={theme.accent} width={200} />
+        </View>
+
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+          <AppMark size={32} />
+          <Text display style={{ fontSize: 28, color: theme.accent, letterSpacing: -0.5 }}>
+            GC ETA
+          </Text>
+        </View>
+        <Text style={{ fontSize: 15, lineHeight: 21, color: theme.secondary, marginTop: 4 }}>
           Three things set your column and your place in line.
         </Text>
       </View>

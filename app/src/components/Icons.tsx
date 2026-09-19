@@ -76,6 +76,43 @@ export function CardWatermark({ color, width = 190 }: { color: string; width?: n
   );
 }
 
+/**
+ * The app icon, small, for use as a wordmark lockup next to "GC ETA".
+ *
+ * Traced from the same geometry as `pipeline/make_icons.py` and the home
+ * screen icon: a rounded green square, a white outline of a card carrying a
+ * photo panel and a progress bar with a marker, which is the one detail that
+ * says "ETA" rather than "ID card". Fixed to the brand colour regardless of
+ * theme, the way a logo is: it is an identity mark, not a themed UI element,
+ * and should look the same in light and dark mode.
+ */
+export function AppMark({ size = 32 }: { size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 100 100">
+      <Rect width={100} height={100} rx={22} fill="#0E6B63" />
+      <G fill="none" stroke="#FFFFFF" strokeLinecap="round" strokeLinejoin="round">
+        <Rect x={8} y={23} width={84} height={54} rx={9} strokeWidth={5} />
+        <Rect x={17} y={41} width={22} height={26} rx={3} strokeWidth={4} />
+        <Circle cx={28} cy={50} r={4.5} strokeWidth={3.5} />
+        <Path d="M20 65c0-5 3.5-8.5 8-8.5s8 3.5 8 8.5" strokeWidth={3.5} />
+        <Line x1={47} y1={45} x2={79} y2={45} strokeWidth={4} />
+        <Line x1={47} y1={54} x2={70} y2={54} strokeWidth={4} />
+        <Line x1={47} y1={63} x2={79} y2={63} stroke="#9CCBC3" strokeWidth={4} />
+        <Line x1={47} y1={63} x2={66} y2={63} strokeWidth={4} />
+        <Rect x={74} y={30} width={9} height={7} rx={1.5} strokeWidth={3} />
+      </G>
+      <G fill="#FFFFFF">
+        <Circle cx={20} cy={33} r={2.2} />
+        <Circle cx={27} cy={33} r={2.2} />
+        <Circle cx={34} cy={33} r={2.2} />
+        <Circle cx={41} cy={33} r={2.2} />
+        <Circle cx={48} cy={33} r={2.2} />
+        <Circle cx={66} cy={63} r={3.5} />
+      </G>
+    </Svg>
+  );
+}
+
 export function ChevronRight({ color, size = 18 }: { color: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">

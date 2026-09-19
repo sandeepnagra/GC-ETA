@@ -13,7 +13,7 @@ import { Sheet } from "../components/Sheet";
 import { DisruptionsBody } from "./DisruptionsScreen";
 import { CompareBody } from "./CompareScreen";
 import { CARD_MIN_HEIGHT } from "../components/Card";
-import { BackIcon, CardWatermark, HelpIcon } from "../components/Icons";
+import { BackIcon, HelpIcon } from "../components/Icons";
 import { EstimateTimeline } from "../components/EstimateTimeline";
 import { QueueCard } from "../components/QueueCard";
 import { StageCard } from "../components/StageCard";
@@ -39,6 +39,9 @@ interface Props {
   onNews: () => void;
   comparison?: Comparison | null;
   suggestion?: SwitchSuggestion | null;
+  /** QA harness only: opens a sheet or a card's back on mount. */
+  initialSheet?: "disruptions" | "compare";
+  initialFlipped?: string;
   events: EventsFile;
   /** The live bundle, which may be newer than the one compiled into the app. */
   bundle: Bundle;
@@ -204,7 +207,7 @@ const CONFIDENCE_NOTE: CardDetail = {
         "Department of State Visa Bulletin archive. Backtest of 393 cases from quarterly origins between October 2016 and September 2023.",
     };
 
-export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, comparison, suggestion, events, bundle, stale, newsCount }: Props) {
+export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, comparison, suggestion, events, bundle, stale, newsCount, initialSheet, initialFlipped }: Props) {
   const { finalAction, filing, outlook } = assessment;
   // The hero card sits inside the screen's 20pt padding and its own 16pt, so
   // the drawing has to be told how much room it really has.
@@ -212,8 +215,8 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
   const [detail, setDetail] = useState<CardDetail | null>(null);
   // Both open the same way the card note does: an aside over the estimate,
   // never a place you navigate to and have to come back from.
-  const [showDisruptions, setShowDisruptions] = useState(false);
-  const [showCompare, setShowCompare] = useState(false);
+  const [showDisruptions, setShowDisruptions] = useState(initialSheet === "disruptions");
+  const [showCompare, setShowCompare] = useState(initialSheet === "compare");
   // Both depend only on the bundle and the pair, so they are cheap and stable.
   const season = useMemo(
     () => seasonalPattern(bundle, draft.category, draft.column),
@@ -370,15 +373,11 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
       style={{ flex: 1, backgroundColor: theme.bg }}
       contentContainerStyle={{ padding: 20, paddingBottom: 48, gap: 12 }}
     >
-      {/* Header. The watermark is drawn first so the text paints over it. */}
+      {/* Header. The green-card watermark that used to sit behind this title
+          moved to the case screen, where the user actually fills in the card
+          the icon depicts, rather than repeating on every visit to the
+          estimate. */}
       <View style={{ position: "relative" }}>
-        <View
-          pointerEvents="none"
-          style={{ position: "absolute", right: 38, top: -28, opacity: theme.dark ? 0.09 : 0.06 }}
-        >
-          <CardWatermark color={theme.accent} width={186} />
-        </View>
-
         <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
           <Pressable
             accessibilityRole="button"
@@ -440,7 +439,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
         <Tile theme={theme} label="Filing chart" value={cutoffText(filing)} tone={theme.text} />
       </View>
 
-      <CardCarousel theme={theme} items={cards} onOpenDetail={setDetail} />
+      <CardCarousel theme={theme} items={cards} onOpenDetail={setDetail} initialFlipped={initialFlipped} />
 
       <DetailSheet theme={theme} detail={detail} onClose={() => setDetail(null)} />
 

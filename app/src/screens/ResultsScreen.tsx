@@ -159,6 +159,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
     key: "confidence",
     title: "How sure",
     node: <ConfidenceCard theme={theme} assessment={assessment} onReadMore={() => setDetail(CONFIDENCE_NOTE)} />,
+    detail: CONFIDENCE_NOTE,
   });
 
   // Only when it will actually draw something. QueueCard renders nothing for a
@@ -169,6 +170,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
       key: "queue",
       title: "Queue",
       node: <QueueCard theme={theme} assessment={assessment} draft={draft} onReadMore={() => setDetail(QUEUE_NOTE)} />,
+    detail: QUEUE_NOTE,
     });
   }
 
@@ -176,12 +178,14 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
     key: "supply",
     title: "Supply",
     node: <SupplyCard theme={theme} picture={supply} column={draft.column} category={draft.category} onReadMore={() => setDetail(SUPPLY_NOTE)} />,
+    detail: SUPPLY_NOTE,
   });
 
   cards.push({
     key: "season",
     title: "Season",
     node: <SeasonCard theme={theme} season={season} onReadMore={() => setDetail(SEASON_NOTE)} />,
+    detail: SEASON_NOTE,
   });
 
   cards.push({
@@ -320,7 +324,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
         <Tile theme={theme} label="Filing chart" value={cutoffText(filing)} tone={theme.text} />
       </View>
 
-      <CardCarousel theme={theme} items={cards} />
+      <CardCarousel theme={theme} items={cards} onOpenDetail={setDetail} />
 
       <DetailSheet theme={theme} detail={detail} onClose={() => setDetail(null)} />
 

@@ -41,7 +41,7 @@
  * screen is awkward to start and easy to miss.
  */
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -85,6 +85,18 @@ export function CardCarousel({
   const tabs = useRef<ScrollView>(null);
   /** Where each pill sits, so the strip can follow the selection. */
   const offsets = useRef<Array<{ x: number; w: number } | undefined>>([]);
+  /** The strip's own viewport and where it is scrolled to. */
+  const [stripWidth, setStripWidth] = useState(0);
+  const stripX = useRef(0);
+  /**
+   * Bumped whenever a pill reports its position.
+   *
+   * Without it the reveal could run before any pill had been measured, find
+   * nothing to scroll to, and never run again, because neither the index nor
+   * the strip width changed afterwards. That is why the selected pill
+   * sometimes stayed clipped no matter which card was showing.
+   */
+  const [measured, setMeasured] = useState(0);
   const [index, setIndex] = useState(0);
   const [heights, setHeights] = useState<number[]>([]);
   const [offset, setOffset] = useState(0);
@@ -106,15 +118,34 @@ export function CardCarousel({
     const clamped = Math.max(0, Math.min(items.length - 1, next));
     setIndex(clamped);
     scroller.current?.scrollTo({ x: clamped * stride, animated: true });
-    revealTab(clamped);
   };
 
-  /** Keep the selected pill on screen when the strip is wider than the phone. */
-  const revealTab = (i: number) => {
-    const at = offsets.current[i];
-    if (!at) return;
-    tabs.current?.scrollTo({ x: Math.max(0, at.x - 12), animated: true });
-  };
+  /**
+   * Bring the selected pill fully into view, moving as little as possible.
+   *
+   * Two things were wrong before. It ran from the swipe and tap handlers rather
+   * than from the selection itself, so a swipe that did not produce a momentum
+   * event left the strip where it was and the pill stayed clipped at the right
+   * edge. And when it did run it always left-aligned the pill, which for one
+   * near the end of the strip scrolled past it and clipped it at the LEFT edge
+   * instead. Driving it from the index means it runs however the selection
+   * changed, and scrolling only far enough to uncover the pill keeps both ends
+   * of the strip reachable.
+   */
+  useEffect(() => {
+    const at = offsets.current[index];
+    if (!at || stripWidth <= 0) return;
+    const pad = 12;
+    const from = stripX.current;
+    let target = from;
+    if (at.x - pad < from) target = at.x - pad;
+    else if (at.x + at.w + pad > from + stripWidth) target = at.x + at.w + pad - stripWidth;
+    target = Math.max(0, target);
+    if (Math.abs(target - from) > 1) {
+      stripX.current = target;
+      tabs.current?.scrollTo({ x: target, animated: true });
+    }
+  }, [index, stripWidth, measured, items.length]);
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     setOffset(event.nativeEvent.contentOffset.x);
@@ -132,7 +163,12 @@ export function CardCarousel({
         ref={tabs}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 6, paddingRight: 4 }}
+        onLayout={(event) => setStripWidth(event.nativeEvent.layout.width)}
+        onScroll={(event) => {
+          stripX.current = event.nativeEvent.contentOffset.x;
+        }}
+        scrollEventThrottle={32}
+        contentContainerStyle={{ gap: 6, paddingRight: 12 }}
       >
         {items.map((item, i) => {
           const on = i === current;
@@ -146,7 +182,9 @@ export function CardCarousel({
               hitSlop={{ top: 8, bottom: 8, left: 2, right: 2 }}
               onLayout={(event) => {
                 const { x, width: w } = event.nativeEvent.layout;
+                const had = offsets.current[i];
                 offsets.current[i] = { x, w };
+                if (!had || had.x !== x || had.w !== w) setMeasured((n) => n + 1);
               }}
               style={{
                 height: 32,
@@ -201,7 +239,21 @@ export function CardCarousel({
               });
             }}
           >
-            {item.node}
+            {item.detail && onOpenDetail ? (
+              // The whole card opens its note, not only the link at the bottom.
+              // The link stays as the visible affordance: a tap target with no
+              // sign it is tappable is not a control. The buttons some cards
+              // carry sit above this one and keep their own taps.
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`${item.title}. Opens the full note.`}
+                onPress={() => onOpenDetail(item.detail!)}
+              >
+                {item.node}
+              </Pressable>
+            ) : (
+              item.node
+            )}
           </View>
         ))}
       </ScrollView>

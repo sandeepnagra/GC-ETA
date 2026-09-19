@@ -17,8 +17,17 @@ interface Props {
   onSubmit: () => void;
 }
 
-/** Priority dates run from the early 1990s to today; none can be in the future. */
-const EARLIEST = new Date(1990, 0, 1);
+/**
+ * The earliest selectable priority date, and today's date is the latest.
+ *
+ * 1990 was an arbitrary round number with no basis in the data. The earliest
+ * live cutoff ever published across the whole bulletin archive, all employment
+ * categories and countries, is 22 April 2001 (EB-3 Mexico). No priority date
+ * before that has ever been the boundary anyone was waiting behind, so 2000
+ * comfortably covers every real case while cutting nine pointless decades off
+ * a spinner that already has to reach back a long way.
+ */
+const EARLIEST = new Date(2000, 0, 1);
 
 // A priority date is a calendar date with no time and no zone. Converting
 // through UTC shifts it: parsing "2015-03-10" as UTC midnight and rendering it
@@ -32,16 +41,24 @@ function toIso(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-function fromIso(iso: string): Date {
+function fromIso(iso: string, fallback: Date): Date {
   const [year, month, day] = iso.split("-").map(Number);
-  if (!year || !month || !day) return new Date();
+  if (!year || !month || !day) return fallback;
   return new Date(year, month - 1, day);
 }
 
 export function CaseScreen({ theme, draft, onChange, onSubmit }: Props) {
   const [picking, setPicking] = useState(false);
   const valid = /^\d{4}-\d{2}-\d{2}$/.test(draft.priorityDate);
+  // One instant, reused everywhere "today" means something. The picker's
+  // value and its own maximumDate used to come from two separate `new Date()`
+  // calls a render apart, so the value could sit a few milliseconds ahead of
+  // the maximum it was being checked against on every re-render while the
+  // picker was open. Native date pickers do not handle a value past their own
+  // maximumDate gracefully, and it read as the picker letting a future date
+  // through even though the prop looked right.
   const today = new Date();
+  const todayIso = toIso(today);
 
   return (
     <ScrollView
@@ -63,7 +80,7 @@ export function CaseScreen({ theme, draft, onChange, onSubmit }: Props) {
         </View>
 
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          <AppMark size={32} />
+          <AppMark size={32} dark={theme.dark} />
           <Text display style={{ fontSize: 28, color: theme.accent, letterSpacing: -0.5 }}>
             GC ETA
           </Text>
@@ -115,7 +132,7 @@ export function CaseScreen({ theme, draft, onChange, onSubmit }: Props) {
         {picking ? (
           <View style={{ backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 14, overflow: "hidden" }}>
             <DateTimePicker
-              value={fromIso(draft.priorityDate)}
+              value={fromIso(draft.priorityDate, today)}
               mode="date"
               // A spinner beats a calendar grid here: priority dates are often
               // a decade back, and paging a month at a time to reach 2013 is
@@ -126,7 +143,12 @@ export function CaseScreen({ theme, draft, onChange, onSubmit }: Props) {
               themeVariant={theme.dark ? "dark" : "light"}
               onChange={(_event, selected) => {
                 if (Platform.OS !== "ios") setPicking(false);
-                if (selected) onChange({ ...draft, priorityDate: toIso(selected) });
+                if (!selected) return;
+                // A second, independent guard on the value itself rather than
+                // trusting the picker's own maximumDate. String comparison is
+                // safe here because both sides are zero-padded YYYY-MM-DD.
+                const iso = toIso(selected);
+                onChange({ ...draft, priorityDate: iso > todayIso ? todayIso : iso });
               }}
             />
           </View>

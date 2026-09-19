@@ -80,17 +80,25 @@ export function CardWatermark({ color, width = 190 }: { color: string; width?: n
  * The app icon, small, for use as a wordmark lockup next to "GC ETA".
  *
  * Traced from the same geometry as `pipeline/make_icons.py` and the home
- * screen icon: a rounded green square, a white outline of a card carrying a
- * photo panel and a progress bar with a marker, which is the one detail that
- * says "ETA" rather than "ID card". Fixed to the brand colour regardless of
- * theme, the way a logo is: it is an identity mark, not a themed UI element,
- * and should look the same in light and dark mode.
+ * screen icon: a rounded square, an outline of a card carrying a photo panel
+ * and a progress bar with a marker, which is the one detail that says "ETA"
+ * rather than "ID card".
+ *
+ * TWO FIXED VARIANTS, NOT A THEMED COMPONENT. The design specifies a light
+ * icon (white square, green line art) and a tinted icon (green square, white
+ * line art), the same two the app icon itself ships as. `dark` selects between
+ * those two named variants; it does not derive colours from `theme`, because a
+ * logo is an identity mark rather than UI chrome; a first version hardcoded
+ * the tinted (green) variant for both appearances, which put the dark-mode
+ * mark on the light-mode screen.
  */
-export function AppMark({ size = 32 }: { size?: number }) {
+export function AppMark({ size = 32, dark = false }: { size?: number; dark?: boolean }) {
+  const fill = dark ? "#0E6B63" : "#FFFFFF";
+  const ink = dark ? "#FFFFFF" : "#0E6B63";
   return (
     <Svg width={size} height={size} viewBox="0 0 100 100">
-      <Rect width={100} height={100} rx={22} fill="#0E6B63" />
-      <G fill="none" stroke="#FFFFFF" strokeLinecap="round" strokeLinejoin="round">
+      <Rect width={100} height={100} rx={22} fill={fill} />
+      <G fill="none" stroke={ink} strokeLinecap="round" strokeLinejoin="round">
         <Rect x={8} y={23} width={84} height={54} rx={9} strokeWidth={5} />
         <Rect x={17} y={41} width={22} height={26} rx={3} strokeWidth={4} />
         <Circle cx={28} cy={50} r={4.5} strokeWidth={3.5} />
@@ -101,7 +109,7 @@ export function AppMark({ size = 32 }: { size?: number }) {
         <Line x1={47} y1={63} x2={66} y2={63} strokeWidth={4} />
         <Rect x={74} y={30} width={9} height={7} rx={1.5} strokeWidth={3} />
       </G>
-      <G fill="#FFFFFF">
+      <G fill={ink}>
         <Circle cx={20} cy={33} r={2.2} />
         <Circle cx={27} cy={33} r={2.2} />
         <Circle cx={34} cy={33} r={2.2} />

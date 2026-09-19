@@ -14,10 +14,41 @@ import { ResultsScreen } from "./src/screens/ResultsScreen";
 import { resolveTheme, type ThemeMode } from "./src/theme";
 import type { CaseDraft, Screen } from "./src/types";
 
+/**
+ * A QA harness, not a feature. `EXPO_PUBLIC_QA_STATE` is a JSON blob that seeds
+ * the app's initial screen, case and theme, so testing a specific state means
+ * setting an environment variable at bundle time rather than editing this file
+ * and reverting it. Expo inlines `EXPO_PUBLIC_*` values into the client bundle,
+ * so `EXPO_PUBLIC_QA_STATE='{"screen":"results","draft":{...}}' npx expo
+ * export:embed ...` produces exactly that state with zero source changes. Unset,
+ * `JSON.parse` never runs and every default below is the same as before.
+ */
+interface QaState {
+  screen?: Screen;
+  draft?: Partial<CaseDraft>;
+  mode?: ThemeMode;
+  /** Key of the carousel card to open face-down, for screenshotting a back. */
+  flipped?: string;
+  /** Which sheet to open over the results screen, if any. */
+  sheet?: "disruptions" | "compare";
+}
+
+function readQaState(): QaState | null {
+  const raw = process.env.EXPO_PUBLIC_QA_STATE;
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as QaState;
+  } catch {
+    return null;
+  }
+}
+
+const QA_STATE = readQaState();
+
 export default function App() {
   const system = useColorScheme();
-  const [mode, setMode] = useState<ThemeMode>("system");
-  const [screen, setScreen] = useState<Screen>("case");
+  const [mode, setMode] = useState<ThemeMode>(QA_STATE?.mode ?? "system");
+  const [screen, setScreen] = useState<Screen>(QA_STATE?.screen ?? "case");
   const [draft, setDraft] = useState<CaseDraft>({
     column: "IN",
     birthCountry: "IN",
@@ -27,6 +58,7 @@ export default function App() {
     // estimate for a case nobody had entered, which reads as a real answer.
     priorityDate: "",
     path: "adjustment",
+    ...QA_STATE?.draft,
   });
 
   // The data can change while the app is open, so it is state rather than a
@@ -106,6 +138,8 @@ export default function App() {
           onBack={() => setScreen("case")}
           onExplain={() => setScreen("explain")}
           onNews={() => setScreen("news")}
+          initialSheet={QA_STATE?.sheet}
+          initialFlipped={QA_STATE?.flipped}
           comparison={comparison}
           suggestion={suggestion}
           events={events}

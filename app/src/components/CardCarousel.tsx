@@ -74,10 +74,13 @@ export function CardCarousel({
   theme,
   items,
   onOpenDetail,
+  initialFlipped,
 }: {
   theme: Theme;
   items: CarouselItem[];
   onOpenDetail?: (detail: CardDetail) => void;
+  /** QA harness only: the key of the card to render face-down on mount. */
+  initialFlipped?: string;
 }) {
   const { width } = useWindowDimensions();
   const pageWidth = Math.max(240, width - PAGE_PADDING * 2);
@@ -100,8 +103,13 @@ export function CardCarousel({
    */
   const [measured, setMeasured] = useState(0);
   /** Only one card is ever face-down, and only the one being looked at. */
-  const [flipped, setFlipped] = useState<string | null>(null);
-  const [index, setIndex] = useState(0);
+  const [flipped, setFlipped] = useState<string | null>(initialFlipped ?? null);
+  // QA harness only: land on the flipped card's own page, not page 0. Without
+  // this the seeded flip was invisible, since the pager still opened on
+  // whichever card sorts first and the flipped one sat off-screen.
+  const [index, setIndex] = useState(() =>
+    initialFlipped ? Math.max(0, items.findIndex((item) => item.key === initialFlipped)) : 0,
+  );
   const [heights, setHeights] = useState<number[]>([]);
   const [offset, setOffset] = useState(0);
 
@@ -137,9 +145,33 @@ export function CardCarousel({
    * of the strip reachable.
    */
   // Turning a card over then swiping away would leave it face-down behind you.
+  // Skipped on the very first run: this effect fires on mount like any other,
+  // and without the guard it would immediately clear a QA-seeded initial flip
+  // before a screenshot ever saw it.
+  const mountedRef = useRef(false);
   useEffect(() => {
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      return;
+    }
     setFlipped(null);
   }, [index]);
+
+  // QA harness only: land the pager on the flipped card's own page. The
+  // `contentOffset` prop below is a best-effort first paint, but RN silently
+  // drops it on iOS when it fires before the native scroll view has measured
+  // its content, which is exactly the case here since the page width depends
+  // on a layout pass. An explicit scrollTo once after mount is what actually
+  // works; `animated: false` keeps it invisible in a screenshot taken after
+  // launch rather than showing a stray swipe.
+  useEffect(() => {
+    if (initialFlipped && index > 0) {
+      scroller.current?.scrollTo({ x: index * stride, animated: false });
+    }
+    // Intentionally mount-only: re-running this on every stride change would
+    // fight the reader's own scrolling.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const at = offsets.current[index];
@@ -226,6 +258,7 @@ export function CardCarousel({
         snapToInterval={stride}
         snapToAlignment="start"
         disableIntervalMomentum
+        contentOffset={{ x: index * stride, y: 0 }}
         onScroll={onScroll}
         scrollEventThrottle={16}
         onMomentumScrollEnd={onMomentumEnd}

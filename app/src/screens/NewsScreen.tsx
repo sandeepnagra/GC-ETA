@@ -39,7 +39,7 @@ export function NewsScreen({ theme, items, onBack }: Props) {
       style={{ flex: 1, backgroundColor: theme.bg }}
       contentContainerStyle={{ padding: 20, paddingBottom: 48, gap: 12 }}
     >
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+      <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 12 }}>
         <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={onBack} hitSlop={12}>
           <Text style={{ fontSize: 17, color: theme.accent }}>Back</Text>
         </Pressable>

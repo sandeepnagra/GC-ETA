@@ -378,7 +378,12 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
           the icon depicts, rather than repeating on every visit to the
           estimate. */}
       <View style={{ position: "relative" }}>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+        {/* flex-start, not center: at accessibility text sizes the title wraps
+            to several lines, and centering the 44pt icon buttons against that
+            full height put the back arrow on top of the wrapped text rather
+            than beside its first line. Confirmed on device at the largest
+            Dynamic Type size. */}
+        <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 6 }}>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Back to your case"

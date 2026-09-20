@@ -6,8 +6,8 @@ import { Text } from "../components/Text";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 import { CATEGORIES, COLUMNS, prettyDate } from "../data";
-import { AppMark, CardWatermark } from "../components/Icons";
-import type { Theme } from "../theme";
+import { AppMark, CardWatermark, MonitorIcon, MoonIcon, SunIcon } from "../components/Icons";
+import type { Theme, ThemeMode } from "../theme";
 import type { CaseDraft } from "../types";
 
 interface Props {
@@ -15,6 +15,8 @@ interface Props {
   draft: CaseDraft;
   onChange: (next: CaseDraft) => void;
   onSubmit: () => void;
+  mode: ThemeMode;
+  onMode: (mode: ThemeMode) => void;
 }
 
 /**
@@ -47,8 +49,9 @@ function fromIso(iso: string, fallback: Date): Date {
   return new Date(year, month - 1, day);
 }
 
-export function CaseScreen({ theme, draft, onChange, onSubmit }: Props) {
+export function CaseScreen({ theme, draft, onChange, onSubmit, mode, onMode }: Props) {
   const [picking, setPicking] = useState(false);
+  const [showAppearance, setShowAppearance] = useState(false);
   const valid = /^\d{4}-\d{2}-\d{2}$/.test(draft.priorityDate);
   // One instant, reused everywhere "today" means something. The picker's
   // value and its own maximumDate used to come from two separate `new Date()`
@@ -69,7 +72,11 @@ export function CaseScreen({ theme, draft, onChange, onSubmit }: Props) {
       {/* The green-card watermark moved here from the results header: this is
           the screen where the user actually fills in the card it depicts,
           rather than a screen they pass through on every visit. */}
-      <View style={{ position: "relative" }}>
+      {/* zIndex here, not just on the popover below: React Native stacks flex
+          siblings in tree order by default, and the Country field comes right
+          after this block, so without it the popover painted underneath the
+          chips rather than over them the moment it opened. */}
+      <View style={{ position: "relative", zIndex: showAppearance ? 10 : 0 }}>
         <View
           pointerEvents="none"
           accessibilityElementsHidden
@@ -79,15 +86,87 @@ export function CaseScreen({ theme, draft, onChange, onSubmit }: Props) {
           <CardWatermark color={theme.accent} width={200} />
         </View>
 
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          <AppMark size={32} dark={theme.dark} />
-          <Text display style={{ fontSize: 28, color: theme.accent, letterSpacing: -0.5 }}>
-            GC ETA
-          </Text>
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <AppMark size={32} dark={theme.dark} />
+            <Text display style={{ fontSize: 28, color: theme.accent, letterSpacing: -0.5 }}>
+              GC ETA
+            </Text>
+          </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Change appearance"
+            accessibilityState={{ expanded: showAppearance }}
+            onPress={() => setShowAppearance((open) => !open)}
+            style={{
+              width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center",
+              backgroundColor: theme.card, borderWidth: 1, borderColor: theme.border,
+            }}
+          >
+            {mode === "system" ? (
+              <MonitorIcon color={theme.text} />
+            ) : mode === "light" ? (
+              <SunIcon color={theme.text} />
+            ) : (
+              <MoonIcon color={theme.text} />
+            )}
+          </Pressable>
         </View>
         <Text style={{ fontSize: 15, lineHeight: 21, color: theme.secondary, marginTop: 4 }}>
           Three things set your column and your place in line.
         </Text>
+
+        {showAppearance ? (
+          <View
+            style={{
+              position: "absolute", top: 46, left: 0, right: 0, zIndex: 10,
+              padding: 14, gap: 10, backgroundColor: theme.card,
+              borderWidth: 1, borderColor: theme.border, borderRadius: 16,
+              shadowColor: "#000", shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 },
+              elevation: 6,
+            }}
+          >
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" }}>
+              <Text style={{ fontSize: 12, fontWeight: "600", letterSpacing: 0.3, textTransform: "uppercase", color: theme.secondary }}>
+                Appearance
+              </Text>
+              <Text style={{ fontSize: 12, color: theme.secondary }}>
+                {mode === "system" ? "Following your phone" : mode === "light" ? "Light" : "Dark"}
+              </Text>
+            </View>
+            <View style={{ flexDirection: "row", gap: 6 }}>
+              {(["system", "light", "dark"] as const).map((option) => {
+                const active = option === mode;
+                const Icon = option === "system" ? MonitorIcon : option === "light" ? SunIcon : MoonIcon;
+                return (
+                  <Pressable
+                    key={option}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: active }}
+                    onPress={() => {
+                      onMode(option);
+                      setShowAppearance(false);
+                    }}
+                    style={{
+                      flex: 1, minHeight: 40, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6,
+                      borderRadius: 10, borderWidth: 1,
+                      backgroundColor: active ? theme.accent : theme.bg,
+                      borderColor: active ? theme.accent : theme.border,
+                    }}
+                  >
+                    <Icon color={active ? theme.heroText : theme.text} size={16} />
+                    <Text style={{ fontSize: 14, fontWeight: active ? "600" : "500", color: active ? theme.heroText : theme.text }}>
+                      {option === "system" ? "System" : option === "light" ? "Light" : "Dark"}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            <Text style={{ fontSize: 12, lineHeight: 17, color: theme.secondary }}>
+              System follows your phone's light or dark setting and changes with it, including on a schedule. Choose Light or Dark to override it just for this app.
+            </Text>
+          </View>
+        ) : null}
       </View>
 
       <Field theme={theme} label="Country of birth" hint="Your birth country sets your column, not your citizenship. Hong Kong, Macau and Taiwan count separately from mainland China.">

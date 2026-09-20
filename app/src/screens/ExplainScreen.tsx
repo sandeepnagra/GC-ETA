@@ -10,12 +10,10 @@ import React from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { Text } from "../components/Text";
 
-import type { ThemeMode, Theme } from "../theme";
+import type { Theme } from "../theme";
 
 interface Props {
   theme: Theme;
-  mode: ThemeMode;
-  onMode: (mode: ThemeMode) => void;
   onBack: () => void;
   onMethodology: () => void;
   dataAsOf: string;
@@ -36,7 +34,7 @@ const STEPS = [
   },
 ];
 
-export function ExplainScreen({ theme, mode, onMode, onBack, onMethodology, dataAsOf }: Props) {
+export function ExplainScreen({ theme, onBack, onMethodology, dataAsOf }: Props) {
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: theme.bg }}
@@ -103,38 +101,6 @@ export function ExplainScreen({ theme, mode, onMode, onBack, onMethodology, data
         </View>
         <Text style={{ fontSize: 20, color: theme.secondary }}>›</Text>
       </Pressable>
-
-      <View style={{ backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1, borderRadius: 16, padding: 16, gap: 10 }}>
-        <Text style={{ fontSize: 12, fontWeight: "600", letterSpacing: 0.3, textTransform: "uppercase", color: theme.secondary }}>
-          Appearance
-        </Text>
-        <View style={{ flexDirection: "row", gap: 6 }}>
-          {(["system", "light", "dark"] as const).map((option) => {
-            const active = option === mode;
-            return (
-              <Pressable
-                key={option}
-                accessibilityRole="button"
-                accessibilityState={{ selected: active }}
-                onPress={() => onMode(option)}
-                style={{
-                  flex: 1, minHeight: 44, alignItems: "center", justifyContent: "center",
-                  borderRadius: 10, borderWidth: 1,
-                  backgroundColor: active ? theme.accent : theme.bg,
-                  borderColor: active ? theme.accent : theme.border,
-                }}
-              >
-                <Text style={{ fontSize: 14, fontWeight: active ? "600" : "500", color: active ? theme.heroText : theme.text }}>
-                  {option === "system" ? "System" : option === "light" ? "Light" : "Dark"}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-        <Text style={{ fontSize: 12, lineHeight: 17, color: theme.secondary }}>
-          System follows your phone and changes with it. Light or Dark overrides that for this app only.
-        </Text>
-      </View>
 
       <Text style={{ fontSize: 12, lineHeight: 17, textAlign: "center", color: theme.secondary }}>
         Data as of {dataAsOf}. An estimate from public data, not a promise and not legal advice.

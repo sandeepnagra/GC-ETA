@@ -129,7 +129,14 @@ export default function App() {
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
       <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.bg} />
       {screen === "case" ? (
-        <CaseScreen theme={theme} draft={draft} onChange={setDraft} onSubmit={() => setScreen("results")} />
+        <CaseScreen
+          theme={theme}
+          draft={draft}
+          onChange={setDraft}
+          onSubmit={() => setScreen("results")}
+          mode={mode}
+          onMode={setMode}
+        />
       ) : screen === "results" && assessment ? (
         <ResultsScreen
           theme={theme}
@@ -154,8 +161,6 @@ export default function App() {
       ) : (
         <ExplainScreen
           theme={theme}
-          mode={mode}
-          onMode={setMode}
           onBack={() => setScreen("results")}
           onMethodology={() => setScreen("methodology")}
           dataAsOf={prettyMonth(bundle.end_month)}

@@ -84,20 +84,22 @@ export function CardWatermark({ color, width = 190 }: { color: string; width?: n
  * and a progress bar with a marker, which is the one detail that says "ETA"
  * rather than "ID card".
  *
- * TWO FIXED VARIANTS, NOT A THEMED COMPONENT. The design specifies a light
- * icon (white square, green line art) and a tinted icon (green square, white
- * line art), the same two the app icon itself ships as. `dark` selects between
- * those two named variants; it does not derive colours from `theme`, because a
- * logo is an identity mark rather than UI chrome; a first version hardcoded
- * the tinted (green) variant for both appearances, which put the dark-mode
- * mark on the light-mode screen.
+ * TRANSPARENT, NOT A TILE. The home screen icon needs its own filled square,
+ * because a launcher icon has to be a solid shape. Next to a title on a
+ * screen the app already controls the background of, that square just reads
+ * as a colour swap between light and dark mode rather than a mark. So this
+ * draws only the line art, in one ink colour, on nothing: dark ink on a light
+ * screen, light ink on a dark one. `dark` picks the ink; it does not derive it
+ * from `theme`, because a logo is an identity mark rather than UI chrome, and
+ * it now sits correctly on any background colour the app ever changes to.
  */
 export function AppMark({ size = 32, dark = false }: { size?: number; dark?: boolean }) {
-  const fill = dark ? "#0E6B63" : "#FFFFFF";
-  const ink = dark ? "#FFFFFF" : "#0E6B63";
+  // The two accents from theme.ts, not a plain neutral: the mark stays teal in
+  // both modes rather than turning grey at night, which is what "matching"
+  // means for a brand mark rather than for UI chrome.
+  const ink = dark ? "#5CBFA8" : "#0E6B63";
   return (
     <Svg width={size} height={size} viewBox="0 0 100 100">
-      <Rect width={100} height={100} rx={22} fill={fill} />
       <G fill="none" stroke={ink} strokeLinecap="round" strokeLinejoin="round">
         <Rect x={8} y={23} width={84} height={54} rx={9} strokeWidth={5} />
         <Rect x={17} y={41} width={22} height={26} rx={3} strokeWidth={4} />
@@ -105,7 +107,7 @@ export function AppMark({ size = 32, dark = false }: { size?: number; dark?: boo
         <Path d="M20 65c0-5 3.5-8.5 8-8.5s8 3.5 8 8.5" strokeWidth={3.5} />
         <Line x1={47} y1={45} x2={79} y2={45} strokeWidth={4} />
         <Line x1={47} y1={54} x2={70} y2={54} strokeWidth={4} />
-        <Line x1={47} y1={63} x2={79} y2={63} stroke="#9CCBC3" strokeWidth={4} />
+        <Line x1={47} y1={63} x2={79} y2={63} strokeWidth={4} strokeOpacity={0.4} />
         <Line x1={47} y1={63} x2={66} y2={63} strokeWidth={4} />
         <Rect x={74} y={30} width={9} height={7} rx={1.5} strokeWidth={3} />
       </G>

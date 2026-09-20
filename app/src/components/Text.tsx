@@ -62,5 +62,15 @@ export function Text({ display, style, ...rest }: Props) {
   const family = display
     ? "Fraunces_700Bold"
     : (BODY[String(fontWeight ?? "400")] ?? BODY["400"]!);
-  return <NativeText {...rest} style={[withoutWeight, { fontFamily: family }]} />;
+  return (
+    <NativeText
+      {...rest}
+      // Android reserves extra space above and below every line for accent
+      // marks a Latin font never uses, which iOS does not do at all. Left at
+      // its default, a pill or chip sized to fit the text on iOS shows a
+      // visible gap above and below the same text on Android. One place to
+      // turn it off, since every screen already renders text through here.
+      style={[withoutWeight, { fontFamily: family, includeFontPadding: false }]}
+    />
+  );
 }

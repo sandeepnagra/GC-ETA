@@ -132,28 +132,14 @@ export function CardCarousel({
   // between, and each of those intermediate pages briefly became "the" index,
   // flashing across the pill row before landing on the one actually tapped.
   const jumping = useRef(false);
-  const jumpToken = useRef(0);
+  const jumpTarget = useRef(0);
 
   const goTo = (next: number) => {
     const clamped = Math.max(0, Math.min(items.length - 1, next));
     jumping.current = true;
-    const token = ++jumpToken.current;
+    jumpTarget.current = clamped * stride;
     setIndex(clamped);
-    scroller.current?.scrollTo({ x: clamped * stride, animated: true });
-    // onMomentumScrollEnd is not reliably fired on iOS after a programmatic
-    // animated scrollTo -- a known gap, not something either onScroll handler
-    // below can route around. Relying on it alone to clear `jumping` meant
-    // that the very first tap could leave the flag stuck true forever,
-    // silently disabling onScroll's live tracking for every drag afterward
-    // too, for the rest of the screen's life: exactly a persistent return to
-    // the pre-fix lag, on a platform where that event is unreliable, however
-    // many times the screen is swiped afterward. This clears it unconditionally
-    // a beat after the animation should have finished, whether or not that
-    // event ever arrives. The token guards against a stale timer from an
-    // earlier tap clearing a flag a newer tap just set.
-    setTimeout(() => {
-      if (jumpToken.current === token) jumping.current = false;
-    }, 400);
+    scroller.current?.scrollTo({ x: jumpTarget.current, animated: true });
   };
 
   /**
@@ -225,9 +211,24 @@ export function CardCarousel({
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const x = event.nativeEvent.contentOffset.x;
     setOffset(x);
-    if (!jumping.current) {
-      setIndex(nearestIndex(x));
+    if (jumping.current) {
+      // A fixed timer to clear this was tried and made things worse: it
+      // fired on a schedule guessed from a short jump, so a tap landing far
+      // away was still mid-flight when the timer cleared the guard early,
+      // and onScroll resumed live-tracking through whatever pages were still
+      // left to cross -- reintroducing the exact flashing this guard exists
+      // to prevent, worse than before because now it happened on the long
+      // jumps specifically. Distance needs no guess: once the scroll is
+      // closer to its target than to any other page, nearestIndex already
+      // resolves to the target regardless, so lowering the guard exactly
+      // there is always safe, however long the animation actually takes.
+      if (Math.abs(x - jumpTarget.current) < stride / 2) {
+        jumping.current = false;
+      } else {
+        return;
+      }
     }
+    setIndex(nearestIndex(x));
   };
 
   const onMomentumEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {

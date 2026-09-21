@@ -188,14 +188,26 @@ export function CardCarousel({
     }
   }, [index, stripWidth, measured, items.length]);
 
+  const nearestIndex = (x: number) => Math.max(0, Math.min(items.length - 1, Math.round(x / stride)));
+
+  // The pill row used to learn which page was showing only from
+  // onMomentumScrollEnd, which fires once, after the whole fling has finished
+  // decelerating. A fast swipe across several cards left the pill frozen on
+  // the card the reader started from for as long as the deceleration took,
+  // sometimes the better part of a second, then jumped straight to the final
+  // one. Updating it from onScroll too means it tracks the page actually
+  // under the reader's finger throughout the gesture, the way a page
+  // indicator normally does, rather than only after the gesture ends.
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    setOffset(event.nativeEvent.contentOffset.x);
+    const x = event.nativeEvent.contentOffset.x;
+    setOffset(x);
+    setIndex(nearestIndex(x));
   };
 
   const onMomentumEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const x = event.nativeEvent.contentOffset.x;
     setOffset(x);
-    setIndex(Math.max(0, Math.min(items.length - 1, Math.round(x / stride))));
+    setIndex(nearestIndex(x));
   };
 
   return (

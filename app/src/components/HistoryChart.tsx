@@ -16,6 +16,13 @@ import { isoToDay } from "@gc-eta/model";
 
 import type { Theme } from "../theme";
 
+/** "2016-10" to "Oct 2016". Short form: the axis label sits in a 34pt margin. */
+function shortMonth(month: string): string {
+  const names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const [y, m] = month.split("-").map(Number) as [number, number];
+  return `${names[m - 1]} ${y}`;
+}
+
 interface Props {
   theme: Theme;
   points: HistoryPoint[];
@@ -115,10 +122,10 @@ export function HistoryChart({ theme, points, priorityDate, width = 326, height 
         })()}
 
         <SvgText fontFamily="IBMPlexSans_400Regular" x={padLeft} y={height - 6} fontSize={10} fill={theme.secondary}>
-          {points[0]?.month ?? ""}
+          {points[0] ? shortMonth(points[0].month) : ""}
         </SvgText>
         <SvgText fontFamily="IBMPlexSans_400Regular" x={width - 6} y={height - 6} fontSize={10} fill={theme.secondary} textAnchor="end">
-          {points[points.length - 1]?.month ?? ""}
+          {points[points.length - 1] ? shortMonth(points[points.length - 1]!.month) : ""}
         </SvgText>
       </Svg>
       {frozen.length > 0 ? (

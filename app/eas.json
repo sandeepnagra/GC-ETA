@@ -21,7 +21,8 @@
     "production": {
       "android": {
         "track": "internal",
-        "releaseStatus": "completed"
+        "releaseStatus": "completed",
+        "serviceAccountKeyPath": "./google-service-account.json"
       }
     }
   }

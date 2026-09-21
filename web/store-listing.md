@@ -61,10 +61,19 @@ Support URL: https://sandeepnagra.github.io/GC-ETA/privacy.html (or a
 dedicated support email)
 Support email: sandeepnagra@gmail.com
 
-## Screenshots needed (both stores require at least one set)
-- Case/input screen (light mode)
-- Results screen — headline estimate card
-- Results screen — Queue or Supply card
-Real device screenshots taken this session (Android, 1080x1920) can be
-recropped/reused, or fresh ones captured once a build is running on a
-physical device or higher-res simulator.
+## Screenshots
+
+Captured from a real release build (SDK 54, API 36) on an Android emulator,
+1080x1920 (9:16) PNG — meets Play's 320-3,840px-per-side requirement directly,
+no cropping needed. Live in `web/store-screenshots/`:
+
+1. `1-case-input.png` — the case/input screen (India, EB-2, priority date set)
+2. `2-outlook-estimate.png` — Results screen, headline estimate card
+3. `3-queue-card.png` — Results screen, Queue card (people ahead of you)
+4. `4-what-changed.png` — the What Changed screen, with a live, sourced event
+5. `5-history-chart.png` — Results screen, ten-year History chart
+
+Play requires 2–8 phone screenshots; these five cover the app's core value
+without padding. iOS screenshots still need capturing once a device/simulator
+build is available (blocked on the same Apple Developer enrollment as iOS
+submission).

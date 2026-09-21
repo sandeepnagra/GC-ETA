@@ -132,12 +132,28 @@ export function CardCarousel({
   // between, and each of those intermediate pages briefly became "the" index,
   // flashing across the pill row before landing on the one actually tapped.
   const jumping = useRef(false);
+  const jumpToken = useRef(0);
 
   const goTo = (next: number) => {
     const clamped = Math.max(0, Math.min(items.length - 1, next));
     jumping.current = true;
+    const token = ++jumpToken.current;
     setIndex(clamped);
     scroller.current?.scrollTo({ x: clamped * stride, animated: true });
+    // onMomentumScrollEnd is not reliably fired on iOS after a programmatic
+    // animated scrollTo -- a known gap, not something either onScroll handler
+    // below can route around. Relying on it alone to clear `jumping` meant
+    // that the very first tap could leave the flag stuck true forever,
+    // silently disabling onScroll's live tracking for every drag afterward
+    // too, for the rest of the screen's life: exactly a persistent return to
+    // the pre-fix lag, on a platform where that event is unreliable, however
+    // many times the screen is swiped afterward. This clears it unconditionally
+    // a beat after the animation should have finished, whether or not that
+    // event ever arrives. The token guards against a stale timer from an
+    // earlier tap clearing a flag a newer tap just set.
+    setTimeout(() => {
+      if (jumpToken.current === token) jumping.current = false;
+    }, 400);
   };
 
   /**

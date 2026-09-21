@@ -5,7 +5,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { whatWouldChange } from "../src/changes.js";
-import type { Bundle, CaseInput, EventsFile } from "../src/types.js";
+import type { Bundle, CaseInput, EventsFile, GcEvent } from "../src/types.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const load = (name: string) =>
@@ -34,11 +34,50 @@ test("cap reform is matched on what it is, not on the word cap", () => {
   // Matching loosely pulled in a wage-weighted H-1B selection rule, whose
   // summary mentions the H-1B cap and which has nothing to do with per-country
   // limits. The row must name the actual bills.
-  const rows = whatWouldChange(bundle, events, india);
+  //
+  // Built from a synthetic registry rather than the live one: the real
+  // EAGLE/IVES entry is correctly excluded once it is marked dead (see the
+  // test below), and this one is about the matching logic, not today's
+  // legislative status.
+  // Only the synthetic event, not the real registry: the live EAGLE/IVES
+  // entry matches the same regex and would win a `.find()` by sitting first,
+  // masking exactly the bug this pair of tests exists to catch.
+  const withPendingReform: EventsFile = {
+    ...events,
+    events: [
+      {
+        id: "test-cap-reform",
+        type: "legislation",
+        title: "Per-country cap reform: EAGLE Act and IVES Act",
+        summary: "Bills that would phase out the seven percent per-country limit.",
+        countries: "all",
+        affects: [],
+        categories: "all",
+        start: null,
+        end: null,
+        status: "pending",
+        modeling: {},
+        confidence: "secondary",
+        verified_against: null,
+        last_checked: "2026-01-01",
+      },
+    ],
+  };
+  const rows = whatWouldChange(bundle, withPendingReform, india);
   const reform = rows.find((r) => r.id === "cap-reform");
   assert.ok(reform, "the row is present");
   assert.match(reform!.detail, /EAGLE|IVES/);
   assert.ok(!/H-1B/.test(reform!.detail));
+});
+
+test("a bill dead since its Congress ended is not shown as a live lever", () => {
+  // The real registry's EAGLE/IVES entry died with the 118th Congress on 3
+  // January 2025 and is marked status "died". A deny-list that only excluded
+  // "enacted" let a dead bill keep showing as a live possibility for eight
+  // months, because nothing had taught it the word for dead; the allow-list
+  // this now uses treats anything it does not recognise as not live.
+  const rows = whatWouldChange(bundle, events, india);
+  assert.ok(!rows.find((r) => r.id === "cap-reform"), "a died bill must not show as a live lever");
 });
 
 test("a consular pause is not shown to someone adjusting status", () => {
@@ -46,6 +85,86 @@ test("a consular pause is not shown to someone adjusting status", () => {
   const consular = whatWouldChange(bundle, events, { ...india, path: "consular" });
   assert.ok(!adjusting.some((r) => r.id === "pause"), "not for an in-US case");
   assert.ok(consular.some((r) => r.id === "pause"), "but yes for a consular one");
+});
+
+const basePause: GcEvent = {
+  id: "test-pause",
+  type: "consular_pause",
+  title: "Test pause",
+  summary: "",
+  countries: "all",
+  affects: ["consular"],
+  categories: "all",
+  start: "2026-01-01",
+  end: null,
+  status: "active",
+  modeling: {},
+  confidence: "secondary",
+  verified_against: null,
+  last_checked: "2026-09-21",
+};
+
+test("an in-force pause outranks one that already ended, even if the ended one names this country specifically", () => {
+  // `.find()` used to return whichever candidate sat first in the file, with
+  // no regard for which one is actually still happening. A pause genuinely
+  // in force today is the more urgent fact for the reader than one a court
+  // already ended, however precisely the ended one names their country.
+  const withBoth: EventsFile = {
+    ...events,
+    country_lists: { ...events.country_lists, test_india: { countries: ["IN"] } },
+    events: [
+      { ...basePause, id: "generic-active", countries: "all", status: "active" },
+      {
+        ...basePause,
+        id: "india-ended",
+        countries: { list: "test_india" },
+        status: "ended_by_court",
+        start: "2025-01-01",
+        end: "2025-06-01",
+      },
+    ],
+  };
+  const rows = whatWouldChange(bundle, withBoth, { ...india, path: "consular" });
+  const pause = rows.find((r) => r.id === "pause");
+  assert.ok(pause);
+  assert.equal(pause!.title, "A pause on your country");
+});
+
+test("among pauses at the same urgency, the one naming this country outranks 'every country'", () => {
+  const withBoth: EventsFile = {
+    ...events,
+    country_lists: { ...events.country_lists, test_india: { countries: ["IN"] } },
+    events: [
+      { ...basePause, id: "generic-active", countries: "all", start: "2026-01-01" },
+      {
+        ...basePause,
+        id: "india-active",
+        countries: { list: "test_india" },
+        start: "2026-03-01",
+      },
+    ],
+  };
+  const rows = whatWouldChange(bundle, withBoth, { ...india, path: "consular" });
+  const pause = rows.find((r) => r.id === "pause");
+  assert.ok(pause);
+  assert.match(pause!.detail, /^Test pause\./);
+});
+
+test("a pause whose end date has passed, and which carries no risk of returning, is dropped rather than shown stale", () => {
+  const withStale: EventsFile = {
+    ...events,
+    events: [
+      {
+        ...basePause,
+        id: "long-over",
+        status: "ended",
+        start: "2020-01-01",
+        end: "2020-06-01",
+      },
+    ],
+  };
+  const rows = whatWouldChange(bundle, withStale, { ...india, path: "consular" });
+  assert.ok(!rows.some((r) => r.id === "pause"), "nothing this stale should still be a lever");
 });
 
 test("EB-1 fall-down is only mentioned to categories that receive it", () => {

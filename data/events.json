@@ -193,18 +193,18 @@
     {
       "id": "per-country-cap-reform-bills",
       "type": "legislation",
-      "title": "Per-country cap reform: EAGLE Act and IVES Act",
-      "summary": "Bills that would phase out the seven percent per-country limit for employment-based green cards. Not passed. Track by sponsor and title rather than bill number: S.3291 and H.R.6542 are 118th Congress numbers and died on 3 January 2025.",
+      "title": "Per-country cap reform: EAGLE Act and IVES Act (118th Congress)",
+      "summary": "S.3291 and H.R.6542, which would have phased out the seven percent per-country limit for employment-based green cards. Died with the 118th Congress on 3 January 2025 without passing either chamber. A bill does not carry over between Congresses; reintroduction under new bill numbers would need its own entry once one is confirmed, not a revival of this one.",
       "countries": "all",
       "affects": [],
       "categories": "all",
       "start": null,
-      "end": null,
-      "status": "pending",
-      "modeling": {"note": "Structural. Would be modelled as a scenario in Level C, not applied to the base estimate."},
+      "end": "2025-01-03",
+      "status": "died",
+      "modeling": {"note": "Structural. Would be modelled as a scenario in Level C, not applied to the base estimate. Kept in the registry, not deleted, so the card's exclusion logic has a real dead entry to be tested against."},
       "confidence": "secondary",
       "verified_against": null,
-      "last_checked": "2026-09-17"
+      "last_checked": "2026-09-21"
     }
   ]
 }

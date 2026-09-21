@@ -75,17 +75,29 @@ export function whatWouldChange(
     }
   }
 
-  // 2. The per-country cap going away, if something in the registry proposes it.
+  // 2. The per-country cap going away, if something in the registry proposes it
+  //    AND is still actually alive.
   //
   //    Matching loosely on the word "cap" pulled in a wage-weighted H-1B
   //    selection rule, whose summary mentions the H-1B cap and which has
   //    nothing to do with per-country limits. Both conditions are required.
+  //
+  //    This used to exclude only "enacted", which let a bill dead since
+  //    January 2025 keep showing as a live possibility for eight months,
+  //    because nothing had taught the check the word for dead. A bill that
+  //    did not pass before its Congress ended is not "still pending"
+  //    forever; reintroduction is a new bill and a new registry entry, not a
+  //    reason to keep this one alive. An allow-list of the statuses that
+  //    actually mean "still moving" fixes this for every future entry too,
+  //    not just this one: anything the list does not recognise counts as not
+  //    live, rather than needing to name every future way to be dead.
+  const LIVE_LEGISLATION_STATUSES = new Set(["pending"]);
   const capReform = events.events.find(
     (event) =>
       event.type === "legislation" &&
       /per-country|EAGLE|IVES/i.test(`${event.title} ${event.summary}`),
   );
-  if (capReform && capReform.status !== "enacted") {
+  if (capReform && LIVE_LEGISLATION_STATUSES.has(capReform.status)) {
     out.push({
       id: "cap-reform",
       direction: "sooner",
@@ -132,14 +144,45 @@ export function whatWouldChange(
   // 5. A pause or ban reaching the applicant's country AND their processing
   //    path. A consular pause does not touch someone adjusting status inside
   //    the United States, and listing it for them would be noise.
-  const pause = events.events.find(
-    (event) =>
-      ["entry_ban", "adjudication_pause", "consular_pause"].includes(event.type) &&
-      event.affects.includes(input.path) &&
-      touchesCountry(events, event, input.birthCountry),
-  );
+  //
+  //    This used to be `.find()`, which returns whichever candidate happens
+  //    to sit first in the registry file -- not the most current, not the
+  //    most specific to this applicant. A generic worldwide pause and a
+  //    country-specific ban can both match the same case, and the file's own
+  //    insertion order has no reason to track which one actually matters
+  //    more today. Sorted instead: a pause genuinely in force now outranks
+  //    one that has already ended, a country-specific listing outranks
+  //    "every country" (more informative for this applicant specifically),
+  //    and the most recently started breaks any remaining tie.
+  //
+  //    An event whose `end` has passed is dropped entirely UNLESS its status
+  //    is one of the ones that exists specifically to flag a real risk of
+  //    returning (a court can undo its own order, and often has). That is
+  //    the deliberate "A pause returning" branch below, not a bug to filter
+  //    away along with genuinely stale ones.
+  const now = Date.now();
+  const isCurrentlyActive = (event: GcEvent) =>
+    event.status === "active" || event.status === "in_force";
+  const couldReturn = (event: GcEvent) =>
+    event.status === "vacated" || event.status === "ended_by_court";
+  const pauseCandidates = events.events
+    .filter(
+      (event) =>
+        ["entry_ban", "adjudication_pause", "consular_pause"].includes(event.type) &&
+        event.affects.includes(input.path) &&
+        touchesCountry(events, event, input.birthCountry) &&
+        (event.end === null || new Date(event.end).getTime() >= now || couldReturn(event)),
+    )
+    .sort((a, b) => {
+      const activeDiff = Number(isCurrentlyActive(b)) - Number(isCurrentlyActive(a));
+      if (activeDiff !== 0) return activeDiff;
+      const specificDiff = Number(b.countries !== "all") - Number(a.countries !== "all");
+      if (specificDiff !== 0) return specificDiff;
+      return (b.start ?? "").localeCompare(a.start ?? "");
+    });
+  const pause = pauseCandidates[0];
   if (pause) {
-    const gone = pause.status === "vacated" || pause.status === "ended_by_court";
+    const gone = couldReturn(pause);
     out.push({
       id: "pause",
       direction: "later",

@@ -9,7 +9,7 @@
     "android": "expo run:android",
     "typecheck": "node scripts/sync-data.mjs && tsc --noEmit",
     "sync-data": "node scripts/sync-data.mjs",
-    "eas-build-post-install": "cd ../model && npm install && npm run build"
+    "eas-build-post-install": "node scripts/sync-data.mjs && cd ../model && npm install && npm run build"
   },
   "dependencies": {
     "@gc-eta/model": "file:../model",

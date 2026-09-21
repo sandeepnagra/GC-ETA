@@ -66,3 +66,8 @@ app/build/
 
 # Staged for the Pages deploy; rebuilt by pipeline/publish.py on every run
 public/
+
+# Google Play service account key, if one is added for `eas submit` -- never
+# committed, whatever it ends up named.
+google-service-account*.json
+*-service-account.json

@@ -167,11 +167,14 @@ export function CardCarousel({
     setFlipped(null);
   }, [index]);
 
-  // QA harness only: land the pager on the flipped card's own page. The
-  // `contentOffset` prop below is a best-effort first paint, but RN silently
-  // drops it on iOS when it fires before the native scroll view has measured
-  // its content, which is exactly the case here since the page width depends
-  // on a layout pass. An explicit scrollTo once after mount is what actually
+  // QA harness only: land the pager on the flipped card's own page. A
+  // `contentOffset` prop used to do this, and it was worse than useless: as
+  // a CONTROLLED prop it was re-applied on every render, including ones
+  // triggered by the live index tracking below, which fought the ScrollView's
+  // actual native position on every one of those renders and produced an
+  // unrecoverable oscillation between two adjacent pages -- the flickering
+  // reported on both platforms. An explicit scrollTo once after mount, fired
+  // and forgotten rather than continuously re-asserted, is what actually
   // works; `animated: false` keeps it invisible in a screenshot taken after
   // launch rather than showing a stray swipe.
   useEffect(() => {
@@ -319,7 +322,6 @@ export function CardCarousel({
         snapToInterval={stride}
         snapToAlignment="start"
         disableIntervalMomentum
-        contentOffset={{ x: index * stride, y: 0 }}
         onScroll={onScroll}
         scrollEventThrottle={16}
         onMomentumScrollEnd={onMomentumEnd}

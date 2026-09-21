@@ -1,0 +1,91 @@
+# Poll official sources daily for something that would change data/events.json,
+# and tell a person when one shows up.
+#
+# pipeline/watch_feeds.py is DETECTION only (see its own docstring and PLAN.md
+# 8.1): it never touches a projection, it only proposes a candidate with an
+# EMPTY modelling effect for a maintainer to confirm and fill in. This workflow
+# exists because a detector nobody runs is the same as no detector -- the gap
+# that let EAGLE/IVES sit in events.json for eight months after dying, and the
+# reason "the app missed a policy change" turned out to be "nothing ever polled
+# for it" rather than a missing source.
+#
+# Sources: USCIS newsroom, Federal Register (DHS, State, Justice, Labor, plus
+# three unscoped full-text searches so an executive order implemented by a
+# department other than DHS or State is not missed), State Department travel
+# alerts, and CourtListener (federal court opinions) -- the last one closes the
+# other half of the ask: a rule getting withdrawn or an executive order getting
+# enjoined is as much a live lever as a new rule taking effect, and three of
+# 2026's biggest shocks arrived as court orders, not Federal Register notices.
+# CourtListener answers unauthenticated at a low rate limit; add a
+# COURTLISTENER_TOKEN repo secret (free at courtlistener.com) if this starts
+# getting throttled. Not required to run at all.
+
+name: Watch feeds
+
+on:
+  schedule:
+    # Offset from refresh-data.yml's 15:00 UTC so the two never race.
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: watch-feeds
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r pipeline/requirements.txt
+
+      - name: Poll feeds
+        id: watch
+        env:
+          COURTLISTENER_TOKEN: ${{ secrets.COURTLISTENER_TOKEN }}
+        run: |
+          python pipeline/watch_feeds.py --write | tee /tmp/watch-output.txt
+          count=$(grep -oE 'candidates for triage: [0-9]+' /tmp/watch-output.txt | grep -oE '[0-9]+' || echo 0)
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+
+      # feed-state.json is what makes tomorrow's run report only what's new
+      # today, rather than the same candidates forever.
+      - name: Commit the updated feed state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/feed-state.json
+          if git diff --cached --quiet; then
+            echo "no state change"
+          else
+            git commit -m "Watch feeds: record seen links"
+            git push
+          fi
+
+      # One standing issue rather than one per run, so a quiet week does not
+      # bury a real candidate under a pile of empty notifications, and so the
+      # notification itself (not just the terminal log) is what a maintainer
+      # actually sees.
+      - name: Post candidates to a tracking issue
+        if: steps.watch.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: "Watch feed candidates for data/events.json"
+        run: |
+          number=$(gh issue list --repo "$GITHUB_REPOSITORY" --search "\"$TITLE\" in:title" \
+            --state open --json number --jq '.[0].number // empty')
+          if [ -z "$number" ]; then
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body-file /tmp/watch-output.txt
+          else
+            gh issue comment "$number" --repo "$GITHUB_REPOSITORY" --body-file /tmp/watch-output.txt
+          fi

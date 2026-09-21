@@ -25,10 +25,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import quote
 from xml.etree import ElementTree
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -57,6 +59,50 @@ FEEDS = [
                "?conditions%5Bagencies%5D%5B%5D=state-department",
     },
     {
+        # EOIR (immigration courts) sits under Justice, and DOJ is also where
+        # the government's own compliance notices for an enjoined policy
+        # sometimes land.
+        "id": "federal-register-justice",
+        "title": "Federal Register, Justice Department",
+        "url": "https://www.federalregister.gov/api/v1/documents.rss"
+               "?conditions%5Bagencies%5D%5B%5D=justice-department",
+    },
+    {
+        # PERM and prevailing-wage rulemaking lives here, not at DHS.
+        "id": "federal-register-labor",
+        "title": "Federal Register, Labor Department",
+        "url": "https://www.federalregister.gov/api/v1/documents.rss"
+               "?conditions%5Bagencies%5D%5B%5D=labor-department",
+    },
+    {
+        # A rule withdrawn before it ever reached formal proposal (Unified
+        # Agenda stage) will never show up here -- only reginfo.gov's biannual
+        # agenda tracks that. But a rule withdrawn AFTER an NPRM, or an agency
+        # announcing it is complying with a court order, is a Federal Register
+        # document, and not always from DHS or State (e.g. an EO implemented
+        # by Labor or Justice). These three term searches are deliberately not
+        # agency-scoped, so score() carries the whole burden of keeping them on
+        # topic -- confirmed live: "visa withdrawal" surfaced the H-1B fee rule
+        # and the 60-day grace period rule, "immigration injunction" surfaced
+        # real DHS litigation, without agency-list noise.
+        "id": "federal-register-immigration-court",
+        "title": "Federal Register, full text: immigration + injunction",
+        "url": "https://www.federalregister.gov/api/v1/documents.rss"
+               "?conditions%5Bterm%5D=immigration+injunction",
+    },
+    {
+        "id": "federal-register-immigration-eo",
+        "title": "Federal Register, full text: immigration + executive order",
+        "url": "https://www.federalregister.gov/api/v1/documents.rss"
+               "?conditions%5Bterm%5D=immigration+executive+order",
+    },
+    {
+        "id": "federal-register-visa-withdrawal",
+        "title": "Federal Register, full text: visa + withdrawal",
+        "url": "https://www.federalregister.gov/api/v1/documents.rss"
+               "?conditions%5Bterm%5D=visa+withdrawal",
+    },
+    {
         # Worth noting: travel.state.gov's HTML is behind the bot filter that
         # forced the bulletin ingest onto a mirror, but its RSS is not.
         "id": "travel-state",
@@ -64,6 +110,35 @@ FEEDS = [
         "url": "https://travel.state.gov/_res/rss/TAsTWs.xml",
     },
 ]
+
+# CourtListener (Free Law Project) indexes federal opinions and dockets, and
+# its search API answers unauthenticated at a low rate limit -- confirmed live
+# with no token. A court blocking or reinstating an executive order is often
+# visible here days before any agency gets around to a Federal Register notice
+# about it, which is the gap this closes: the entries in events.json for the
+# Rhode Island and 75-country cases were both, in the end, court orders first.
+# A free token (COURTLISTENER_TOKEN) raises the rate limit and is worth adding
+# as a repo secret if this starts getting throttled, but is not required to
+# run at all.
+#
+# Confirmed live: an unquoted query ANDs bare words, not a phrase, so
+# "green card injunction" also matched "Blue Lake Rancheria v. Kalshi" on
+# "green" and "card" appearing nowhere near each other. Quoting the phrase and
+# checking only the case caption (not the snippet, which CourtListener fills
+# with the PDF's cover page rather than the matched passage) fixed that: each
+# of these returns real immigration litigation -- v. Trump, v. Mullin (DHS),
+# v. USCIS -- top-ranked by recency.
+COURTLISTENER_QUERIES = [
+    '"green card" injunction',
+    '"employment-based" injunction',
+    '"adjustment of status" vacated',
+    '"per-country" injunction',
+    '"green card" "executive order"',
+]
+# The search is a phrase match, not a topic filter -- a court's own text search
+# ranking, not our score(), is what is trusted here. So candidates skip the
+# WATCH_TERMS gate entirely and take only the newest few per query instead.
+COURTLISTENER_PER_QUERY = 5
 
 # Terms that make an item worth a human look. Matched on WORD BOUNDARIES, which
 # matters more than it sounds: a first version matched "perm" as a substring and
@@ -77,6 +152,16 @@ WATCH_TERMS = [
     "immigrant visa", "consular", "retrogress", "retrogression", "green card",
     "labor certification", "eb-1", "eb-2", "eb-3", "eb-4", "eb-5",
     "national interest waiver", "chargeability", "visa availability",
+    "immigration",
+    # A rule or order changing status is news the moment it moves either
+    # direction. These are deliberately kept as WEAK terms, not strong: e.g.
+    # "withdrawal" alone fires on any agency's unrelated rule withdrawal, and
+    # the two-weak-terms bar is what keeps that out while still catching it
+    # paired with "immigration", "green card", or similar.
+    "executive order", "injunction", "vacated", "enjoined",
+    "temporary restraining order", "preliminary injunction", "withdrawal",
+    "withdrawn", "rescind", "rescinded", "struck down", "unconstitutional",
+    "stayed",
 ]
 
 # Terms that raise an item from "worth reading" to "likely event".
@@ -142,6 +227,28 @@ def parse_feed(xml_text: str) -> list[dict]:
     return items
 
 
+def parse_courtlistener(json_text: str) -> list[dict]:
+    """CourtListener's v4 search response, reshaped to the RSS item shape."""
+    try:
+        payload = json.loads(json_text)
+    except json.JSONDecodeError:
+        return []
+    items: list[dict] = []
+    for result in payload.get("results", []):
+        link = result.get("absolute_url", "")
+        opinions = result.get("opinions") or [{}]
+        snippet = result.get("snippet") or opinions[0].get("snippet") or ""
+        items.append(
+            {
+                "title": result.get("caseName", ""),
+                "link": f"https://www.courtlistener.com{link}" if link else "",
+                "published": result.get("dateFiled", ""),
+                "summary": " ".join(snippet.split())[:400],
+            }
+        )
+    return items
+
+
 def _contains(haystack: str, term: str) -> bool:
     """Word-boundary match, so "perm" does not fire on "permanent"."""
     return re.search(rf"(?<![a-z0-9]){re.escape(term)}(?![a-z0-9])", haystack) is not None
@@ -169,36 +276,55 @@ def main() -> int:
     args = parser.parse_args()
 
     fetcher = Fetcher(use_cache=False)
+    token = os.environ.get("COURTLISTENER_TOKEN")
+    if token:
+        fetcher._session.headers.update({"Authorization": f"Token {token}"})
     state = load_state()
     seen: dict[str, str] = state.get("seen", {})
     candidates: list[dict] = []
     checked = 0
 
-    for feed in FEEDS:
+    sources = [(feed["id"], feed["url"], parse_feed, True) for feed in FEEDS] + [
+        (
+            f"courtlistener:{query}",
+            "https://www.courtlistener.com/api/rest/v4/search/"
+            f"?q={quote(query)}&type=o&order_by=dateFiled+desc",
+            parse_courtlistener,
+            False,
+        )
+        for query in COURTLISTENER_QUERIES
+    ]
+
+    for feed_id, url, parse, gate_on_terms in sources:
         try:
-            doc = fetcher.get(feed["url"], allow_404=True)
+            doc = fetcher.get(url, allow_404=True)
         except Exception as error:  # a feed being down must not break the run
-            print(f"  !!  {feed['id']}: {error.__class__.__name__}")
+            print(f"  !!  {feed_id}: {error.__class__.__name__}")
             continue
         if doc is None:
-            print(f"  404 {feed['id']}")
+            print(f"  404 {feed_id}")
             continue
-        items = parse_feed(doc.text)
+        items = parse(doc.text)
+        if not gate_on_terms:
+            items = items[:COURTLISTENER_PER_QUERY]
         checked += len(items)
         for item in items:
             if not item["link"]:
                 continue
             if item["link"] in seen and not args.all:
                 continue
-            weight, hits = score(item)
-            if weight < MIN_SCORE:
-                continue
-            candidates.append({**item, "feed": feed["id"], "score": weight, "matched": hits})
-        print(f"  ok  {feed['id']:24} {len(items):>3} items")
+            if gate_on_terms:
+                weight, hits = score(item)
+                if weight < MIN_SCORE:
+                    continue
+            else:
+                weight, hits = MIN_SCORE, ["court search: " + feed_id.split(":", 1)[1]]
+            candidates.append({**item, "feed": feed_id, "score": weight, "matched": hits})
+        print(f"  ok  {feed_id:24} {len(items):>3} items")
 
     candidates.sort(key=lambda c: -c["score"])
 
-    print(f"\nscanned {checked} items across {len(FEEDS)} feeds")
+    print(f"\nscanned {checked} items across {len(sources)} feeds")
     print(f"candidates for triage: {len(candidates)}\n")
     for candidate in candidates[:20]:
         print(f"  [{candidate['score']:>2}] {candidate['title'][:96]}")

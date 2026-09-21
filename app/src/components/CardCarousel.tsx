@@ -126,8 +126,16 @@ export function CardCarousel({
   if (items.length === 0) return null;
   const current = Math.min(index, items.length - 1);
 
+  // Set while a tap is driving an animated jump to a known target, so onScroll
+  // (below) knows not to touch the index until it arrives. Without this, a tap
+  // that jumps several cards away animates smoothly through every page in
+  // between, and each of those intermediate pages briefly became "the" index,
+  // flashing across the pill row before landing on the one actually tapped.
+  const jumping = useRef(false);
+
   const goTo = (next: number) => {
     const clamped = Math.max(0, Math.min(items.length - 1, next));
+    jumping.current = true;
     setIndex(clamped);
     scroller.current?.scrollTo({ x: clamped * stride, animated: true });
   };
@@ -201,13 +209,16 @@ export function CardCarousel({
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const x = event.nativeEvent.contentOffset.x;
     setOffset(x);
-    setIndex(nearestIndex(x));
+    if (!jumping.current) {
+      setIndex(nearestIndex(x));
+    }
   };
 
   const onMomentumEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const x = event.nativeEvent.contentOffset.x;
     setOffset(x);
     setIndex(nearestIndex(x));
+    jumping.current = false;
   };
 
   return (

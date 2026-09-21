@@ -45,6 +45,12 @@
       ],
       "expo-font"
     ],
-    "icon": "./assets/icon.png"
+    "icon": "./assets/icon.png",
+    "extra": {
+      "eas": {
+        "projectId": "fae47e1b-6f8c-422a-b505-0e497bd5047f"
+      }
+    },
+    "owner": "sandeepnagra"
   }
 }

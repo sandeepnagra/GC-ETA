@@ -8,7 +8,8 @@
     "ios": "expo run:ios",
     "android": "expo run:android",
     "typecheck": "node scripts/sync-data.mjs && tsc --noEmit",
-    "sync-data": "node scripts/sync-data.mjs"
+    "sync-data": "node scripts/sync-data.mjs",
+    "eas-build-post-install": "cd ../model && npm install && npm run build"
   },
   "dependencies": {
     "@gc-eta/model": "file:../model",
@@ -24,7 +25,6 @@
   },
   "devDependencies": {
     "@types/react": "~18.2.79",
-    "eas-cli": "^24.7.0",
     "typescript": "~5.3.3"
   }
 }

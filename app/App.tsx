@@ -1,5 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { SafeAreaView, StatusBar, View, useColorScheme } from "react-native";
+import { StatusBar, View, useColorScheme } from "react-native";
+// react-native's own SafeAreaView only insets on iOS; on Android it is a
+// plain View, which is why content sat flush under the status bar there
+// while iOS looked fine. This package computes real insets on both.
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useFonts } from "expo-font";
 import { assessCase, caseTimeline, compareCategories, suggestSwitch } from "@gc-eta/model";
 
@@ -126,46 +130,48 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
-      <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.bg} />
-      {screen === "case" ? (
-        <CaseScreen
-          theme={theme}
-          draft={draft}
-          onChange={setDraft}
-          onSubmit={() => setScreen("results")}
-          mode={mode}
-          onMode={setMode}
-        />
-      ) : screen === "results" && assessment ? (
-        <ResultsScreen
-          theme={theme}
-          draft={draft}
-          assessment={assessment}
-          onBack={() => setScreen("case")}
-          onExplain={() => setScreen("explain")}
-          onNews={() => setScreen("news")}
-          initialSheet={QA_STATE?.sheet}
-          initialFlipped={QA_STATE?.flipped}
-          comparison={comparison}
-          suggestion={suggestion}
-          events={events}
-          bundle={bundle}
-          stale={stale}
-          newsCount={timeline.filter((i) => i.direct).length}
-        />
-      ) : screen === "methodology" ? (
-        <MethodologyScreen theme={theme} bundle={bundle} events={events} onBack={() => setScreen("explain")} />
-      ) : screen === "news" ? (
-        <NewsScreen theme={theme} items={timeline} onBack={() => setScreen("results")} />
-      ) : (
-        <ExplainScreen
-          theme={theme}
-          onBack={() => setScreen("results")}
-          onMethodology={() => setScreen("methodology")}
-          dataAsOf={prettyMonth(bundle.end_month)}
-        />
-      )}
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
+        <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.bg} />
+        {screen === "case" ? (
+          <CaseScreen
+            theme={theme}
+            draft={draft}
+            onChange={setDraft}
+            onSubmit={() => setScreen("results")}
+            mode={mode}
+            onMode={setMode}
+          />
+        ) : screen === "results" && assessment ? (
+          <ResultsScreen
+            theme={theme}
+            draft={draft}
+            assessment={assessment}
+            onBack={() => setScreen("case")}
+            onExplain={() => setScreen("explain")}
+            onNews={() => setScreen("news")}
+            initialSheet={QA_STATE?.sheet}
+            initialFlipped={QA_STATE?.flipped}
+            comparison={comparison}
+            suggestion={suggestion}
+            events={events}
+            bundle={bundle}
+            stale={stale}
+            newsCount={timeline.filter((i) => i.direct).length}
+          />
+        ) : screen === "methodology" ? (
+          <MethodologyScreen theme={theme} bundle={bundle} events={events} onBack={() => setScreen("explain")} />
+        ) : screen === "news" ? (
+          <NewsScreen theme={theme} items={timeline} onBack={() => setScreen("results")} />
+        ) : (
+          <ExplainScreen
+            theme={theme}
+            onBack={() => setScreen("results")}
+            onMethodology={() => setScreen("methodology")}
+            dataAsOf={prettyMonth(bundle.end_month)}
+          />
+        )}
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }

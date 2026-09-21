@@ -120,19 +120,46 @@ export async function loadCached(bundled: DataSet): Promise<DataSet> {
  *
  * Returns null when there is nothing to do, which is the common case: the
  * manifest is a few hundred bytes and most launches stop there.
+ *
+ * The bundle and the event registry are checked independently, not as one
+ * unit gated on the manifest's single `generated_at`. That field is written
+ * from the BUNDLE's own timestamp (see publish.py) and only moves when a
+ * bulletin refresh runs. events.json is hand-curated and gets fixed on its
+ * own schedule -- correcting a stale entry (a bill wrongly still shown as
+ * pending, say) used to only reach installed apps if it happened to land the
+ * same day as a bundle rebuild, otherwise it sat live on the CDN but
+ * invisible to every app that had already cached an older copy.
  */
 export async function checkForUpdate(current: DataSet): Promise<DataSet | null> {
   try {
     const manifest = (await getJson(`${BASE}/manifest.json`)) as Manifest;
-    if (!manifest?.generated_at) return null;
-    if (manifest.generated_at <= current.bundle.generated_at) return null;
+    if (!manifest) return null;
 
-    const [bundle, events] = await Promise.all([
-      getJson(`${BASE}/app-bundle.json`),
-      getJson(`${BASE}/events.json`),
-    ]);
-    if (!acceptableBundle(bundle, current.bundle)) return null;
-    if (!acceptableEvents(events)) return null;
+    let bundle: Bundle = current.bundle;
+    let events: EventsFile = current.events;
+    let changed = false;
+
+    if (manifest.generated_at && manifest.generated_at > current.bundle.generated_at) {
+      const candidate = await getJson(`${BASE}/app-bundle.json`);
+      if (acceptableBundle(candidate, current.bundle)) {
+        bundle = candidate;
+        changed = true;
+      }
+    }
+
+    // Fetched every launch regardless of the bundle check above: it is a few
+    // KB, parameter-free like everything else here, and its own last_reviewed
+    // date -- not the bundle's generated_at -- is what says whether it moved.
+    const eventsCandidate = await getJson(`${BASE}/events.json`);
+    if (
+      acceptableEvents(eventsCandidate) &&
+      eventsCandidate.last_reviewed > current.events.last_reviewed
+    ) {
+      events = eventsCandidate;
+      changed = true;
+    }
+
+    if (!changed) return null;
 
     await FileSystem.makeDirectoryAsync(CACHE_DIR, { intermediates: true }).catch(() => {});
     await FileSystem.writeAsStringAsync(BUNDLE_FILE, JSON.stringify(bundle));
@@ -141,7 +168,11 @@ export async function checkForUpdate(current: DataSet): Promise<DataSet | null> 
     // ignored rather than half-read on the next launch.
     await FileSystem.writeAsStringAsync(
       STAMP_FILE,
-      JSON.stringify({ generated_at: manifest.generated_at, at: new Date().toISOString() }),
+      JSON.stringify({
+        generated_at: bundle.generated_at,
+        events_last_reviewed: events.last_reviewed,
+        at: new Date().toISOString(),
+      }),
     );
     return { bundle, events, source: "fetched" };
   } catch {

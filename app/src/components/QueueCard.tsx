@@ -140,7 +140,7 @@ export function QueueCard({
         accessible
         accessibilityLabel={
           perYear
-            ? `A hundred dots, ${covered} filled. One year of this country's visa numbers would cover about ${covered} percent of the people ahead of you.`
+            ? `A hundred dots stand for the ${people.toLocaleString("en-US")} people ahead of you, one dot per percent. ${covered} are filled: that is how much of the line a typical year of visas for ${pair} would clear. It is a sense of scale, not a wait-time estimate, since the number of visas issued swings a lot from year to year.`
             : "A hundred dots, none filled, because no issuance history is recorded."
         }
         style={{ gap: 4, paddingHorizontal: 6 }}
@@ -165,17 +165,20 @@ export function QueueCard({
       <View style={{ flexDirection: "row", gap: 14, justifyContent: "center" }}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
           <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: theme.accent }} />
-          <Text style={{ fontSize: 12, color: theme.secondary }}>One year of numbers</Text>
+          <Text style={{ fontSize: 12, color: theme.secondary }}>A typical year's visas</Text>
         </View>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
           <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: theme.border }} />
-          <Text style={{ fontSize: 12, color: theme.secondary }}>Still ahead of you</Text>
+          <Text style={{ fontSize: 12, color: theme.secondary }}>Still in line ahead of you</Text>
         </View>
       </View>
 
       <Text style={{ fontSize: 13, lineHeight: 18, color: theme.text, textAlign: "center" }}>
-        Each dot is 1% of the people with an earlier date.
-        {perYear ? ` One year of this country's numbers covers about ${covered}%.` : ""}
+        {people.toLocaleString("en-US")} people have an earlier {pair} priority date than yours —
+        each dot above is 1% of them.
+        {perYear
+          ? ` The ${covered} filled dots show how much of that line a typical year of visas would clear. That's a sense of scale, not a countdown — some years issue far more visas than others, so it can't be turned into a number of years to wait.`
+          : ""}
       </Text>
     </Shell>
   );

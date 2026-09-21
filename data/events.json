@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_reviewed": "2026-09-17",
+  "last_reviewed": "2026-09-21",
   "note": "Hand-curated. Detection is automated (Federal Register, court dockets, agency alerts) but assigning a modelling effect is a judgement call, so entries arrive as pull requests with an empty effect for a maintainer to fill. See PLAN.md 8.1. Every entry carries verified_against and confidence; the app must not display an entry whose last_checked is stale.",
   "country_lists": {
     "travel_ban_full": {

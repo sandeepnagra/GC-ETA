@@ -7,8 +7,8 @@
  * treating "U" as a real zero rather than a gap.
  */
 
-import React from "react";
-import { View } from "react-native";
+import React, { useState } from "react";
+import { View, type LayoutChangeEvent } from "react-native";
 import { Text } from "./Text";
 import Svg, { Circle, Line, Path, Rect, Text as SvgText } from "react-native-svg";
 import type { HistoryPoint } from "@gc-eta/model";
@@ -27,11 +27,21 @@ interface Props {
   theme: Theme;
   points: HistoryPoint[];
   priorityDate: string;
+  /** Fallback only, before the first layout measurement lands. */
   width?: number;
   height?: number;
 }
 
-export function HistoryChart({ theme, points, priorityDate, width = 326, height = 180 }: Props) {
+export function HistoryChart({ theme, points, priorityDate, width: fallbackWidth = 326, height = 180 }: Props) {
+  // Measured, not a fixed constant: 326 was the design's own card width, but
+  // the card is only ever exactly that wide by coincidence on one screen
+  // size. A phone narrower than that clips the chart's right edge against
+  // the card border instead of drawing it smaller, which is exactly what a
+  // fixed SVG width does when its container is narrower than it is.
+  const [measuredWidth, setMeasuredWidth] = useState<number | null>(null);
+  const onLayout = (event: LayoutChangeEvent) => setMeasuredWidth(event.nativeEvent.layout.width);
+  const width = measuredWidth ?? fallbackWidth;
+
   const dated = points.filter((p) => p.day !== null);
   if (dated.length < 2) {
     return (
@@ -39,6 +49,11 @@ export function HistoryChart({ theme, points, priorityDate, width = 326, height 
         Not enough published history to chart this category.
       </Text>
     );
+  }
+
+  if (measuredWidth === null) {
+    // One frame reserved at final height so nothing jumps once it measures.
+    return <View onLayout={onLayout} style={{ height }} />;
   }
 
   const padLeft = 34;
@@ -78,7 +93,7 @@ export function HistoryChart({ theme, points, priorityDate, width = 326, height 
   const ticks = [minDay, (minDay + maxDay) / 2, maxDay];
 
   return (
-    <View>
+    <View onLayout={onLayout}>
       <Svg width={width} height={height}>
         {ticks.map((tick) => (
           <React.Fragment key={tick}>

@@ -24,7 +24,11 @@
  * everyone downloads the same file. Nothing about the case is sent.
  */
 
-import * as FileSystem from "expo-file-system";
+// expo-file-system v19 (SDK 54) replaced this string-path API with a
+// Directory/File class model; "/legacy" is Expo's own escape hatch back to
+// the API this file was written against, rather than a rewrite for its own
+// sake.
+import * as FileSystem from "expo-file-system/legacy";
 import type { Bundle, EventsFile } from "@gc-eta/model";
 
 /**

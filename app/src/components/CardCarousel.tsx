@@ -221,6 +221,27 @@ export function CardCarousel({
     jumping.current = false;
   };
 
+  // iOS only, and this is the actual fix for it: once a finger lifts, iOS
+  // hands the deceleration to UIScrollView's own native paging physics, which
+  // reports onScroll far more sparsely during that phase than Android does.
+  // The live tracking above still works while a finger is down, but a fast
+  // fling on iOS lifts the finger early and coasts for most of the gesture,
+  // so the pill barely moved until onMomentumScrollEnd fired -- the "close to
+  // a second" freeze reported on iOS specifically, still present after the
+  // onScroll fix because that fix cannot help during a phase with too few
+  // scroll events to sample. targetContentOffset is where the OS commits to
+  // landing, snapped to the page grid by snapToInterval, decided the instant
+  // the drag ends rather than once the animation finishes playing it out;
+  // reading it here moves the pill at release instead of at settle. Android
+  // does not populate it, so this is a no-op there and the existing
+  // onScroll/onMomentumScrollEnd path is what continues to run.
+  const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (jumping.current) return;
+    const target = event.nativeEvent.targetContentOffset?.x;
+    if (target === undefined) return;
+    setIndex(nearestIndex(target));
+  };
+
   return (
     <View style={{ gap: 10 }}>
       <ScrollView
@@ -285,6 +306,7 @@ export function CardCarousel({
         onScroll={onScroll}
         scrollEventThrottle={16}
         onMomentumScrollEnd={onMomentumEnd}
+        onScrollEndDrag={onScrollEndDrag}
         contentContainerStyle={{ gap: GAP, alignItems: "flex-start" }}
         style={height > 0 ? { height } : undefined}
       >

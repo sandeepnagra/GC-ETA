@@ -324,7 +324,7 @@ export function suggestSwitch(
     return {
       verdict: "cannot_tell",
       target: null,
-      headline: `There is not enough to compare ${yourCategory.replace("EB", "EB-")} and ${label} on.`,
+      headline: `There is not enough data to compare ${yourCategory.replace("EB", "EB-")} and ${label} on.`,
       because: [
         "At least one of the two has no dated estimate, usually because the wait runs past where the record can say anything useful.",
       ],

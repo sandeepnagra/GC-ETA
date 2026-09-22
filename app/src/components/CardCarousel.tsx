@@ -47,7 +47,6 @@ import {
   NativeSyntheticEvent,
   Pressable,
   ScrollView,
-  useWindowDimensions,
   View,
 } from "react-native";
 import { Text } from "./Text";
@@ -56,6 +55,7 @@ import type { Theme } from "../theme";
 import type { CardDetail } from "./DetailSheet";
 import { FlipCard } from "./FlipCard";
 import { NoteBack } from "./NoteBack";
+import { useContentWidth } from "../layout";
 
 /** Matches the results screen's horizontal padding. */
 const PAGE_PADDING = 20;
@@ -82,7 +82,11 @@ export function CardCarousel({
   /** QA harness only: the key of the card to render face-down on mount. */
   initialFlipped?: string;
 }) {
-  const { width } = useWindowDimensions();
+  // The clamped content column, not the raw device width -- otherwise a
+  // foldable opened flat would page through cards as wide as the whole
+  // unfolded device instead of the same column the rest of the screen sits
+  // in. On a phone this is exactly the device width, unchanged.
+  const width = useContentWidth();
   const pageWidth = Math.max(240, width - PAGE_PADDING * 2);
   const stride = pageWidth + GAP;
 

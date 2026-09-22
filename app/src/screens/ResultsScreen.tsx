@@ -1,8 +1,9 @@
 /** The estimate, its outlook, and what is acting on it. */
 
 import React, { useMemo, useState } from "react";
-import { Pressable, ScrollView, View, useWindowDimensions } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { Text } from "../components/Text";
+import { useContentWidth } from "../layout";
 import type { CaseAssessment } from "@gc-eta/model";
 import { dayToIso, historyPoints, seasonalPattern, supplyPicture, whatWouldChange } from "@gc-eta/model";
 import { categoryLabel, columnLabel, prettyDate, shortDate } from "../data";
@@ -210,8 +211,11 @@ const CONFIDENCE_NOTE: CardDetail = {
 export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, comparison, suggestion, events, bundle, stale, newsCount, initialSheet, initialFlipped }: Props) {
   const { finalAction, filing, outlook } = assessment;
   // The hero card sits inside the screen's 20pt padding and its own 16pt, so
-  // the drawing has to be told how much room it really has.
-  const { width: screenWidth } = useWindowDimensions();
+  // the drawing has to be told how much room it really has. Measured from the
+  // clamped content column, not the raw device width -- on a foldable opened
+  // flat that column is narrower than the device, and sizing from the device
+  // instead would draw a chart wider than the column it sits in.
+  const screenWidth = useContentWidth();
   const [detail, setDetail] = useState<CardDetail | null>(null);
   // Both open the same way the card note does: an aside over the estimate,
   // never a place you navigate to and have to come back from.

@@ -15,6 +15,7 @@ import { useFonts } from "expo-font";
 import { assessCase, caseTimeline, compareCategories, suggestSwitch } from "@gc-eta/model";
 
 import { bundledData, prettyMonth } from "./src/data";
+import { MAX_CONTENT_WIDTH } from "./src/layout";
 import { checkForUpdate, freshness, loadCached } from "./src/updates";
 import { FONTS } from "./src/components/Text";
 import { CaseScreen } from "./src/screens/CaseScreen";
@@ -138,46 +139,53 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg, alignItems: "center" }}>
         <SystemBars style={theme.dark ? "light" : "dark"} />
-        {screen === "case" ? (
-          <CaseScreen
-            theme={theme}
-            draft={draft}
-            onChange={setDraft}
-            onSubmit={() => setScreen("results")}
-            mode={mode}
-            onMode={setMode}
-          />
-        ) : screen === "results" && assessment ? (
-          <ResultsScreen
-            theme={theme}
-            draft={draft}
-            assessment={assessment}
-            onBack={() => setScreen("case")}
-            onExplain={() => setScreen("explain")}
-            onNews={() => setScreen("news")}
-            initialSheet={QA_STATE?.sheet}
-            initialFlipped={QA_STATE?.flipped}
-            comparison={comparison}
-            suggestion={suggestion}
-            events={events}
-            bundle={bundle}
-            stale={stale}
-            newsCount={timeline.filter((i) => i.direct).length}
-          />
-        ) : screen === "methodology" ? (
-          <MethodologyScreen theme={theme} bundle={bundle} events={events} onBack={() => setScreen("explain")} />
-        ) : screen === "news" ? (
-          <NewsScreen theme={theme} items={timeline} onBack={() => setScreen("results")} />
-        ) : (
-          <ExplainScreen
-            theme={theme}
-            onBack={() => setScreen("results")}
-            onMethodology={() => setScreen("methodology")}
-            dataAsOf={prettyMonth(bundle.end_month)}
-          />
-        )}
+        {/* Centred and clamped so a foldable opened flat, or a tablet, gets a
+            readable phone-width column instead of every screen's fixed-width
+            hero chart and carousel stretching to the full, much wider device.
+            width: "100%" is what makes the clamp a no-op on an actual phone:
+            it only ever gets smaller than MAX_CONTENT_WIDTH there. */}
+        <View style={{ flex: 1, width: "100%", maxWidth: MAX_CONTENT_WIDTH, alignSelf: "center" }}>
+          {screen === "case" ? (
+            <CaseScreen
+              theme={theme}
+              draft={draft}
+              onChange={setDraft}
+              onSubmit={() => setScreen("results")}
+              mode={mode}
+              onMode={setMode}
+            />
+          ) : screen === "results" && assessment ? (
+            <ResultsScreen
+              theme={theme}
+              draft={draft}
+              assessment={assessment}
+              onBack={() => setScreen("case")}
+              onExplain={() => setScreen("explain")}
+              onNews={() => setScreen("news")}
+              initialSheet={QA_STATE?.sheet}
+              initialFlipped={QA_STATE?.flipped}
+              comparison={comparison}
+              suggestion={suggestion}
+              events={events}
+              bundle={bundle}
+              stale={stale}
+              newsCount={timeline.filter((i) => i.direct).length}
+            />
+          ) : screen === "methodology" ? (
+            <MethodologyScreen theme={theme} bundle={bundle} events={events} onBack={() => setScreen("explain")} />
+          ) : screen === "news" ? (
+            <NewsScreen theme={theme} items={timeline} onBack={() => setScreen("results")} />
+          ) : (
+            <ExplainScreen
+              theme={theme}
+              onBack={() => setScreen("results")}
+              onMethodology={() => setScreen("methodology")}
+              dataAsOf={prettyMonth(bundle.end_month)}
+            />
+          )}
+        </View>
       </SafeAreaView>
     </SafeAreaProvider>
   );

@@ -43,7 +43,8 @@
           "target": "16.4"
         }
       ],
-      "expo-font"
+      "expo-font",
+      "react-native-edge-to-edge"
     ],
     "icon": "./assets/icon.png",
     "extra": {

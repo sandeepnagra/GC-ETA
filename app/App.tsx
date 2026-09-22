@@ -1,9 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { StatusBar, View, useColorScheme } from "react-native";
+import { View, useColorScheme } from "react-native";
 // react-native's own SafeAreaView only insets on iOS; on Android it is a
 // plain View, which is why content sat flush under the status bar there
 // while iOS looked fine. This package computes real insets on both.
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+// Android 15+ made edge-to-edge mandatory and deprecated the APIs that used
+// to tint the status bar (react-native's own StatusBar backgroundColor prop
+// among them) -- Play's pre-launch report flags exactly that prop. SystemBars
+// only sets icon style, not a background colour, which is the point: the app
+// draws behind the bars now, and content clears them via the safe-area insets
+// above instead of the bar tinting to match.
+import { SystemBars } from "react-native-edge-to-edge";
 import { useFonts } from "expo-font";
 import { assessCase, caseTimeline, compareCategories, suggestSwitch } from "@gc-eta/model";
 
@@ -132,7 +139,7 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
-        <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} backgroundColor={theme.bg} />
+        <SystemBars style={theme.dark ? "light" : "dark"} />
         {screen === "case" ? (
           <CaseScreen
             theme={theme}

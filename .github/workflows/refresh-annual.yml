@@ -30,14 +30,35 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
+      # Full history: the commit step rebases when another workflow pushes
+      # first, and a rebase needs more than the default shallow checkout.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
 
+      # Shared with the daily job, which is what keeps the archive build below
+      # down to the month or two this runner has not already seen.
+      - name: Restore the fetch cache
+        uses: actions/cache@v4
+        with:
+          path: pipeline/cache
+          key: fetch-cache-${{ github.run_id }}
+          restore-keys: |
+            fetch-cache-
+
       - run: pip install -r pipeline/requirements.txt
+
+      # Kept aside before the rebuild overwrites it. The validate step below
+      # compares against this: pointed at data/app-bundle.json after the
+      # rebuild, as it was, it compared the new bundle with itself and the
+      # "went backwards" guard could never fire.
+      - name: Keep the current bundle for comparison
+        run: cp data/app-bundle.json /tmp/previous-bundle.json
 
       # Both scripts are resumable and skip years they already hold, so a run
       # that adds nothing is cheap and a run that adds a year is the only one
@@ -48,20 +69,23 @@ jobs:
       - name: Visa issuance from the Report of the Visa Office
         run: python pipeline/build_issuance.py
 
+      # build_app_bundle.py reads data/bulletins.json, and that file is
+      # gitignored -- 6 MB of parsed archive, reproducible from here, so it is
+      # never committed. The daily job builds it before using it; this one did
+      # not, so every run of this workflow died on FileNotFoundError the moment
+      # it reached the bundle step. Cheap with the cache restored above: the
+      # months are already there, so this re-parses rather than re-downloads.
+      - name: Rebuild the bulletin archive the bundle is built from
+        run: python pipeline/build_bulletins.py
+
       - name: Rebuild the app bundle
         run: python pipeline/build_app_bundle.py
 
       - name: Validate
-        run: python pipeline/publish.py --out /tmp/check --previous data/app-bundle.json
+        run: python pipeline/publish.py --out /tmp/check --previous /tmp/previous-bundle.json
 
       - name: Commit if anything changed
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/
-          if git diff --cached --quiet; then
-            echo "no new annual data"
-          else
-            git commit -m "Refresh annual sources: labour certifications and visa issuance"
-            git push
-          fi
+        run: >
+          .github/scripts/commit-and-push.sh
+          "Refresh annual sources: labour certifications and visa issuance"
+          data/

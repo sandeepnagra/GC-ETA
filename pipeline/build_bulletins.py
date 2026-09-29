@@ -44,6 +44,11 @@ def parse_month_arg(value: str) -> tuple[int, int]:
     return int(year), int(month)
 
 
+def next_month(ym: tuple[int, int]) -> tuple[int, int]:
+    year, month = ym
+    return (year + 1, 1) if month == 12 else (year, month + 1)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--start", default="2009-10", help="YYYY-MM (default FY2010)")
@@ -54,11 +59,21 @@ def main() -> int:
 
     today = date.today()
     start = parse_month_arg(args.start)
-    end = parse_month_arg(args.end) if args.end else (today.year, today.month)
+    # One month PAST the current one by default. The Visa Bulletin is published
+    # two to three weeks before the month it governs, so stopping at the
+    # current month meant the new bulletin could not be picked up until the
+    # first of the month it was already describing -- the daily job ran green
+    # and fetched nothing new for weeks. The model already assumes this:
+    # expectedLatestMonth() rolls forward on the 25th and marks the bundle
+    # stale until the pipeline delivers the month the app is asking for.
+    # A month that is not out yet 404s, which is expected and handled below.
+    current = (today.year, today.month)
+    end = parse_month_arg(args.end) if args.end else next_month(current)
 
     fetcher = Fetcher(delay=args.delay, use_cache=not args.no_cache)
     bulletins: list[dict] = []
     missing: list[str] = []
+    not_yet: list[str] = []
     warning_counts: Counter[str] = Counter()
     fetched_live = 0
 
@@ -66,7 +81,15 @@ def main() -> int:
         url = bulletin_url(month, year)
         doc = fetcher.get(url, allow_404=True)
         if doc is None:
-            missing.append(f"{year:04d}-{month:02d}")
+            # A future month that is not published yet is not a gap in the
+            # archive, it is just the future. Recording it as missing would
+            # put a permanent, self-healing entry in months_missing every
+            # single run and bury the three real holes (2009-10, 2009-11,
+            # 2012-10) that are worth noticing.
+            if (year, month) > current:
+                not_yet.append(f"{year:04d}-{month:02d}")
+            else:
+                missing.append(f"{year:04d}-{month:02d}")
             continue
         if not doc.from_cache:
             fetched_live += 1
@@ -101,6 +124,10 @@ def main() -> int:
     months_with_sections = sum(1 for b in bulletins if b.get("sections"))
     print(f"months parsed : {len(bulletins)}")
     print(f"months missing: {len(missing)}  {missing[:6]}{' ...' if len(missing) > 6 else ''}")
+    if not_yet:
+        print(f"not out yet   : {', '.join(not_yet)} (looked ahead, 404 -- normal)")
+    if bulletins:
+        print(f"latest month  : {bulletins[-1]['month']}")
     print(f"rows total    : {total_rows:,}")
     print(f"sections      : {total_sections:,} across {months_with_sections} months")
     print(f"fetched live  : {fetched_live} (rest from cache)")

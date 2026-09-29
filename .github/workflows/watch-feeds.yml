@@ -40,7 +40,12 @@ jobs:
   watch:
     runs-on: ubuntu-latest
     steps:
+      # Full history: the commit step rebases when another workflow pushes
+      # first, and a rebase needs more than the default shallow checkout.
+      # The repo is about a megabyte, so this costs nothing.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -61,16 +66,10 @@ jobs:
       # feed-state.json is what makes tomorrow's run report only what's new
       # today, rather than the same candidates forever.
       - name: Commit the updated feed state
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/feed-state.json
-          if git diff --cached --quiet; then
-            echo "no state change"
-          else
-            git commit -m "Watch feeds: record seen links"
-            git push
-          fi
+        run: >
+          .github/scripts/commit-and-push.sh
+          "Watch feeds: record seen links"
+          data/feed-state.json
 
       # One standing issue rather than one per run, so a quiet week does not
       # bury a real candidate under a pile of empty notifications, and so the

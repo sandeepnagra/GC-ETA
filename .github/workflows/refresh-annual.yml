@@ -78,14 +78,27 @@ jobs:
       - name: Rebuild the bulletin archive the bundle is built from
         run: python pipeline/build_bulletins.py
 
+      # Built to prove the new annual data produces a good bundle, then
+      # thrown away: see the commit step for why it is not committed here.
       - name: Rebuild the app bundle
         run: python pipeline/build_app_bundle.py
 
       - name: Validate
         run: python pipeline/publish.py --out /tmp/check --previous /tmp/previous-bundle.json
 
+      # Only this job's own products -- the two annual source files. The
+      # bundle rebuilt above is deliberately left behind.
+      #
+      # It used to commit all of data/, which meant this job and the daily one
+      # both wrote data/app-bundle.json. Run them together and they conflict
+      # on it for real, which is what happened here: two regenerations of the
+      # same file differing by a timestamp is not something a rebase can or
+      # should resolve. It also contradicted this workflow's own promise at
+      # the top of the file -- commit the source data, let the daily job
+      # publish it, one code path in front of users. The daily job rebuilds
+      # the bundle from these files within the day anyway.
       - name: Commit if anything changed
         run: >
           .github/scripts/commit-and-push.sh
           "Refresh annual sources: labour certifications and visa issuance"
-          data/
+          data/perm-density.json data/issuance.json

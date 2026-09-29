@@ -29,6 +29,21 @@ export function BackIcon({ color, size = 22 }: { color: string; size?: number })
   );
 }
 
+/** Circular arrow: ask whether a newer bulletin has been published. */
+export function RefreshIcon({ color, size = 22 }: { color: string; size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M20 11.5a8 8 0 10-2.34 5.16M20 5.5v6h-6"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
 export function HelpIcon({ color, size = 22 }: { color: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">

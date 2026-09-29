@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AppState, View, useColorScheme } from "react-native";
 // react-native's own SafeAreaView only insets on iOS; on Android it is a
 // plain View, which is why content sat flush under the status bar there
@@ -16,6 +16,7 @@ import { assessCase, caseTimeline, compareCategories, suggestSwitch } from "@gc-
 
 import { bundledData, prettyMonth } from "./src/data";
 import { MAX_CONTENT_WIDTH } from "./src/layout";
+import { loadPrefs, savePrefs } from "./src/prefs";
 import { checkForUpdate, freshness, loadCached, type DataSet } from "./src/updates";
 import { FONTS } from "./src/components/Text";
 import { CaseScreen } from "./src/screens/CaseScreen";
@@ -24,7 +25,7 @@ import { MethodologyScreen } from "./src/screens/MethodologyScreen";
 import { NewsScreen } from "./src/screens/NewsScreen";
 import { ResultsScreen } from "./src/screens/ResultsScreen";
 import { resolveTheme, type ThemeMode } from "./src/theme";
-import type { CaseDraft, Screen } from "./src/types";
+import type { CaseDraft, RefreshState, Screen } from "./src/types";
 
 /**
  * A QA harness, not a feature. `EXPO_PUBLIC_QA_STATE` is a JSON blob that seeds
@@ -86,25 +87,108 @@ export default function App() {
   const [data, setData] = useState(bundledData);
   const { bundle, events } = data;
 
+  // What is actually loaded right now, kept in a ref so the AppState listener
+  // and the refresh button both diff against it rather than against whatever
+  // was current when their closure was created.
+  const heldRef = useRef<DataSet>(bundledData);
+
+  /**
+   * The results screen's refresh, as distinct from the silent background
+   * check: this one has someone waiting on an answer, so it reports one.
+   *
+   * Worth being precise about what it can and cannot do. The estimate is
+   * seeded from the case and the data, so re-running it against unchanged
+   * data returns an identical range by design -- a refresh that found
+   * nothing new has genuinely nothing to show, and saying "up to date" is
+   * the honest result rather than a failure to work.
+   */
+  const [refreshState, setRefreshState] = useState<RefreshState>({ status: "idle" });
+  const refreshBusy = useRef(false);
+
+  const refreshNow = useCallback(async () => {
+    if (refreshBusy.current) return;
+    refreshBusy.current = true;
+    setRefreshState({ status: "checking" });
+    try {
+      const before = heldRef.current.bundle.end_month;
+      const outcome = await checkForUpdate(heldRef.current);
+      if (outcome.status === "updated") {
+        heldRef.current = outcome.data;
+        setData(outcome.data);
+        const month = outcome.data.bundle.end_month;
+        setRefreshState({
+          status: "updated",
+          // Only claim a new bulletin when the month actually moved. The
+          // event registry updates on its own schedule, and calling that a
+          // new bulletin would be wrong.
+          note: month !== before ? `Updated to the ${prettyMonth(month)} bulletin` : "Updated",
+        });
+      } else if (outcome.status === "current") {
+        setRefreshState({ status: "current", note: "Already the latest bulletin" });
+      } else {
+        setRefreshState({ status: "failed", note: "Could not check just now" });
+      }
+    } finally {
+      refreshBusy.current = false;
+    }
+  }, []);
+
+  // Clear the result line so it reads as a response to the tap that produced
+  // it rather than a permanent label on the header.
+  useEffect(() => {
+    if (refreshState.status === "idle" || refreshState.status === "checking") return;
+    const timer = setTimeout(() => setRefreshState({ status: "idle" }), 4000);
+    return () => clearTimeout(timer);
+  }, [refreshState]);
+
+  // Saved preferences arrive a tick after first paint, and until they do
+  // there is nothing to save. Without this guard the first render would
+  // write the empty defaults over a perfectly good saved draft before the
+  // load that was already in flight had a chance to apply it.
+  const [prefsLoaded, setPrefsLoaded] = useState(false);
+
   useEffect(() => {
     let live = true;
-    // The held set, tracked outside React state so the foreground listener
-    // below always diffs against what is actually loaded rather than the
-    // value captured when the listener was registered.
-    let held: DataSet = bundledData;
+    void (async () => {
+      const saved = await loadPrefs();
+      if (!live) return;
+      // QA_STATE wins: it exists to pin an exact screen for screenshots, and
+      // a saved draft silently overriding it would make those unreproducible.
+      if (saved.draft && !QA_STATE?.draft) {
+        setDraft((current) => ({ ...current, ...saved.draft }));
+      }
+      if (saved.mode && !QA_STATE?.mode) setMode(saved.mode);
+      setPrefsLoaded(true);
+    })();
+    return () => {
+      live = false;
+    };
+  }, []);
+
+  // Saved on change rather than on submit: someone who picks their date and
+  // then closes the app without tapping through has still done the tedious
+  // part, and should not have to do it again. The file is a few hundred
+  // bytes and these writes are already off the render path.
+  useEffect(() => {
+    if (!prefsLoaded) return;
+    void savePrefs({ draft, mode });
+  }, [draft, mode, prefsLoaded]);
+
+  useEffect(() => {
+    let live = true;
 
     const refresh = async () => {
-      const fresher = await checkForUpdate(held);
-      if (!live || !fresher) return;
-      held = fresher;
-      setData(fresher);
+      const outcome = await checkForUpdate(heldRef.current);
+      if (!live || outcome.status !== "updated") return;
+      heldRef.current = outcome.data;
+      setData(outcome.data);
     };
 
     void (async () => {
       const cached = await loadCached(bundledData);
       if (!live) return;
       if (cached.source !== "bundled") {
-        held = cached;
+        heldRef.current = cached;
         setData(cached);
       }
       await refresh();
@@ -216,6 +300,8 @@ export default function App() {
               events={events}
               bundle={bundle}
               stale={stale}
+              onRefresh={refreshNow}
+              refreshState={refreshState}
               newsCount={timeline.filter((i) => i.direct).length}
             />
           ) : screen === "methodology" ? (

@@ -1,7 +1,7 @@
 /** The estimate, its outlook, and what is acting on it. */
 
 import React, { useMemo, useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, View } from "react-native";
 import { Text } from "../components/Text";
 import { useContentWidth } from "../layout";
 import type { CaseAssessment } from "@gc-eta/model";
@@ -14,7 +14,7 @@ import { Sheet } from "../components/Sheet";
 import { DisruptionsBody } from "./DisruptionsScreen";
 import { CompareBody } from "./CompareScreen";
 import { CARD_MIN_HEIGHT } from "../components/Card";
-import { BackIcon, HelpIcon } from "../components/Icons";
+import { BackIcon, HelpIcon, RefreshIcon } from "../components/Icons";
 import { EstimateTimeline } from "../components/EstimateTimeline";
 import { QueueCard } from "../components/QueueCard";
 import { StageCard } from "../components/StageCard";
@@ -29,7 +29,7 @@ import { prettyMonth } from "../data";
 import { directionStyle, type Theme } from "../theme";
 import type { Bundle, Comparison, EventsFile, SwitchSuggestion } from "@gc-eta/model";
 import type { Freshness } from "../updates";
-import type { CaseDraft } from "../types";
+import type { CaseDraft, RefreshState } from "../types";
 
 interface Props {
   theme: Theme;
@@ -47,6 +47,9 @@ interface Props {
   /** The live bundle, which may be newer than the one compiled into the app. */
   bundle: Bundle;
   stale: Freshness;
+  /** Ask whether a newer bulletin has been published, without leaving here. */
+  onRefresh: () => void;
+  refreshState: RefreshState;
   newsCount: number;
 }
 
@@ -208,7 +211,7 @@ const CONFIDENCE_NOTE: CardDetail = {
         "Department of State Visa Bulletin archive. Backtest of 393 cases from quarterly origins between October 2016 and September 2023.",
     };
 
-export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, comparison, suggestion, events, bundle, stale, newsCount, initialSheet, initialFlipped }: Props) {
+export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, comparison, suggestion, events, bundle, stale, onRefresh, refreshState, newsCount, initialSheet, initialFlipped }: Props) {
   const { finalAction, filing, outlook } = assessment;
   // The hero card sits inside the screen's 20pt padding and its own 16pt, so
   // the drawing has to be told how much room it really has. Measured from the
@@ -401,11 +404,44 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
             <Text display style={{ fontSize: 19, color: theme.text, letterSpacing: -0.2 }}>
               {columnLabel(draft.column)} · {categoryLabel(draft.category)} · {shortDate(draft.priorityDate)}
             </Text>
-            <Text style={{ fontSize: 12, color: theme.secondary }}>
-              Bulletin {prettyMonth(assessment.asOfMonth)}
-              {stale.stale ? ` · ${stale.note}` : ""}
-            </Text>
+            {/* The refresh result replaces this line while it has something
+                to say rather than sitting beside it: two statuses about the
+                same data, one of them seconds out of date, reads as a
+                contradiction at 12pt. */}
+            {refreshState.status === "idle" ? (
+              <Text style={{ fontSize: 12, color: theme.secondary }}>
+                Bulletin {prettyMonth(assessment.asOfMonth)}
+                {stale.stale ? ` · ${stale.note}` : ""}
+              </Text>
+            ) : (
+              <Text
+                accessibilityLiveRegion="polite"
+                style={{
+                  fontSize: 12,
+                  color: refreshState.status === "failed" ? theme.negative : theme.secondary,
+                }}
+              >
+                {refreshState.status === "checking"
+                  ? "Checking for a newer bulletin…"
+                  : refreshState.note}
+              </Text>
+            )}
           </View>
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Check for a newer bulletin"
+            accessibilityState={{ busy: refreshState.status === "checking" }}
+            disabled={refreshState.status === "checking"}
+            onPress={onRefresh}
+            style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center", borderRadius: 22 }}
+          >
+            {refreshState.status === "checking" ? (
+              <ActivityIndicator size="small" color={theme.secondary} />
+            ) : (
+              <RefreshIcon color={theme.text} />
+            )}
+          </Pressable>
 
           <Pressable
             accessibilityRole="button"

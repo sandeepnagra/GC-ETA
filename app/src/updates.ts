@@ -53,6 +53,22 @@ export interface DataSet {
   source: DataSource;
 }
 
+/**
+ * Why this is three cases and not a nullable DataSet.
+ *
+ * "Nothing newer was published" and "I could not reach the server" are the
+ * same silence to the code and completely different news to a person. While
+ * the only caller was a background check on launch the distinction cost
+ * nothing, because neither case said anything to anyone. A refresh button
+ * makes it matter immediately: answering a tap on a dead connection with
+ * "already up to date" tells someone their estimate is current when nobody
+ * actually managed to check.
+ */
+export type UpdateOutcome =
+  | { status: "updated"; data: DataSet }
+  | { status: "current" }
+  | { status: "failed" };
+
 interface Manifest {
   generated_at: string;
   bulletin_month: string;
@@ -122,8 +138,8 @@ export async function loadCached(bundled: DataSet): Promise<DataSet> {
 /**
  * Check for a newer publish and take it if there is one.
  *
- * Returns null when there is nothing to do, which is the common case: the
- * manifest is a few hundred bytes and most launches stop there.
+ * "current" is the common case and the cheap one: the manifest is a few
+ * hundred bytes and most launches stop there.
  *
  * The bundle and the event registry are checked independently, not as one
  * unit gated on the manifest's single `generated_at`. That field is written
@@ -134,10 +150,10 @@ export async function loadCached(bundled: DataSet): Promise<DataSet> {
  * same day as a bundle rebuild, otherwise it sat live on the CDN but
  * invisible to every app that had already cached an older copy.
  */
-export async function checkForUpdate(current: DataSet): Promise<DataSet | null> {
+export async function checkForUpdate(current: DataSet): Promise<UpdateOutcome> {
   try {
     const manifest = (await getJson(`${BASE}/manifest.json`)) as Manifest;
-    if (!manifest) return null;
+    if (!manifest) return { status: "failed" };
 
     let bundle: Bundle = current.bundle;
     let events: EventsFile = current.events;
@@ -163,7 +179,7 @@ export async function checkForUpdate(current: DataSet): Promise<DataSet | null> 
       changed = true;
     }
 
-    if (!changed) return null;
+    if (!changed) return { status: "current" };
 
     // Caching is an optimisation for the next launch; having the data is the
     // point of this function. These used to share the outer try, so a failed
@@ -191,9 +207,9 @@ export async function checkForUpdate(current: DataSet): Promise<DataSet | null> 
       // reading a cache that was never written.
     }
 
-    return { bundle, events, source: "fetched" };
+    return { status: "updated", data: { bundle, events, source: "fetched" } };
   } catch {
-    return null;
+    return { status: "failed" };
   }
 }
 

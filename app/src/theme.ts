@@ -3,8 +3,14 @@
  *
  * The app follows the phone's light or dark setting by default and updates
  * live when it changes. An explicit Light or Dark choice overrides that for
- * this app only, and is the single value stored on the device: a theme that
- * resets every launch is a bug, not a privacy feature. PLAN.md 7.3.
+ * this app only, and is remembered across launches: a theme that resets
+ * every launch is a bug, not a privacy feature. PLAN.md 7.3.
+ *
+ * This said "the single value stored on the device" for a long time while
+ * nothing was stored at all -- the choice was plain useState and did reset
+ * on every launch, the exact bug the sentence was written to rule out. It is
+ * saved now, in src/prefs.ts, alongside the case draft, which is why it is
+ * no longer the only one.
  */
 
 import { useColorScheme } from "react-native";

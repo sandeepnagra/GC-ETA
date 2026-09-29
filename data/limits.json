@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "generated_at": "2026-09-29T16:39:40.914264+00:00",
+ "generated_at": "2026-09-29T17:04:30.953149+00:00",
  "source": "Stated in the Department of State Visa Bulletin, read from the archive",
  "note": "Figures are provisional under INA 203(g) until USCIS supplies immediate-relative and parolee counts mid-year. revised_mid_year flags a fiscal year where the stated numbers changed.",
  "limits": [
@@ -436,6 +436,29 @@
    "has_determined_figure": true,
    "revised_mid_year": true,
    "months_stating_limits": 12
+  },
+  {
+   "fiscal_year": 2027,
+   "revisions": [
+    {
+     "employment_worldwide": 140000,
+     "employment_is_floor_only": true,
+     "per_country": 25620,
+     "dependent_area": 7320,
+     "stated_in": "2026-10"
+    }
+   ],
+   "final": {
+    "employment_worldwide": 140000,
+    "employment_is_floor_only": true,
+    "per_country": 25620,
+    "dependent_area": 7320,
+    "stated_in": "2026-10"
+   },
+   "determined": null,
+   "has_determined_figure": false,
+   "revised_mid_year": false,
+   "months_stating_limits": 1
   }
  ]
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { View, useColorScheme } from "react-native";
+import { AppState, View, useColorScheme } from "react-native";
 // react-native's own SafeAreaView only insets on iOS; on Android it is a
 // plain View, which is why content sat flush under the status bar there
 // while iOS looked fine. This package computes real insets on both.
@@ -16,7 +16,7 @@ import { assessCase, caseTimeline, compareCategories, suggestSwitch } from "@gc-
 
 import { bundledData, prettyMonth } from "./src/data";
 import { MAX_CONTENT_WIDTH } from "./src/layout";
-import { checkForUpdate, freshness, loadCached } from "./src/updates";
+import { checkForUpdate, freshness, loadCached, type DataSet } from "./src/updates";
 import { FONTS } from "./src/components/Text";
 import { CaseScreen } from "./src/screens/CaseScreen";
 import { ExplainScreen } from "./src/screens/ExplainScreen";
@@ -57,6 +57,13 @@ function readQaState(): QaState | null {
 
 const QA_STATE = readQaState();
 
+/**
+ * How long to leave it before asking again when the app comes back to the
+ * foreground. Long enough that flicking between apps does not re-ask, short
+ * enough that someone who opens the app the morning a bulletin lands sees it.
+ */
+const FOREGROUND_RECHECK_MS = 60_000;
+
 export default function App() {
   const system = useColorScheme();
   const [mode, setMode] = useState<ThemeMode>(QA_STATE?.mode ?? "system");
@@ -81,14 +88,52 @@ export default function App() {
 
   useEffect(() => {
     let live = true;
+    // The held set, tracked outside React state so the foreground listener
+    // below always diffs against what is actually loaded rather than the
+    // value captured when the listener was registered.
+    let held: DataSet = bundledData;
+
+    const refresh = async () => {
+      const fresher = await checkForUpdate(held);
+      if (!live || !fresher) return;
+      held = fresher;
+      setData(fresher);
+    };
+
     void (async () => {
       const cached = await loadCached(bundledData);
-      if (live && cached.source !== "bundled") setData(cached);
-      const fresher = await checkForUpdate(cached);
-      if (live && fresher) setData(fresher);
+      if (!live) return;
+      if (cached.source !== "bundled") {
+        held = cached;
+        setData(cached);
+      }
+      await refresh();
     })();
+
+    // Mount alone is not enough. This effect runs once per mount, and Android
+    // resuming from the recents list does not remount -- the process is still
+    // alive, React never re-runs this, and the app serves whatever it loaded
+    // whenever it was last cold-started. An app people keep in recents can
+    // therefore sit on a superseded bulletin indefinitely: exactly what
+    // happened when October published and installed apps kept showing
+    // September's Unavailable until they were force-stopped.
+    //
+    // Checking on foreground rather than on a timer keeps the request tied to
+    // someone actually looking at the screen. The throttle is there because
+    // app switching is bursty and there is no reason to ask twice in a
+    // minute; the manifest is a few hundred bytes, but it is still someone
+    // else's bandwidth and the user's battery.
+    let lastCheck = Date.now();
+    const subscription = AppState.addEventListener("change", (next) => {
+      if (next !== "active") return;
+      if (Date.now() - lastCheck < FOREGROUND_RECHECK_MS) return;
+      lastCheck = Date.now();
+      void refresh();
+    });
+
     return () => {
       live = false;
+      subscription.remove();
     };
   }, []);
 

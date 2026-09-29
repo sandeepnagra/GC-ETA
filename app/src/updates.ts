@@ -165,19 +165,32 @@ export async function checkForUpdate(current: DataSet): Promise<DataSet | null> 
 
     if (!changed) return null;
 
-    await FileSystem.makeDirectoryAsync(CACHE_DIR, { intermediates: true }).catch(() => {});
-    await FileSystem.writeAsStringAsync(BUNDLE_FILE, JSON.stringify(bundle));
-    await FileSystem.writeAsStringAsync(EVENTS_FILE, JSON.stringify(events));
-    // Written last, so a half-finished write leaves no stamp and the cache is
-    // ignored rather than half-read on the next launch.
-    await FileSystem.writeAsStringAsync(
-      STAMP_FILE,
-      JSON.stringify({
-        generated_at: bundle.generated_at,
-        events_last_reviewed: events.last_reviewed,
-        at: new Date().toISOString(),
-      }),
-    );
+    // Caching is an optimisation for the next launch; having the data is the
+    // point of this function. These used to share the outer try, so a failed
+    // write threw away a download that had already been fetched, validated
+    // and found newer -- and because the catch returns null, the screen kept
+    // the superseded data with nothing logged. The next launch would fetch
+    // it again, fail to write again, and show stale data again.
+    try {
+      await FileSystem.makeDirectoryAsync(CACHE_DIR, { intermediates: true }).catch(() => {});
+      await FileSystem.writeAsStringAsync(BUNDLE_FILE, JSON.stringify(bundle));
+      await FileSystem.writeAsStringAsync(EVENTS_FILE, JSON.stringify(events));
+      // Written last, so a half-finished write leaves no stamp and the cache is
+      // ignored rather than half-read on the next launch.
+      await FileSystem.writeAsStringAsync(
+        STAMP_FILE,
+        JSON.stringify({
+          generated_at: bundle.generated_at,
+          events_last_reviewed: events.last_reviewed,
+          at: new Date().toISOString(),
+        }),
+      );
+    } catch {
+      // Nothing to do about it and nothing to tell the user: they get the
+      // fresh data this session, and the next launch re-fetches rather than
+      // reading a cache that was never written.
+    }
+
     return { bundle, events, source: "fetched" };
   } catch {
     return null;

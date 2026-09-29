@@ -1,17 +1,9 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
 import { test } from "node:test";
-import { fileURLToPath } from "node:url";
 
 import { bundleAsOf, forecastCutoff } from "../src/backtest.js";
 import { getSeries, monthToAbsolute } from "../src/bundle.js";
-import type { Bundle } from "../src/types.js";
-
-const here = dirname(fileURLToPath(import.meta.url));
-const bundle = JSON.parse(
-  readFileSync(resolve(here, "../../../data/app-bundle.json"), "utf8"),
-) as Bundle;
+import { bundle } from "./fixtures.js";
 
 test("a truncated bundle ends where it was cut", () => {
   const past = bundleAsOf(bundle, "2019-06");

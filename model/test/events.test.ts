@@ -1,20 +1,10 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
 import { test } from "node:test";
-import { fileURLToPath } from "node:url";
 
 import { applicableEvents, staleEvents } from "../src/events.js";
 import { assessCase } from "../src/assess.js";
 import { caseTimeline } from "../src/news.js";
-import type { Bundle, EventsFile } from "../src/types.js";
-
-const here = dirname(fileURLToPath(import.meta.url));
-const read = (name: string) =>
-  JSON.parse(readFileSync(resolve(here, `../../../data/${name}`), "utf8"));
-const events = read("events.json") as EventsFile;
-const bundle = read("app-bundle.json") as Bundle;
-const TODAY = "2026-09-17";
+import { bundle, events, TODAY } from "./fixtures.js";
 
 const ids = (list: ReturnType<typeof applicableEvents>) => list.map((a) => a.event.id);
 const find = (list: ReturnType<typeof applicableEvents>, id: string) =>

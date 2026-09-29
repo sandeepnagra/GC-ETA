@@ -1,8 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
 import { test } from "node:test";
-import { fileURLToPath } from "node:url";
 
 import {
   absoluteToMonth,
@@ -15,12 +12,7 @@ import {
 import { estimate, extractSteps, scaleStepsToRegime } from "../src/levelA.js";
 import { nearTermOutlook, sectionsFor } from "../src/outlook.js";
 import type { EventsFile } from "../src/types.js";
-import type { Bundle } from "../src/types.js";
-
-const here = dirname(fileURLToPath(import.meta.url));
-const bundle = JSON.parse(
-  readFileSync(resolve(here, "../../../data/app-bundle.json"), "utf8"),
-) as Bundle;
+import { bundle } from "./fixtures.js";
 
 test("date encoding round-trips", () => {
   assert.equal(dayToIso(isoToDay("2015-03-10")), "2015-03-10");

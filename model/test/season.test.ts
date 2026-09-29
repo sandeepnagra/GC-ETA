@@ -1,17 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 
 import { seasonalPattern } from "../src/season.js";
 import { supplyPicture } from "../src/supply.js";
-import type { Bundle, Column } from "../src/types.js";
-
-const here = dirname(fileURLToPath(import.meta.url));
-const bundle = JSON.parse(
-  readFileSync(resolve(here, "../../../data/app-bundle.json"), "utf8"),
-) as Bundle;
+import type { Column } from "../src/types.js";
+import { bundle } from "./fixtures.js";
 
 test("the fiscal year starts in October", () => {
   const season = seasonalPattern(bundle, "EB2", "IN" as Column);

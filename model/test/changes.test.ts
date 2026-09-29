@@ -1,17 +1,9 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 
 import { whatWouldChange } from "../src/changes.js";
-import type { Bundle, CaseInput, EventsFile, GcEvent } from "../src/types.js";
-
-const here = dirname(fileURLToPath(import.meta.url));
-const load = (name: string) =>
-  JSON.parse(readFileSync(resolve(here, `../../../data/${name}`), "utf8"));
-const bundle = load("app-bundle.json") as Bundle;
-const events = load("events.json") as EventsFile;
+import type { CaseInput, EventsFile, GcEvent } from "../src/types.js";
+import { bundle, events } from "./fixtures.js";
 
 const india: CaseInput = {
   birthCountry: "IN",

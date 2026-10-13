@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "last_reviewed": "2026-09-21",
-  "note": "Hand-curated. Detection is automated (Federal Register, court dockets, agency alerts) but assigning a modelling effect is a judgement call, so entries arrive as pull requests with an empty effect for a maintainer to fill. See PLAN.md 8.1. Every entry carries verified_against and confidence; the app must not display an entry whose last_checked is stale.",
+  "last_reviewed": "2026-10-12",
+  "note": "Hand-curated. Detection is automated (Federal Register, agency and White House announcements, court dockets) but assigning a modelling effect is a judgement call, so entries arrive as pull requests with an empty effect for a maintainer to fill. See PLAN.md 8.1. Every entry carries verified_against and confidence; the app must not display an entry whose last_checked is stale.",
   "country_lists": {
     "travel_ban_full": {
       "note": "Proclamation 10949, full restrictions.",
@@ -205,6 +205,27 @@
       "confidence": "secondary",
       "verified_against": null,
       "last_checked": "2026-09-21"
+    },
+    {
+      "id": "dol-perm-suspension-eight-employers-2026",
+      "type": "labor_cert_pause",
+      "title": "PERM suspended for eight large employers",
+      "summary": "The Labor Department suspended Microsoft, Adobe, Cognizant, Infosys, Tata Consultancy Services, Wipro, HCL and Capgemini from the PERM labour certification programme on 8 October 2026, under 20 CFR 656.31(b), pending investigations into possible fraud or wilful misrepresentation. Pending applications are not processed and new ones are refused. An initial suspension runs up to 180 days and can be extended while an investigation continues. H-1B is not suspended, PERM is open to every other employer, and approved I-140s are not cancelled.",
+      "countries": "all",
+      "affects": ["adjustment", "consular"],
+      "categories": "all",
+      "start": "2026-10-08",
+      "end": null,
+      "status": "in_force",
+      "modeling": {
+        "unknown_population": true,
+        "rebounds_on_lift": true,
+        "note": "Direction is clear, size is not, so no multiplier. NOT future_demand: changing employer on an H-1B needs a fresh PERM and I-140 from the new employer and only the priority date carries over, so someone at one of these eight who is mid-PERM cannot file I-485 even once their date is current, the earlier I-140 having stopped being able to support a filing when they left that job. That is demand held back at the FRONT of the queue now rather than inflow years out, and the Visa Office advances cutoffs when annual numbers go unused. No number because nothing public says how many people at these eight are in that position, which is the entire effect size. It is a suspension and not a cancellation, so those cases return when it lifts and could retrograde dates later: the sign changes over time. Litigation at this scale is likely and would reverse it outright.",
+        "primary_source_note": "Announced 8 October 2026 at a press conference by the Vice President and the Secretary of Labor. It is not a Federal Register document and, as of 12 October, has not appeared on OFLC's own announcements page, whose latest item is 17 September. verified_against stays null until an official notice exists to point at."
+      },
+      "confidence": "secondary",
+      "verified_against": null,
+      "last_checked": "2026-10-12"
     }
   ]
 }

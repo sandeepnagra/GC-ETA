@@ -109,6 +109,39 @@ FEEDS = [
         "title": "State Department travel alerts",
         "url": "https://travel.state.gov/_res/rss/TAsTWs.xml",
     },
+    # ANNOUNCEMENT CHANNELS, as opposed to publication channels.
+    #
+    # Everything above this point watches places where government writes rules
+    # down. That turned out to be a blind spot rather than a filter: on 8
+    # October 2026 the Labor Department suspended eight large employers from
+    # PERM under 20 CFR 656.31(b), which stops the labour certification that
+    # every employment-based green card starts with, and this tool saw
+    # nothing. It could not have. The action was announced at a press
+    # conference by the Vice President and the Secretary of Labor; there is no
+    # Federal Register document (checked: zero Labor documents mentioning PERM
+    # in the surrounding thirty days) and it had still not reached OFLC's own
+    # announcements page four days later.
+    #
+    # An action that never goes through rulemaking was invisible to us by
+    # construction, however many Federal Register feeds we added. These two
+    # cover the channel it actually used.
+    {
+        # Shallow: ten items. A busy publication day can push something off it
+        # between polls, which is why watch-feeds.yml runs more often than
+        # daily now. Filtering is left to score(), since this carries every
+        # DOL release including mine-safety and wage-and-hour.
+        "id": "dol-releases",
+        "title": "Labor Department news releases",
+        "url": "https://www.dol.gov/rss/releases.xml",
+    },
+    {
+        # Thirty items, so less exposed to the problem above. Proclamations
+        # and executive orders appear here before the Federal Register prints
+        # them, which is the same gap one step earlier.
+        "id": "white-house-actions",
+        "title": "White House presidential actions",
+        "url": "https://www.whitehouse.gov/presidential-actions/feed/",
+    },
 ]
 
 # CourtListener (Free Law Project) indexes federal opinions and dockets, and
@@ -152,7 +185,7 @@ WATCH_TERMS = [
     "immigrant visa", "consular", "retrogress", "retrogression", "green card",
     "labor certification", "eb-1", "eb-2", "eb-3", "eb-4", "eb-5",
     "national interest waiver", "chargeability", "visa availability",
-    "immigration",
+    "immigration", "h-1b", "perm", "debarment", "debarred", "prevailing wage",
     # A rule or order changing status is news the moment it moves either
     # direction. These are deliberately kept as WEAK terms, not strong: e.g.
     # "withdrawal" alone fires on any agency's unrelated rule withdrawal, and
@@ -169,6 +202,21 @@ STRONG_TERMS = [
     "visa bulletin", "priority date", "final action date", "dates for filing",
     "public charge", "retrogress", "retrogression", "per-country",
     "visa availability", "chargeability",
+    # Strong because it is the step every employment-based green card starts
+    # with, and because the phrase is specific enough to carry on its own: a
+    # release headed "suspends eight employers from permanent labor
+    # certification" otherwise scored one, since "permanent" is not "perm"
+    # under word-boundary matching, and fell under the two-weak-terms bar.
+    # That is the exact item this tool missed on 8 October.
+    #
+    # "perm" and "h-1b" join it for the same reason, found by testing the
+    # headline phrasings rather than assuming: "Labor Department announces
+    # PERM suspensions for Microsoft, Adobe and six IT firms" matched only
+    # "perm" and scored one, and a debarment headline matched only "h-1b" and
+    # scored one. Both are unambiguous in a government feed -- "perm" is
+    # word-boundary matched, so "permanent" does not trip it -- and both name
+    # the two programmes every case in this app passes through.
+    "labor certification", "perm", "h-1b",
 ]
 
 # Generic administrative notices that mention our terms in passing. These are

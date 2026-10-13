@@ -181,3 +181,65 @@ test("rows with nothing to say are left out rather than shown empty", () => {
   assert.ok(!rows.some((r) => r.id === "pause"));
   assert.ok(rows.some((r) => r.id === "spillover"), "the bundle-derived row survives");
 });
+
+const baseLaborPause: GcEvent = {
+  id: "test-labor-pause",
+  type: "labor_cert_pause",
+  title: "PERM suspended for some employers",
+  summary: "",
+  countries: "all",
+  affects: ["adjustment", "consular"],
+  categories: "all",
+  start: "2026-10-08",
+  end: null,
+  status: "in_force",
+  modeling: {},
+  confidence: "secondary",
+  verified_against: null,
+  last_checked: "2026-10-12",
+};
+
+test("a labour certification pause is shown to everyone, not filtered by country or path", () => {
+  // It is scoped by employer, and the app never asks who you work for, so
+  // filtering it the way a country ban is filtered would hide it from the
+  // people it actually catches.
+  const withPause: EventsFile = { ...events, events: [baseLaborPause] };
+  for (const input of [
+    india,
+    { ...india, path: "consular" as const },
+    { ...india, column: "ROW" as const, birthCountry: "GB" },
+    { ...india, category: "EB3" },
+  ]) {
+    const row = whatWouldChange(bundle, withPause, input).find((r) => r.id === "labor-cert-pause");
+    assert.ok(row, `expected the row for ${input.birthCountry} ${input.category} ${input.path}`);
+  }
+});
+
+test("the labour certification row says the demand comes back", () => {
+  // The whole reason it is not modelled as a number: it defers filings rather
+  // than removing them, so a reader told only "sooner" would be misled.
+  const withPause: EventsFile = { ...events, events: [baseLaborPause] };
+  const row = whatWouldChange(bundle, withPause, india).find((r) => r.id === "labor-cert-pause");
+  assert.equal(row!.direction, "sooner");
+  assert.match(row!.detail, /comes back|come back/);
+  assert.match(row!.detail, /suspension rather than a cancellation/);
+});
+
+test("a labour certification pause that has ended is not a live lever", () => {
+  const ended: EventsFile = {
+    ...events,
+    events: [{ ...baseLaborPause, end: "2026-10-09", status: "ended" }],
+  };
+  const rows = whatWouldChange(bundle, ended, india);
+  assert.ok(!rows.some((r) => r.id === "labor-cert-pause"));
+});
+
+test("a labour certification pause whose end date has passed is dropped even if still marked in force", () => {
+  // Status and dates disagreeing is exactly how the dead EAGLE/IVES entry
+  // survived for eight months. The date wins.
+  const stale: EventsFile = {
+    ...events,
+    events: [{ ...baseLaborPause, end: "2026-10-09", status: "in_force" }],
+  };
+  assert.ok(!whatWouldChange(bundle, stale, india).some((r) => r.id === "labor-cert-pause"));
+});

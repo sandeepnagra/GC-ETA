@@ -24,8 +24,21 @@ name: Watch feeds
 
 on:
   schedule:
-    # Offset from refresh-data.yml's 15:00 UTC so the two never race.
-    - cron: "0 13 * * *"
+    # Every six hours, offset from refresh-data.yml's 15:00 UTC so the two do
+    # not start together.
+    #
+    # Daily was fine while every source was an archive you could page back
+    # through. The Labor Department's releases feed is ten items deep and
+    # nothing else: on a busy publication day an item can be pushed off it
+    # inside twenty-four hours, so polling once a day means the window is
+    # wider than the feed and something can pass through unseen. Six hours
+    # puts the window comfortably under the depth at normal publication
+    # rates.
+    #
+    # Cheap to do: a run is about sixteen small requests, the seen-link state
+    # means repeats are not re-reported, and the commit step exits without a
+    # commit when nothing new arrived, so most runs leave no trace.
+    - cron: "13 1,7,13,19 * * *"
   workflow_dispatch:
 
 permissions:

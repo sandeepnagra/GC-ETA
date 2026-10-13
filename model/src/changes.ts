@@ -49,6 +49,19 @@ function touchesCountry(file: EventsFile, event: GcEvent, birthCountry?: string)
   return false;
 }
 
+/**
+ * Still happening, as far as the registry knows.
+ *
+ * The same trap the cap-reform row fell into: a status check alone let a
+ * thing that had finished keep showing as a live lever. An end date in the
+ * past means it is over whatever the status says, and a status the list does
+ * not recognise counts as not live rather than as live by default.
+ */
+function isLive(event: GcEvent, now = Date.now()): boolean {
+  if (!["in_force", "active", "scheduled"].includes(event.status)) return false;
+  return event.end === null || new Date(event.end).getTime() >= now;
+}
+
 export function whatWouldChange(
   bundle: Bundle,
   events: EventsFile,
@@ -141,7 +154,34 @@ export function whatWouldChange(
     });
   }
 
-  // 5. A pause or ban reaching the applicant's country AND their processing
+  // 5. Labour certification stopped at particular employers.
+  //
+  //    Not filtered by country, category or path, because the suspension is
+  //    not scoped by any of them -- it is scoped by employer, and the app
+  //    deliberately never asks who you work for. So this is shown to everyone
+  //    as context rather than claimed to apply to the reader, and the wording
+  //    has to carry both readings: the people caught by it are blocked, and
+  //    everyone else is behind marginally fewer filings.
+  //
+  //    Direction is "sooner" for the reader being advised, which is the one
+  //    the card is written for, and the detail says plainly why that can
+  //    reverse. It is the front of the queue rather than future inflow:
+  //    changing employer needs a fresh labour certification, only the
+  //    priority date carries over, and without one a current date cannot be
+  //    turned into a filing.
+  const laborPause = events.events.find(
+    (event) => event.type === "labor_cert_pause" && isLive(event),
+  );
+  if (laborPause) {
+    out.push({
+      id: "labor-cert-pause",
+      direction: "sooner",
+      title: "Labour certifications stopped at some employers",
+      detail: `${laborPause.title}. People there who need a new one cannot file, even once their date is current, so that demand is held back while it lasts. It is a suspension rather than a cancellation, and those cases come back when it lifts.`,
+    });
+  }
+
+  // 6. A pause or ban reaching the applicant's country AND their processing
   //    path. A consular pause does not touch someone adjusting status inside
   //    the United States, and listing it for them would be noise.
   //

@@ -49,11 +49,17 @@ for (let a = monthToAbsolute("2016-10"); a <= monthToAbsolute("2023-09"); a += 3
 console.log("\n2. FIRST PASSAGE: when does a priority date become current?");
 console.log("   What the app actually promises. Coverage is the headline:");
 console.log("   a P10-P90 band should contain the truth about 80% of the time.\n");
-const passage = backtestFirstPassage(bundle, PAIRS, origins, [1, 2, 3], 500);
+// 4000 iterations, matching what the app itself runs. At 500 this reported
+// coverage of 77% against an actual 78.9%, and that two-point phantom was
+// enough to send a whole modelling change chasing a miscalibration that was
+// not there. A metric used to decide whether to ship something has to be
+// quieter than the effect it is judging.
+const passage = backtestFirstPassage(bundle, PAIRS, origins, [1, 2, 3], 4000);
 console.log(`   origins tested      : ${origins.length} (quarterly, 2016-10 to 2023-09)`);
 console.log(`   samples             : ${passage.samples}  (${passage.censored} still not current at the end of the record)`);
 console.log(`   interval coverage   : ${pct(passage.coverage)}   target ~80%`);
 console.log(`   median error of P50 : ${Number.isFinite(passage.medianErrorYears) ? passage.medianErrorYears.toFixed(2) + " years" : "n/a"}`);
+console.log(`   median P10-P90 band : ${Number.isFinite(passage.medianBandYears) ? passage.medianBandYears.toFixed(2) + " years" : "n/a"}   (coverage is cheap if the band is wide)`);
 console.log(`   Brier, current ≤24mo: ${Number.isFinite(passage.brier24) ? passage.brier24.toFixed(3) : "n/a"}   (0 perfect, 0.25 = always saying 50%)`);
 console.log(`   "beyond horizon"    : ${passage.beyondHorizonTotal} calls, ${pct(passage.beyondHorizonCorrect)} still not current`);
 console.log();

@@ -88,6 +88,14 @@ export interface EstimateInput {
   /** Deterministic seed, so the same case always yields the same range. */
   seed?: number;
   iterations?: number;
+  /**
+   * How hard to widen the interval when the recent record diverges from the
+   * regime the resampler is drawing from. 0 is off. Not a forecast of any
+   * particular policy: see regimeInstability in levelA.ts. Default and
+   * whether it ships at all are settled by the backtest, not by argument.
+   */
+  regimeWidening?: number;
+  instabilityMode?: "excess" | "divergence";
 }
 
 export interface Estimate {

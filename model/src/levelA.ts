@@ -38,6 +38,20 @@ const MIN_BLOCK = 24;
 const MAX_BLOCK = 36;
 /** Below this crossing fraction we refuse to state a date. */
 const HORIZON_CONFIDENCE = 0.5;
+/** Months counted as "recent" when asking whether the regime has shifted. */
+const INSTABILITY_WINDOW = 24;
+/** Baseline months required BEYOND the window, or the ratio is self-referential. */
+const MIN_INSTABILITY_BASELINE = 24;
+/** Observations a fiscal month needs before it is widened about its own mean. */
+const MIN_PER_MONTH_OBS = 3;
+/** Nothing measured here justifies more than doubling the scatter. */
+const MAX_WIDENING = 2;
+/**
+ * Off until the backtest says otherwise. A knob that widens every reader's
+ * range is not shipped on the strength of the argument for it.
+ */
+const DEFAULT_REGIME_WIDENING = 0;
+const DEFAULT_INSTABILITY_MODE: InstabilityMode = "divergence";
 
 /** Deterministic PRNG, so the same case always produces the same range. */
 function mulberry32(seed: number): () => number {
@@ -50,6 +64,14 @@ function mulberry32(seed: number): () => number {
   };
 }
 
+function standardDeviation(values: number[]): number {
+  if (values.length < 2) return 0;
+  const mean = values.reduce((a, b) => a + b, 0) / values.length;
+  const variance =
+    values.reduce((sum, v) => sum + (v - mean) * (v - mean), 0) / (values.length - 1);
+  return Math.sqrt(variance);
+}
+
 export interface Step {
   /** 0 = October .. 11 = September. */
   fiscalMonth: number;
@@ -58,6 +80,34 @@ export interface Step {
   fiscalYear: number;
   /** Where the cutoff stood before this step, for density scaling. */
   fromDay: number;
+}
+
+/** Each fiscal month's mean advance, with how many observations backed it. */
+function fiscalMonthMeans(steps: Step[]): {
+  mean: number[];
+  count: number[];
+  global: number;
+} {
+  const sum = new Array(12).fill(0) as number[];
+  const count = new Array(12).fill(0) as number[];
+  for (const step of steps) {
+    sum[step.fiscalMonth]! += step.advanceDays;
+    count[step.fiscalMonth]! += 1;
+  }
+  const mean = sum.map((total, i) => (count[i]! > 0 ? total / count[i]! : 0));
+  const global =
+    steps.length > 0 ? steps.reduce((a, s) => a + s.advanceDays, 0) / steps.length : 0;
+  return { mean, count, global };
+}
+
+/** Steps with the fiscal calendar taken out, in original order. */
+function deseasonalisedResiduals(steps: Step[]): number[] {
+  const { mean, count, global } = fiscalMonthMeans(steps);
+  return steps.map((step) => {
+    const centre =
+      count[step.fiscalMonth]! >= MIN_PER_MONTH_OBS ? mean[step.fiscalMonth]! : global;
+    return step.advanceDays - centre;
+  });
 }
 
 /**
@@ -116,6 +166,108 @@ export function scaleStepsToRegime(
     const historical = limitByFiscalYear[String(step.fiscalYear)];
     if (!historical || historical <= 0) return step;
     return { ...step, advanceDays: step.advanceDays * (target / historical) };
+  });
+}
+
+/**
+ * Which way "unlike its own history" counts.
+ *
+ * "excess" is the obvious reading: only unusually VOLATILE recent months
+ * count. Measured on this archive it turned out to be inert exactly when it
+ * was wanted -- in October 2026 every column reads 0.44 to 0.73 of its own
+ * decade baseline, because a frozen cutoff has almost no variance, so the
+ * bulletin looks calmer than it has in ten years while the policy
+ * environment is the most disturbed it has been. Volatility of the published
+ * cutoff is not a proxy for turbulence in the world that sets it.
+ *
+ * "divergence" counts either direction, which is the claim actually being
+ * made: the resampler's library is drawn from a regime, and what matters is
+ * whether the months we now stand in resemble it. A stretch of frozen months
+ * is as much a different regime as a stretch of wild ones, and in both cases
+ * the library is a worse guide than its sample size suggests. The backtest
+ * decides between them; neither is assumed.
+ */
+export type InstabilityMode = "excess" | "divergence";
+
+/**
+ * How much more erratic the recent record is than the decade behind it.
+ *
+ * This is the honest half of a problem with no honest whole. Things happen
+ * that move this queue and cannot be measured: labour certification suspended
+ * at named employers, people abandoning approved petitions or changing jobs
+ * and needing a fresh one, adjudication quietly tightening, spillover moving
+ * because some unrelated family category stalled. Each is real and each has a
+ * direction. None has a number -- there is one instance of each, no
+ * measurable affected population, and nothing to fit a coefficient against.
+ * Inventing one would move every reader's headline date on a guess, and the
+ * historical steps already contain every past shock, so a hand-set multiplier
+ * would count that twice.
+ *
+ * What a shock does leave behind is turbulence, and turbulence is measurable
+ * without knowing its cause. So this asks only "is the recent record less
+ * like its own history than usual", and the answer widens the interval rather
+ * than moving the middle: the app says it is less sure, never that the date
+ * has changed. Measuring it from the bundle is also what makes it testable --
+ * it exists at every month of the backtest, where an event-registry flag
+ * would not, the registry having started in 2025.
+ *
+ * Seasonality is removed first. Raw monthly dispersion is dominated by the
+ * fiscal calendar (October jumps, summer retrogresses), so comparing raw
+ * standard deviations would report a window as unstable for containing an
+ * ordinary October. The comparison is of residuals about each fiscal month's
+ * own mean, which is the part that genuinely means "unpredictable".
+ *
+ * Returns 1 when the recent record is no more erratic than its history, and
+ * never less: being more confident than the long record supports is not a
+ * direction this is allowed to move.
+ */
+export function regimeInstability(
+  steps: Step[],
+  window = INSTABILITY_WINDOW,
+  mode: InstabilityMode = "divergence",
+): number {
+  if (steps.length < window + MIN_INSTABILITY_BASELINE) return 1;
+  const residuals = deseasonalisedResiduals(steps);
+  const baseline = standardDeviation(residuals);
+  if (baseline <= 0) return 1;
+  const recent = standardDeviation(residuals.slice(-window));
+  if (recent <= 0) return 1;
+  const ratio = recent / baseline;
+  return mode === "excess" ? Math.max(1, ratio) : Math.max(ratio, 1 / ratio);
+}
+
+/** Widening factor for a strength setting, clamped. 1 means leave it alone. */
+export function wideningFactor(instability: number, strength: number): number {
+  if (strength <= 0 || !Number.isFinite(instability)) return 1;
+  return Math.min(MAX_WIDENING, 1 + strength * (instability - 1));
+}
+
+/**
+ * Spread the steps out about their own means, leaving those means alone.
+ *
+ * Mean preserved is the whole point: drift is what decides where the estimate
+ * lands and dispersion is what decides how wide it is, and the claim being
+ * made here is only about the second. A version that moved the mean would be
+ * the invented coefficient this exists to avoid.
+ *
+ * About the FISCAL MONTH's mean, not the overall mean. The resampler draws
+ * blocks fiscal-month aligned precisely because October and June are
+ * different months, and widening about a single overall mean would inflate
+ * October's already-large positive deviation and drive the summer further
+ * negative. That is a claim that seasonality is stronger than recorded, which
+ * is not the claim. Centring per fiscal month leaves the seasonal profile
+ * untouched and inflates only the within-month scatter. A fiscal month with
+ * too few observations to have a mean of its own falls back to the overall
+ * one rather than being widened about a single point, which would be a
+ * no-op for it.
+ */
+export function widenStepDispersion(steps: Step[], factor: number): Step[] {
+  if (factor <= 1 || steps.length === 0) return steps;
+  const { mean, count, global } = fiscalMonthMeans(steps);
+  return steps.map((step) => {
+    const centre =
+      count[step.fiscalMonth]! >= MIN_PER_MONTH_OBS ? mean[step.fiscalMonth]! : global;
+    return { ...step, advanceDays: centre + (step.advanceDays - centre) * factor };
   });
 }
 
@@ -332,8 +484,25 @@ export function estimate(
       "Adjusted for how many people hold the priority dates ahead of you, which differs sharply across years.",
     );
   }
-  const { crossings, crossedFraction } = simulateFirstPassage(
+  // Widening goes LAST, after both scalings. Density scaling multiplies
+  // individual steps by step-specific factors, which moves their mean; widen
+  // before it and the mean this is careful to preserve is destroyed anyway.
+  const widenStrength = input.regimeWidening ?? DEFAULT_REGIME_WIDENING;
+  const instability = regimeInstability(
     densityScaled.steps,
+    INSTABILITY_WINDOW,
+    input.instabilityMode ?? DEFAULT_INSTABILITY_MODE,
+  );
+  const widening = wideningFactor(instability, widenStrength);
+  const simulationSteps = widenStepDispersion(densityScaled.steps, widening);
+  if (widening > 1.01) {
+    drivers.push(
+      "The last two years have not moved like the ten before them, so this range is widened to say the record is a weaker guide than usual right now.",
+    );
+  }
+
+  const { crossings, crossedFraction } = simulateFirstPassage(
+    simulationSteps,
     launchDay,
     targetDay,
     startFiscalMonth,

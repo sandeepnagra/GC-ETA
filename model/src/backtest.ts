@@ -276,6 +276,37 @@ export interface PassageScore {
   beyondHorizonTotal: number;
   /** Brier score for "current within 24 months". Lower is better. */
   brier24: number;
+  /**
+   * Median width of P10-P90, in years. Reported beside coverage because a
+   * band wide enough covers anything, so coverage alone would let a loss of
+   * precision read as a gain in skill.
+   */
+  medianBandYears: number;
+  /**
+   * One row per scored case, so two settings can be compared on the same
+   * cases rather than on two aggregate percentages. Coverage on 393 samples
+   * carries about two points of standard error, which is most of the
+   * difference any of this is expected to make: the question "did the same
+   * case move in or out of band" is answerable where "did the percentage go
+   * up" is not.
+   */
+  samplesDetail: PassageSample[];
+}
+
+export interface PassageSample {
+  key: string;
+  /** Months from origin to the real crossing, or null if it never happened. */
+  truthMonths: number | null;
+  p10: number;
+  p50: number;
+  p90: number;
+  inBand: boolean;
+}
+
+export interface PassageOptions {
+  iterations?: number;
+  regimeWidening?: number;
+  instabilityMode?: "excess" | "divergence";
 }
 
 export function backtestFirstPassage(
@@ -283,8 +314,13 @@ export function backtestFirstPassage(
   pairs: Array<{ category: string; column: Column }>,
   origins: string[],
   targetOffsetsYears: number[],
-  iterations = 800,
+  iterations: number | PassageOptions = 800,
 ): PassageScore {
+  const options: PassageOptions =
+    typeof iterations === "number" ? { iterations } : iterations;
+  const iters = options.iterations ?? 800;
+  const bands: number[] = [];
+  const samplesDetail: PassageSample[] = [];
   const start = monthToAbsolute(bundle.start_month);
   const last = monthToAbsolute(bundle.end_month);
   const errors: number[] = [];
@@ -315,7 +351,15 @@ export function backtestFirstPassage(
 
         const result = estimate(
           truncated,
-          { column, category, priorityDate: targetIso, seed: origin, iterations },
+          {
+            column,
+            category,
+            priorityDate: targetIso,
+            seed: origin,
+            iterations: iters,
+            regimeWidening: options.regimeWidening,
+            instabilityMode: options.instabilityMode,
+          },
           "final_action",
         );
         if (result.status !== "not_current") continue;
@@ -345,17 +389,24 @@ export function backtestFirstPassage(
         const p50 = monthToAbsolute(result.p50) - origin;
         const p90 = monthToAbsolute(result.p90) - origin;
 
+        const key = `${originMonth}|${category}/${column}|+${offset}y`;
+        bands.push((p90 - p10) / 12);
+
         if (truthMonths === null) {
           // Right-censored: it had not happened by the end of the record. The
           // band is consistent only if it extends past the end of the data.
           censored += 1;
-          if (p90 >= last - origin) inBand += 1;
+          const ok = p90 >= last - origin;
+          if (ok) inBand += 1;
           samples += 1;
+          samplesDetail.push({ key, truthMonths, p10, p50, p90, inBand: ok });
           continue;
         }
 
         samples += 1;
-        if (truthMonths >= p10 && truthMonths <= p90) inBand += 1;
+        const ok = truthMonths >= p10 && truthMonths <= p90;
+        if (ok) inBand += 1;
+        samplesDetail.push({ key, truthMonths, p10, p50, p90, inBand: ok });
         errors.push(Math.abs(p50 - truthMonths) / 12);
 
         const predicted24 = result.probabilityWithin?.find((p) => p.months === 24)?.probability;
@@ -369,6 +420,7 @@ export function backtestFirstPassage(
   }
 
   errors.sort((a, b) => a - b);
+  bands.sort((a, b) => a - b);
   return {
     samples,
     censored,
@@ -377,6 +429,8 @@ export function backtestFirstPassage(
     beyondHorizonCorrect: beyondTotal ? beyondCorrect / beyondTotal : NaN,
     beyondHorizonTotal: beyondTotal,
     brier24: brierCount ? brierSum / brierCount : NaN,
+    medianBandYears: bands.length ? bands[Math.floor(bands.length / 2)]! : NaN,
+    samplesDetail,
   };
 }
 

@@ -1476,6 +1476,33 @@ when they will draw something.
 - **Sanity anchors:** Cato's long-run estimates (a new India EB-2 applicant faces a multi-decade or lifetime wait) and the observed 2026 India cohort behavior (2013 PDs cleared, 2015 entering) should fall inside the model's range.
 - **Unit tests:** fiscal-year math, per-country cap computation from limits, fall-down arithmetic, chart selection logic, event applicability by country and path.
 
+### 10.1 Tested and rejected: folding unquantifiable policy factors into the estimate
+
+The question, asked in October 2026: several things plainly move this queue and cannot be counted — labour certification suspended at eight named employers, holders of approved I-140s who have left the country or changed jobs and have no current petition, EB-1 adjudication tightening and so reducing what falls down to EB-2, spillover shifting because unrelated family categories stalled. Can they enter the model as a factor?
+
+**Not as a multiplier.** Each is a single instance with no measurable affected population, so there is nothing to fit a coefficient against, and the historical steps already contain every past shock of this kind — a hand-set multiplier would count that twice. Choosing a number would move every reader's headline date on a guess.
+
+**The testable version was built, measured, and not shipped.** Instead of moving the median, widen the interval when the recent record diverges from the regime the resampler draws its library from — a signal computed from the bundle alone (recent 24-month dispersion of deseasonalised steps against its own 120-month baseline), so it exists at every month of the backtest and is falsifiable. An event-registry flag could not be tested at all: the backtest runs 2016–2023 and the registry starts in 2025.
+
+Measured on quarterly origins 2016-10 to 2023-09, 393 scored cases, 4000 iterations (converged — identical at 12000):
+
+| setting | coverage | median band | P50 error | paired flips in/out |
+|---|---|---|---|---|
+| baseline | 78.9% | 3.50 yr | 0.83 yr | — |
+| divergence 0.25 | 78.4% | 3.75 yr | 0.92 yr | +9 / −11 |
+| divergence 0.50 | 79.0% | 3.92 yr | 0.92 yr | +13 / −13 |
+| divergence 1.00 | 80.9% | 4.17 yr | 0.92 yr | +23 / −15 |
+| excess 0.50 | 77.0% | 3.42 yr | 0.92 yr | +5 / −13 |
+
+Four findings:
+
+1. **There was nothing to fix.** Baseline coverage is 78.9% against a target of 80 — half a standard error on 393 samples. The 77% that prompted the exercise was an artefact of the backtest report running 500 iterations where the app runs 4000. Fixed; the report now runs 4000 and prints median band width beside coverage, because coverage is cheap if the band is wide.
+2. **The one setting that reaches 80.9% is not distinguishable from chance.** 38 paired flips split 23/15 is p ≈ 0.12. Every weaker setting flips evenly, which is what noise looks like, while the band grows monotonically regardless. Comparing paired flips rather than two aggregate percentages is what made this visible: ±2.1pp of standard error is most of the effect being argued about.
+3. **The cost is certain where the gain is not.** A fifth wider band is eight more months of "don't know" for every reader, and P50 moves *earlier* rather than staying put — first passage to a receding target is absorbing, so raising dispersion at fixed drift shortens the median crossing. Mean-preserving in step space is not median-preserving in passage space. A feature sold as "less certain" that quietly reads "sooner" is worse than no feature.
+4. **Volatility of the published cutoff is not a proxy for turbulence in the world that sets it.** This is the finding worth keeping. In October 2026 every column reads 0.44–0.73 of its own decade baseline, because largely frozen dates have almost no variance. The bulletin looks the calmest it has in ten years while the policy environment is the most disturbed it has been, so the obvious one-sided reading ("recent months unusually volatile") is inert in exactly the situation that motivated it — and measured worse historically besides.
+
+The machinery ships behind `regimeWidening`, defaulting to 0, with the measurements pinned in `model/test/widening.test.ts` so switching it on is a deliberate act with a number attached. The honest answer to the original question is that these factors belong in the "what would change this" card, which names them without pricing them, and not in the arithmetic.
+
 ---
 
 ## 11. Open questions and risks

@@ -1494,6 +1494,8 @@ Measured on quarterly origins 2016-10 to 2023-09, 393 scored cases, 4000 iterati
 | divergence 1.00 | 80.9% | 4.17 yr | 0.92 yr | +23 / −15 |
 | excess 0.50 | 77.0% | 3.42 yr | 0.92 yr | +5 / −13 |
 
+Coverage and band width are each computed over that setting's own scored cases (393–398, since widening changes which cases resolve inside the horizon), so the band figures are directionally unambiguous but not a paired comparison; the flip counts are, being intersected on identical case keys. Beyond-horizon calls were 0 at both 500 and 4000 iterations with an identical 393 samples, so the corrected baseline is a change in the coverage metric alone and not in which cases were scorable.
+
 Four findings:
 
 1. **There was nothing to fix.** Baseline coverage is 78.9% against a target of 80 — half a standard error on 393 samples. The 77% that prompted the exercise was an artefact of the backtest report running 500 iterations where the app runs 4000. Fixed; the report now runs 4000 and prints median band width beside coverage, because coverage is cheap if the band is wide.

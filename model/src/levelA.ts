@@ -51,7 +51,15 @@ const MAX_WIDENING = 2;
  * range is not shipped on the strength of the argument for it.
  */
 const DEFAULT_REGIME_WIDENING = 0;
-const DEFAULT_INSTABILITY_MODE: InstabilityMode = "divergence";
+/**
+ * The conservative reading, deliberately. "divergence" is the one that fires
+ * on this archive today and the one the calibration declined to ship (38
+ * paired flips split 23/15, p about 0.12, for a fifth more band width), so it
+ * must be named explicitly to be used. Defaulting to it would mean switching
+ * the strength off zero silently selected the rejected mode, which is the
+ * opposite of a knob that takes a deliberate act to turn on.
+ */
+const DEFAULT_INSTABILITY_MODE: InstabilityMode = "excess";
 
 /** Deterministic PRNG, so the same case always produces the same range. */
 function mulberry32(seed: number): () => number {
@@ -224,7 +232,7 @@ export type InstabilityMode = "excess" | "divergence";
 export function regimeInstability(
   steps: Step[],
   window = INSTABILITY_WINDOW,
-  mode: InstabilityMode = "divergence",
+  mode: InstabilityMode = "excess",
 ): number {
   if (steps.length < window + MIN_INSTABILITY_BASELINE) return 1;
   const residuals = deseasonalisedResiduals(steps);

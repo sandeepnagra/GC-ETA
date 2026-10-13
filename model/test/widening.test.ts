@@ -39,8 +39,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
+import { getSeries, monthToAbsolute } from "../src/bundle.js";
 import {
   estimate,
+  extractSteps,
   regimeInstability,
   widenStepDispersion,
   wideningFactor,
@@ -173,4 +175,27 @@ test("widening is off by default, so the shipped estimate is unchanged", () => {
   const explicitlyOff = estimate(bundle, { ...input, regimeWidening: 0 });
   assert.deepEqual(shipped, explicitlyOff);
   assert.ok(!shipped.drivers.some((d) => d.includes("widened")));
+});
+
+test("every fiscal month on the live archive has enough steps to centre on", () => {
+  // The per-month centring is what keeps widening from exaggerating the
+  // seasonal profile, and it silently falls back to the overall mean below
+  // MIN_PER_MONTH_OBS. On this archive the thinnest column, EB3/ROW, has 56
+  // steps and bottoms out at exactly 3 in one fiscal month -- one observation
+  // from that fallback. Pinned so a shorter series or a new archive gap shows
+  // up here rather than as a quiet distortion.
+  for (const [category, column] of [["EB3", "ROW"], ["EB3", "PH"], ["EB2", "IN"]] as const) {
+    const cells = getSeries(bundle, "final_action", "employment", category, column as Column);
+    assert.ok(cells, `${category}/${column} should have a series`);
+    const startAbsolute = monthToAbsolute(bundle.start_month);
+    const cutoff = Math.max(0, cells.length - 120);
+    const recent = extractSteps(cells.slice(cutoff), startAbsolute + cutoff);
+    const steps = recent.length >= 36 ? recent : extractSteps(cells, startAbsolute);
+    const counts = new Array(12).fill(0) as number[];
+    for (const s of steps) counts[s.fiscalMonth]! += 1;
+    assert.ok(
+      Math.min(...counts) >= 3,
+      `${category}/${column} fiscal-month counts ${counts.join(",")} fall below 3`,
+    );
+  }
 });

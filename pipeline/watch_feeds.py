@@ -29,6 +29,7 @@ import os
 import re
 import sys
 from datetime import datetime, timezone
+from difflib import SequenceMatcher
 from pathlib import Path
 from urllib.parse import quote
 from xml.etree import ElementTree
@@ -302,6 +303,100 @@ def _contains(haystack: str, term: str) -> bool:
     return re.search(rf"(?<![a-z0-9]){re.escape(term)}(?![a-z0-9])", haystack) is not None
 
 
+# Two feeds carrying the same document seldom word the title identically. The
+# White House and Federal Register copies of Executive Order 14431 differed by
+# a stray repeated phrase and scored 0.94 similar, against 0.22 for two
+# genuinely unrelated notices, so this sits with room on both sides rather
+# than being tuned to the one pair that prompted it.
+TITLE_MATCH = 0.90
+
+
+def normalise_title(title: str) -> str:
+    """Case, punctuation and spacing removed, so only the words are compared."""
+    return " ".join(re.sub(r"[^a-z0-9 ]", " ", title.lower()).split())
+
+
+def _prefers(link: str, feed: str) -> int:
+    """
+    Which copy of one document to keep as the canonical link.
+
+    The Federal Register is the document of record: stable citation, an API
+    that answers when the HTML is bot-blocked, and a publication date that is
+    not the date someone posted a press item about it. A White House or agency
+    page announcing the same order is kept as a cross-reference, not dropped,
+    because it is sometimes the only place the thing appears first.
+    """
+    return 2 if feed.startswith("federal-register") else 1 if "federalregister.gov" in link else 0
+
+
+def collapse_duplicates(rows: list[dict]) -> list[dict]:
+    """
+    One document, one row.
+
+    A single notice routinely matches several feeds at once -- the EB-5 fee
+    rule arrived through three, and so did a registration notice before it --
+    because the Federal Register searches overlap by design, each scoped to
+    catch something the others would miss. That overlap is the point; three
+    identical rows in the triage queue is not. Without this, the cost of
+    adding a feed is paid by whoever reads the issue.
+
+    Two documents are the same when they share a link, or when they come from
+    DIFFERENT feeds and their titles are near-identical. The different-feeds
+    condition is a deliberate guard: the Federal Register publishes
+    corrections whose titles barely differ from the notice they correct, and
+    collapsing those would hide the correction behind the original.
+
+    Merging keeps the strongest score and the union of matched terms, so a
+    document is never buried because the feed that happened to be read first
+    scored it lower.
+    """
+    merged: list[dict] = []
+    by_link: dict[str, dict] = {}
+
+    for row in rows:
+        target = by_link.get(row["link"])
+        if target is None:
+            normalised = normalise_title(row["title"])
+            for existing in merged:
+                if row["feed"] in existing["feeds"]:
+                    continue
+                ratio = SequenceMatcher(None, existing["normalised"], normalised).ratio()
+                if ratio >= TITLE_MATCH:
+                    target = existing
+                    break
+
+        if target is None:
+            fresh = {
+                **row,
+                "normalised": normalise_title(row["title"]),
+                "feeds": [row["feed"]],
+                "matched": list(row["matched"]),
+                "also_at": [],
+            }
+            fresh.pop("feed", None)
+            merged.append(fresh)
+            by_link[row["link"]] = fresh
+            continue
+
+        if row["feed"] not in target["feeds"]:
+            target["feeds"].append(row["feed"])
+        target["score"] = max(target["score"], row["score"])
+        for hit in row["matched"]:
+            if hit not in target["matched"]:
+                target["matched"].append(hit)
+        if row["link"] != target["link"]:
+            # Keep the better citation as the primary, the other as a pointer.
+            if _prefers(row["link"], row["feed"]) > _prefers(target["link"], target["feeds"][0]):
+                target["also_at"].append(target["link"])
+                target["link"], target["title"] = row["link"], row["title"]
+                target["normalised"] = normalise_title(row["title"])
+            elif row["link"] not in target["also_at"]:
+                target["also_at"].append(row["link"])
+        by_link.setdefault(row["link"], target)
+
+    return merged
+
+
 def score(item: dict) -> tuple[int, list[str]]:
     haystack = f"{item['title']} {item['summary']}".lower()
     if any(re.search(pattern, haystack) for pattern in NOISE_PATTERNS):
@@ -370,14 +465,23 @@ def main() -> int:
             candidates.append({**item, "feed": feed_id, "score": weight, "matched": hits})
         print(f"  ok  {feed_id:24} {len(items):>3} items")
 
+    # Feeds overlap on purpose, so the same notice arrives several times.
+    # Collapse before counting: "candidates for triage" should be a number of
+    # documents a person has to read, not a number of feed hits.
+    raw = len(candidates)
+    candidates = collapse_duplicates(candidates)
     candidates.sort(key=lambda c: -c["score"])
 
     print(f"\nscanned {checked} items across {len(sources)} feeds")
-    print(f"candidates for triage: {len(candidates)}\n")
+    collapsed = raw - len(candidates)
+    suffix = f"  ({collapsed} duplicate feed hits collapsed)" if collapsed else ""
+    print(f"candidates for triage: {len(candidates)}{suffix}\n")
     for candidate in candidates[:20]:
         print(f"  [{candidate['score']:>2}] {candidate['title'][:96]}")
-        print(f"       {candidate['feed']}  ·  {', '.join(candidate['matched'][:5])}")
+        print(f"       {', '.join(candidate['feeds'])}  ·  {', '.join(candidate['matched'][:5])}")
         print(f"       {candidate['link'][:110]}")
+        for other in candidate["also_at"]:
+            print(f"       also at: {other[:101]}")
 
     if candidates:
         print(
@@ -389,7 +493,11 @@ def main() -> int:
     if args.write:
         now = datetime.now(timezone.utc).isoformat()
         for candidate in candidates:
-            seen[candidate["link"]] = now
+            # Every link the run saw, not just the canonical one: a copy that
+            # was merged away is still a link that has been triaged, and
+            # leaving it unrecorded would bring it back tomorrow as new.
+            for link in [candidate["link"], *candidate["also_at"]]:
+                seen[link] = now
         state["seen"] = seen
         state["last_run"] = now
         STATE_FILE.write_text(json.dumps(state, indent=1))

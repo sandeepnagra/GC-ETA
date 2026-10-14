@@ -26,8 +26,9 @@ import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { staleEvents } from "../src/events.js";
+import { estimate } from "../src/levelA.js";
 import { expectedLatestMonth, freshness } from "../src/freshness.js";
-import type { Bundle, EventsFile } from "../src/types.js";
+import type { Bundle, Column, EventsFile } from "../src/types.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const live = (name: string) =>
@@ -90,5 +91,65 @@ test("every event carries a last_checked date the staleness rule can read", () =
       /^\d{4}-\d{2}-\d{2}$/,
       `${event.id} has an unusable last_checked: ${event.last_checked}`,
     );
+  }
+});
+
+test("the model still answers for a realistic gap on every live pair", () => {
+  // The check the backtest structurally cannot make, and the one whose
+  // absence let the density coverage bug ship.
+  //
+  // backtestFirstPassage defines each target as the cutoff AT THE ORIGIN plus
+  // an offset, so both ends of every density lookup sit in the same era and
+  // the ratio between them stays near 1. The live configuration is the
+  // opposite shape: India EB-2's cutoff is stranded in 2013 while the people
+  // asking hold 2018 dates, so one end is in the region the DOL files cover
+  // and the other is not. That is precisely where the bug bit, and no
+  // combination of origins or offsets reproduces it -- adding 5- and 7-year
+  // offsets was tried for exactly this and does not fire.
+  //
+  // So this asserts the weakest useful property, against today's data: asked
+  // about a date a few years past the current cutoff, the model returns an
+  // answer rather than a shrug. Under the bug this was 0% on every India
+  // series -- no date, no range, nothing -- while every other test passed.
+  //
+  // The threshold is HORIZON_CONFIDENCE, the fraction below which the model
+  // itself refuses to state a date -- so this asserts no more than "the app
+  // would show something". Not an arbitrary line, and not a pin on today's
+  // output, so it survives the archive moving. Measured either side: 97-98%
+  // with the floor in place, 15-20% with it removed.
+  const pairs: Array<[string, Column]> = [
+    ["EB2", "IN" as Column],
+    ["EB3", "IN" as Column],
+    ["EB2", "CN" as Column],
+    ["EB3", "CN" as Column],
+  ];
+  for (const [category, column] of pairs) {
+    for (const chart of ["final_action", "dates_for_filing"] as const) {
+      const cells = bundle.series[`${chart}|employment|${category}|${column}`];
+      if (!cells) continue;
+      const latest = [...cells].reverse().find(
+        (c) => typeof c === "string" && /^\d{4}-\d{2}-\d{2}$/.test(c),
+      ) as string | undefined;
+      if (!latest) continue;
+
+      // Four years past the published cutoff: a gap real users have, and far
+      // enough past it to cross the density coverage boundary.
+      const target = new Date(`${latest}T00:00:00Z`);
+      target.setUTCFullYear(target.getUTCFullYear() + 4);
+      const priorityDate = target.toISOString().slice(0, 10);
+
+      const result = estimate(
+        bundle,
+        { column, category, priorityDate, seed: 1, iterations: 800 },
+        chart,
+      );
+      if (result.status !== "not_current") continue;
+      assert.ok(
+        (result.crossedFraction ?? 0) > 0.5,
+        `${category}/${column} ${chart}: only ${Math.round((result.crossedFraction ?? 0) * 100)}% ` +
+          `of simulations reach a date 4 years past the ${latest} cutoff. The model has stopped ` +
+          `answering, which is what a broken step scaling looks like.`,
+      );
+    }
   }
 });

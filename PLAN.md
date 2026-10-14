@@ -1546,7 +1546,29 @@ The right-hand column is decision volume across two fiscal years, so it is an or
 
 This data is not consumed by the model and must not be: it is decision-year volume, not a priority-date cohort, and using it as one would be the same error in the other direction. It exists so the next question about pre-2015 demand has data instead of speculation. Anyone wanting genuine density for older cohorts needs a different source — the USCIS I-485 inventory is not it either, since it counts cases still pending and old cohorts have largely been approved out of it, which is the same survivorship trap in a new file.
 
-**Also outstanding:** add 5- and 7-year target offsets to the backtest. `beyondHorizonTotal` was 0 before this bug and is 0 after it, so the metric that should have caught a model answering "never" has never fired. Until those offsets land, nothing in the suite distinguishes a model that answers correctly from one that answers at all, and the long-gap regime where this broke is unscored.
+### 10.3 Why the backtest could not have caught it, and what does
+
+The long-gap offsets were added, and the reasoning for adding them turned out to be wrong in an instructive way.
+
+The first-passage test now scores gaps of 1, 2, 3, 5 and 7 years instead of 1 to 3, and reports coverage per gap rather than only in aggregate — the aggregate is what hid the last bug, and a model can look calibrated overall while being useless at the distances that matter. On 663 samples it holds up:
+
+| gap | n | coverage | median band | P50 error |
+|---|---|---|---|---|
+| 1 yr | 135 | 81% | 2.25 yr | 0.67 yr |
+| 2 yr | 135 | 78% | 3.33 yr | 1.00 yr |
+| 3 yr | 133 | 79% | 4.08 yr | 1.08 yr |
+| 5 yr | 131 | 80% | 5.67 yr | 1.75 yr |
+| 7 yr | 129 | 79% | 7.00 yr | 2.42 yr |
+
+Flat across the range, which is real evidence the post-fix model is calibrated at the distances users actually have, not just at short ones.
+
+**But they do not catch the density bug, and could never have.** Tested directly by restoring the bug and re-running: coverage moves from 78% to 76%, and `beyondHorizonTotal` stays at 0 either way. The reason is structural. `backtestFirstPassage` defines every target as the cutoff AT THE ORIGIN plus an offset, so both ends of every density lookup sit in the same era and the ratio between them stays near 1 whether the floor is applied or not. The live configuration is the opposite shape: India EB-2's cutoff is stranded in 2013 while the people asking hold 2018 dates, so one end falls in the region the DOL files cover and the other does not. No combination of origins and offsets reproduces that, because the backtest's targets move with the cutoff and the real queue's do not.
+
+So the hole was never "the offsets are too short". It was that **nothing tested the configuration the app actually runs in**, and a backtest built on historical origins structurally cannot.
+
+**What closes it** is a live-data check in `data-health.test.ts`: for the main pairs and both charts, ask for a date four years past the published cutoff and assert the model returns an answer at all. The threshold is `HORIZON_CONFIDENCE`, the fraction below which the model itself refuses to state a date, so it asserts no more than "the app would show something". Measured either side of the fix: 97–98% of simulations cross with the floor in place, 15–20% with it removed. The bug would have failed it loudly on day one while every other test passed.
+
+The general lesson, which is worth more than the specific guard: a backtest validates the model against history, not against today's data. Those are different failure surfaces, and this project now has something pointed at each.
 
 The superseded first measurement, which concluded the widening should not ship, is preserved in the history at `06d119c` and `10bb43c`.
 

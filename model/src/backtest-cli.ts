@@ -24,6 +24,7 @@ const PAIRS: Array<{ category: string; column: Column }> = [
 ];
 
 const days = (d: number) => (Number.isFinite(d) ? `${(d / 30.44).toFixed(1)} mo` : "n/a");
+const yrs = (v: number) => (Number.isFinite(v) ? `${v.toFixed(2)} yr` : "n/a");
 const pct = (p: number) => (Number.isFinite(p) ? `${(p * 100).toFixed(0)}%` : "n/a");
 
 console.log(`\nBACKTEST  ·  archive ${bundle.start_month} to ${bundle.end_month}`);
@@ -54,7 +55,13 @@ console.log("   a P10-P90 band should contain the truth about 80% of the time.\n
 // enough to send a whole modelling change chasing a miscalibration that was
 // not there. A metric used to decide whether to ship something has to be
 // quieter than the effect it is judging.
-const passage = backtestFirstPassage(bundle, PAIRS, origins, [1, 2, 3], 4000);
+// 5 and 7 as well as 1 to 3. The short offsets alone were how the density
+// coverage bug survived: with the cutoff only a year or three from the
+// target, the model answered sensibly, while at the gaps real users actually
+// have it answered "never" and nothing scored that. beyondHorizonTotal sat at
+// 0 throughout, so the one metric that should have caught it never fired.
+const OFFSETS = [1, 2, 3, 5, 7];
+const passage = backtestFirstPassage(bundle, PAIRS, origins, OFFSETS, 4000);
 console.log(`   origins tested      : ${origins.length} (quarterly, 2016-10 to 2023-09)`);
 console.log(`   samples             : ${passage.samples}  (${passage.censored} still not current at the end of the record)`);
 console.log(`   interval coverage   : ${pct(passage.coverage)}   target ~80%`);
@@ -62,6 +69,26 @@ console.log(`   median error of P50 : ${Number.isFinite(passage.medianErrorYears
 console.log(`   median P10-P90 band : ${Number.isFinite(passage.medianBandYears) ? passage.medianBandYears.toFixed(2) + " years" : "n/a"}   (coverage is cheap if the band is wide)`);
 console.log(`   Brier, current ≤24mo: ${Number.isFinite(passage.brier24) ? passage.brier24.toFixed(3) : "n/a"}   (0 perfect, 0.25 = always saying 50%)`);
 console.log(`   "beyond horizon"    : ${passage.beyondHorizonTotal} calls, ${pct(passage.beyondHorizonCorrect)} still not current`);
+
+// Per gap size, because the aggregate is what hid the last bug. A model can
+// look calibrated overall while being useless at the distances that matter.
+console.log(`\n   by gap between the cutoff and the target:`);
+console.log(`   ${"gap".padEnd(8)}${"n".padStart(6)}${"coverage".padStart(10)}${"band".padStart(10)}${"P50 err".padStart(10)}`);
+for (const offset of OFFSETS) {
+  const rows = passage.samplesDetail.filter((s) => s.offsetYears === offset);
+  if (rows.length === 0) continue;
+  const inBand = rows.filter((s) => s.inBand).length;
+  const bands = rows.map((s) => (s.p90 - s.p10) / 12).sort((a, b) => a - b);
+  const errs = rows
+    .filter((s) => s.truthMonths !== null)
+    .map((s) => Math.abs(s.p50 - (s.truthMonths as number)) / 12)
+    .sort((a, b) => a - b);
+  const mid = (v: number[]) => (v.length ? v[Math.floor(v.length / 2)]! : NaN);
+  console.log(
+    `   ${(offset + " yr").padEnd(8)}${String(rows.length).padStart(6)}` +
+    `${pct(inBand / rows.length).padStart(10)}${yrs(mid(bands)).padStart(10)}${yrs(mid(errs)).padStart(10)}`,
+  );
+}
 console.log();
 
 console.log("3. QUEUE COUNT (Level B) SCORED AGAINST CUTOFF MOVEMENT.");
@@ -74,7 +101,6 @@ console.log("   score here is expected and is not evidence the count is wrong.\n
 
 const INDIA = PAIRS.filter((p) => p.column === "IN");
 const REST = PAIRS.filter((p) => p.column !== "IN");
-const yrs = (v: number) => (Number.isFinite(v) ? `${v.toFixed(2)} yr` : "n/a");
 
 for (const [label, set] of [["India", INDIA], ["other columns", REST]] as const) {
   const q = backtestQueue(bundle, set, origins, [1, 2, 3]);

@@ -295,6 +295,13 @@ export interface PassageScore {
 
 export interface PassageSample {
   key: string;
+  /**
+   * How far past the cutoff the target sat, in years. Carried so coverage can
+   * be read per gap size: the aggregate hid a model that answered "never" for
+   * long gaps while scoring well on short ones, which is how the density
+   * coverage bug survived a backtest that reported 78.9%.
+   */
+  offsetYears: number;
   /** Months from origin to the real crossing, or null if it never happened. */
   truthMonths: number | null;
   p10: number;
@@ -397,6 +404,7 @@ export function backtestFirstPassage(
         const p90 = monthToAbsolute(result.p90) - origin;
 
         const key = `${originMonth}|${category}/${column}|+${offset}y`;
+        const sample = { key, offsetYears: offset };
         bands.push((p90 - p10) / 12);
 
         if (truthMonths === null) {
@@ -406,14 +414,14 @@ export function backtestFirstPassage(
           const ok = p90 >= last - origin;
           if (ok) inBand += 1;
           samples += 1;
-          samplesDetail.push({ key, truthMonths, p10, p50, p90, inBand: ok });
+          samplesDetail.push({ ...sample, truthMonths, p10, p50, p90, inBand: ok });
           continue;
         }
 
         samples += 1;
         const ok = truthMonths >= p10 && truthMonths <= p90;
         if (ok) inBand += 1;
-        samplesDetail.push({ key, truthMonths, p10, p50, p90, inBand: ok });
+        samplesDetail.push({ ...sample, truthMonths, p10, p50, p90, inBand: ok });
         errors.push(Math.abs(p50 - truthMonths) / 12);
 
         const predicted24 = result.probabilityWithin?.find((p) => p.months === 24)?.probability;

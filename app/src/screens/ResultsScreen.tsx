@@ -4,8 +4,8 @@ import React, { useMemo, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, View } from "react-native";
 import { Text } from "../components/Text";
 import { useContentWidth } from "../layout";
-import type { CaseAssessment } from "@gc-eta/model";
-import { dayToIso, historyPoints, seasonalPattern, supplyPicture, whatWouldChange } from "@gc-eta/model";
+import type { CaseAssessment, NextMilestone } from "@gc-eta/model";
+import { dayToIso, historyPoints, nextMilestone, seasonalPattern, supplyPicture, whatWouldChange } from "@gc-eta/model";
 import { categoryLabel, columnLabel, prettyDate, shortDate } from "../data";
 import { HistoryChart } from "../components/HistoryChart";
 import { CardCarousel, type CarouselItem } from "../components/CardCarousel";
@@ -238,6 +238,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
     [bundle, events, draft],
   );
   const heroWidth = Math.max(240, screenWidth - 20 * 2 - 16 * 2);
+  const step = nextMilestone(assessment, Boolean(draft.filedI485));
   const blockers = assessment.events.filter((e) => e.relevance === "blocks");
   const context = assessment.events.filter((e) => e.relevance === "context");
 
@@ -457,12 +458,17 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
       {/* Hero */}
       <View style={{ backgroundColor: theme.heroBg, borderRadius: 16, padding: 16, gap: 8 }}>
         <Text style={{ fontSize: 12, fontWeight: "600", letterSpacing: 0.4, color: theme.heroText, opacity: 0.85, textTransform: "uppercase" }}>
-          {finalAction.status === "current" ? "Your date is current" : "Final action likely"}
+          {heroEyebrow(step)}
         </Text>
         <Text display style={{ fontSize: 28, lineHeight: 34, color: theme.heroText, letterSpacing: -0.5 }}>
-          {headline(assessment)}
+          {step === "file_now" ? "You can file your I-485" : headline(assessment)}
         </Text>
-        {heroSubtitle(finalAction) ? (
+        {step === "file_now" ? (
+          <Text style={{ fontSize: 14, color: theme.heroText, opacity: 0.9 }}>
+            The filing chart has reached your date. Check that U.S. Citizenship and Immigration
+            Services is accepting on it this month, which it decides monthly.
+          </Text>
+        ) : heroSubtitle(finalAction) ? (
           <Text style={{ fontSize: 14, color: theme.heroText, opacity: 0.9 }}>
             {heroSubtitle(finalAction)}
           </Text>
@@ -475,6 +481,9 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
             filing={filing}
             width={heroWidth}
           />
+        ) : null}
+        {step === "final_action" && !draft.filedI485 ? (
+          <FilingAside theme={theme} filing={filing} />
         ) : null}
       </View>
 
@@ -558,6 +567,21 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
  * September 2051". A case with an earliest month but no midpoint leads with
  * that month. Only a case where nothing at all crossed says so plainly.
  */
+/**
+ * The hero's eyebrow, one per milestone.
+ *
+ * The rule that picks the milestone lives in the model as `nextMilestone`,
+ * because it is a domain question -- what is this applicant's next step --
+ * rather than a layout one, and because the app has no test setup to pin it
+ * with. Its docstring carries the reasoning and the chart calibration that
+ * decides which date may lead.
+ */
+function heroEyebrow(step: NextMilestone): string {
+  if (step === "current") return "Your date is current";
+  if (step === "file_now") return "Next step · available now";
+  return "Next · your green card";
+}
+
 function headline(assessment: CaseAssessment): string {
   const fa = assessment.finalAction;
   if (fa.status === "current") return "You are current";
@@ -599,6 +623,68 @@ function cutoffText(estimate: CaseAssessment["finalAction"]): string {
   if (cell.kind === "current") return "Current";
   if (cell.kind === "unavailable") return "Unavailable";
   return "Not published";
+}
+
+/**
+ * The earlier milestone, under the headline rather than in it.
+ *
+ * Being able to file is genuinely the reader's next step, and it arrives
+ * one to two years before final action in the categories where the wait
+ * hurts, so burying it entirely was wrong -- it used to appear only as a
+ * marker inside the hero chart with no date attached.
+ *
+ * It does not LEAD, though, and the reason is measurement rather than taste.
+ * Scored on the same backtest as everything else, the first-passage estimate
+ * for the Dates for Filing chart covers 56% of outcomes inside P10-P90
+ * against the 80% it claims, and 67% even when the origins are moved later to
+ * give it more history. Final action scores 79%. Widening does not rescue it:
+ * swept to the clamp it reaches 59%. The cause is not under-dispersed noise
+ * but the chart itself -- it is set to manage filing inflow rather than to
+ * ration visa numbers, so it jumps and then sits, and only 133 months of it
+ * exist against 195 of final action. Putting the worst-calibrated number in
+ * the largest type would be the opposite of what the confidence labels are
+ * for.
+ *
+ * So the date is shown, and shown as weaker than it looks. The confidence
+ * word is fixed at "low" rather than read from the estimate, because the
+ * estimate's own confidence comes from how wide its band is, and the problem
+ * here is that the band is too NARROW to be believed -- a medium-looking
+ * spread is exactly the case that under-covers. If the filing chart is ever
+ * calibrated properly, this is the line to delete.
+ */
+function FilingAside({
+  theme,
+  filing,
+}: {
+  theme: Theme;
+  filing: CaseAssessment["filing"];
+}) {
+  if (filing.status !== "not_current") return null;
+  const when = filing.p50
+    ? `around ${prettyMonth(filing.p50)}`
+    : filing.p10
+      ? `${prettyMonth(filing.p10)} at the earliest`
+      : null;
+  if (!when) return null;
+  return (
+    <View
+      style={{
+        borderTopWidth: 1,
+        borderTopColor: theme.heroText,
+        paddingTop: 9,
+        gap: 2,
+        opacity: 0.88,
+      }}
+    >
+      <Text style={{ fontSize: 13, fontWeight: "600", color: theme.heroText }}>
+        You could file earlier, {when}
+      </Text>
+      <Text style={{ fontSize: 12, color: theme.heroText }}>
+        Low confidence: filing dates are set to manage how many people file, so this
+        one is a weaker guess than the date above.
+      </Text>
+    </View>
+  );
 }
 
 function Tile({ theme, label, value, tone }: { theme: Theme; label: string; value: string; tone: string }) {

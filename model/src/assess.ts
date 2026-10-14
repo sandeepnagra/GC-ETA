@@ -70,6 +70,44 @@ function countFrom(bundle: Bundle, input: CaseInput): number | null {
   return null;
 }
 
+/**
+ * Which milestone is actually next for this applicant.
+ *
+ * One rule rather than a pile of special cases: show the reader their NEXT
+ * step. Which step that is depends only on where they are, and there are
+ * three places to be.
+ *
+ * - Final action has reached them: nothing the bulletin governs is left. The
+ *   remaining wait is USCIS adjudication time, which this model does not
+ *   cover and must not pretend to.
+ * - Not filed, and the filing chart has reached them: they can file now.
+ *   This is the one answer that is a FACT rather than a forecast -- it reads
+ *   today's bulletin instead of predicting anything -- and it is the most
+ *   actionable thing the app can say. It used to be unsayable: the screen led
+ *   with the final action date and never mentioned that the person could act
+ *   this week.
+ * - Everything else: final action. Either they have filed, in which case the
+ *   filing date is behind them by definition and predicting it would be
+ *   predicting the past; or neither date has arrived, in which case final
+ *   action leads because it is the chart the model is calibrated on. On the
+ *   same backtest, Dates for Filing covers 56% of outcomes inside P10-P90
+ *   against the 80% it claims (67% with more history, 59% swept to the
+ *   widening clamp), while final action reaches 79%. The filing date is still
+ *   worth showing when it is ahead of them, just not in the largest type.
+ *
+ * `filed` is the applicant's own answer, not something the bulletin knows.
+ */
+export type NextMilestone = "current" | "file_now" | "final_action";
+
+export function nextMilestone(
+  assessment: Pick<CaseAssessment, "finalAction" | "filing">,
+  filed: boolean,
+): NextMilestone {
+  if (assessment.finalAction.status === "current") return "current";
+  if (!filed && assessment.filing.status === "current") return "file_now";
+  return "final_action";
+}
+
 export function assessCase(
   bundle: Bundle,
   events: EventsFile,

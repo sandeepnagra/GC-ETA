@@ -5,7 +5,8 @@ export { nearTermOutlook, sectionsFor, DEFAULT_WINDOW_DAYS } from "./outlook.js"
 export type { Outlook, ScheduledChange, ChangeSource, Direction } from "./outlook.js";
 export { applicableEvents, staleEvents } from "./events.js";
 export type { ApplicableEvent, Relevance } from "./events.js";
-export { assessCase } from "./assess.js";
+export { assessCase, nextMilestone } from "./assess.js";
+export type { NextMilestone } from "./assess.js";
 export type { CaseAssessment } from "./assess.js";
 export { caseTimeline } from "./news.js";
 export type { NewsItem } from "./news.js";

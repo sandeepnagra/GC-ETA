@@ -27,7 +27,7 @@ import {
 } from "./bundle.js";
 import { estimate, extractSteps, scaleStepsToRegime, simulateFirstPassage } from "./levelA.js";
 import { estimateQueue } from "./levelB.js";
-import type { Bundle, Cell, Column } from "./types.js";
+import type { Bundle, Cell, Chart, Column } from "./types.js";
 
 /**
  * A fiscal year's employment limit is published mid-year. The September 2026
@@ -307,6 +307,12 @@ export interface PassageOptions {
   iterations?: number;
   regimeWidening?: number;
   instabilityMode?: "excess" | "divergence";
+  /**
+   * Which chart to score. The app leads with "dates_for_filing", because
+   * being able to file is the reader's next milestone, so that chart has to
+   * be scored on its own rather than inheriting final action's calibration.
+   */
+  chart?: Chart;
 }
 
 export function backtestFirstPassage(
@@ -319,6 +325,7 @@ export function backtestFirstPassage(
   const options: PassageOptions =
     typeof iterations === "number" ? { iterations } : iterations;
   const iters = options.iterations ?? 800;
+  const chart: Chart = options.chart ?? "final_action";
   const bands: number[] = [];
   const samplesDetail: PassageSample[] = [];
   const start = monthToAbsolute(bundle.start_month);
@@ -338,8 +345,8 @@ export function backtestFirstPassage(
     const truncated = bundleAsOf(bundle, originMonth);
 
     for (const { category, column } of pairs) {
-      const full = getSeries(bundle, "final_action", "employment", category, column);
-      const visible = getSeries(truncated, "final_action", "employment", category, column);
+      const full = getSeries(bundle, chart, "employment", category, column);
+      const visible = getSeries(truncated, chart, "employment", category, column);
       if (!full || !visible) continue;
       const anchor = latestDated(visible);
       if (!anchor) continue;
@@ -360,7 +367,7 @@ export function backtestFirstPassage(
             regimeWidening: options.regimeWidening,
             instabilityMode: options.instabilityMode,
           },
-          "final_action",
+          chart,
         );
         if (result.status !== "not_current") continue;
 

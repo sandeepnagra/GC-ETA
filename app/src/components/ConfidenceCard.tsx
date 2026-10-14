@@ -33,11 +33,23 @@ import type { Theme } from "../theme";
  * Measured by `npm run backtest` against the published archive. Quoted here so
  * the reader sees the model's record next to its answer, and updated whenever
  * that run changes.
+ *
+ * The midpoint error got WORSE at the last update, from 0.8 years to 1.08,
+ * and that is not a regression. The backtest previously scored only gaps of
+ * one to three years between the cutoff and the target; it now also scores
+ * five and seven, which is where most people asking actually sit, and long
+ * gaps are harder. The old figure was the easy half of the exam. Sample count
+ * went 393 to 663 for the same reason.
+ *
+ * The band is quoted alongside coverage deliberately. A range wide enough
+ * contains almost anything, so coverage on its own would let a loss of
+ * precision read to the user as a gain in skill.
  */
 const MEASURED = {
-  samples: 393,
-  coverage: 78,
-  medianErrorYears: 0.8,
+  samples: 663,
+  coverage: 79,
+  medianErrorYears: 1.1,
+  medianBandYears: 4.4,
 };
 
 export function ConfidenceCard({
@@ -88,7 +100,8 @@ export function ConfidenceCard({
       <Text style={{ fontSize: 13, lineHeight: 18, color: theme.text }}>
         Tested against {MEASURED.samples} past cases, a range like the one above
         contained the true answer {MEASURED.coverage}% of the time, against the 80%
-        intended. The midpoint was out by about {MEASURED.medianErrorYears} years.
+        intended, and ran about {MEASURED.medianBandYears} years wide. The midpoint
+        was out by about {MEASURED.medianErrorYears} years.
       </Text>
 
       <Text style={{ fontSize: 11, lineHeight: 15, color: theme.secondary }}>

@@ -45,6 +45,17 @@ export interface Bundle {
   density?: Record<string, Record<string, { total: number; advanced?: number; bachelors?: number }>>;
   density_coverage?: { decision_years: string[]; missing_years: number[] };
   /**
+   * Which chart USCIS designated for adjustment filings, keyed by bulletin
+   * month. The bulletin itself does not say; USCIS decides monthly. A month
+   * that is absent was NOT OBSERVED, which is not the same as final action
+   * having applied -- the record only accumulates forward from when
+   * collection started. See pipeline/build_chart_determination.py.
+   */
+  chart_in_use?: Record<
+    string,
+    { employment: string; family?: string; observed_on?: string }
+  >;
+  /**
    * Visa numbers actually issued, by fiscal year, chargeability column and
    * category, from Table V of the Report of the Visa Office. These already
    * include dependents, so they are visa numbers rather than principals.

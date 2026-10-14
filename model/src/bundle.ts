@@ -107,3 +107,25 @@ export function historyPoints(
   }
   return out;
 }
+
+/**
+ * Which chart USCIS will accept an adjustment filing on, for a given month.
+ *
+ * Returns null when the month was never observed, and null is a real answer
+ * rather than a default: the record accumulates forward from when collection
+ * began and the page only ever shows the current month, so most of the
+ * archive simply has no entry. Reading an absent month as "final action
+ * applied" would invent a refusal nobody issued, which is worse than the
+ * hedge it would replace.
+ */
+export function chartInUse(
+  bundle: Bundle,
+  month?: string,
+): "dates_for_filing" | "final_action" | null {
+  const key = month ?? bundle.end_month;
+  const entry = bundle.chart_in_use?.[key];
+  if (!entry) return null;
+  return entry.employment === "dates_for_filing" || entry.employment === "final_action"
+    ? entry.employment
+    : null;
+}

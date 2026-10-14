@@ -80,12 +80,14 @@ function countFrom(bundle: Bundle, input: CaseInput): number | null {
  * - Final action has reached them: nothing the bulletin governs is left. The
  *   remaining wait is USCIS adjudication time, which this model does not
  *   cover and must not pretend to.
- * - Not filed, and the filing chart has reached them: they can file now.
- *   This is the one answer that is a FACT rather than a forecast -- it reads
- *   today's bulletin instead of predicting anything -- and it is the most
- *   actionable thing the app can say. It used to be unsayable: the screen led
- *   with the final action date and never mentioned that the person could act
- *   this week.
+ * - Not filed, and the filing chart has reached them: they can file now,
+ *   PROVIDED USCIS is accepting on that chart this month. It decides monthly
+ *   and the bulletin does not say, so that designation is collected
+ *   separately and passed in. With it this is the one answer that is a FACT
+ *   rather than a forecast; without it the caller must hedge. A month in
+ *   which USCIS named final action instead returns "file_blocked": the date
+ *   is reached and the door is shut, which is a different thing to tell
+ *   someone than either "file now" or "wait years".
  * - Everything else: final action. Either they have filed, in which case the
  *   filing date is behind them by definition and predicting it would be
  *   predicting the past; or neither date has arrived, in which case final
@@ -97,14 +99,32 @@ function countFrom(bundle: Bundle, input: CaseInput): number | null {
  *
  * `filed` is the applicant's own answer, not something the bulletin knows.
  */
-export type NextMilestone = "current" | "file_now" | "final_action";
+export type NextMilestone =
+  | "current"
+  | "file_now"
+  | "file_blocked"
+  | "final_action";
 
+/**
+ * `chartInUse` is USCIS's designation for the month, from
+ * `chartInUse(bundle)`. Passing it is what separates "your date has been
+ * reached" from "you may actually file", which are not the same month and
+ * were conflated until the determination was collected. null means the month
+ * was never observed, and the caller should hedge rather than promise --
+ * absent is not a refusal.
+ */
 export function nextMilestone(
   assessment: Pick<CaseAssessment, "finalAction" | "filing">,
   filed: boolean,
+  chartInUse: "dates_for_filing" | "final_action" | null = null,
 ): NextMilestone {
   if (assessment.finalAction.status === "current") return "current";
-  if (!filed && assessment.filing.status === "current") return "file_now";
+  if (!filed && assessment.filing.status === "current") {
+    // The date is reached. Whether the door is open is a separate fact, and
+    // USCIS decides it monthly: in a final-action month the filing chart is
+    // simply not the one being accepted, however current it reads.
+    return chartInUse === "final_action" ? "file_blocked" : "file_now";
+  }
   return "final_action";
 }
 

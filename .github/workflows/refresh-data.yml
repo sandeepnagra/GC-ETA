@@ -92,6 +92,14 @@ jobs:
       - name: Re-read the annual limits from the archive
         run: python pipeline/build_limits.py
 
+      # Before the bundle, because the bundle folds it in. USCIS publishes
+      # only the current month, so this has to run while that month is up:
+      # a month missed is a month lost, not one that can be fetched later.
+      # Allowed to fail the run -- a silent gap here is how the app would go
+      # back to hedging without anyone noticing.
+      - name: Record which filing chart USCIS designated this month
+        run: python pipeline/build_chart_determination.py
+
       - name: Rebuild the app bundle
         run: python pipeline/build_app_bundle.py
 

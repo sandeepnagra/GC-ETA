@@ -1465,6 +1465,22 @@ queue card returns null for a date that is already current, but its entry stayed
 in the list, so there was a blank page inside "1 of 7". Items are now added only
 when they will draw something.
 
+### 9.9 Next features, ranked by evidence (as of 14 October 2026)
+
+Identified from gaps found while validating the app end to end, not from a brainstorm. Each names what is missing and what it would cost.
+
+**1. Track USCIS's monthly filing-chart designation. — DONE, 14 October 2026.** The app told readers to "check which chart USCIS designated this month" because it could not. `pipeline/build_chart_determination.py` now reads the one sentence USCIS publishes, `chart_in_use` rides in the bundle, and `nextMilestone` takes it, which turns "you could file if…" into "you can file" and adds a fourth state — `file_blocked`, where the date is reached and the door is shut, which is a different thing to tell someone than either "file now" or "wait years". The record accumulates forward and cannot be backfilled, so claims like "USCIS has used Dates for Filing every October since 2018" stay unsupported until the series is long enough.
+
+**2. Notifications.** There are none and the app is pull-only, so people check it out of anxiety. Three triggers earn their keep: the filing chart reaching your date in a month USCIS is accepting on it, your category retrogressing, and a registry event landing that touches your country and path. The second and third are already computed — `outlook` and `applicableEvents` — so the work is delivery, not modelling. This is the largest user-value item left.
+
+**3. What happens after filing.** For a filed applicant `nextMilestone` returns `current` and the app says plainly that it does not model what remains, which is the only question that person still has. USCIS publishes I-485 processing times by office and form type. Modest scraping, and it completes the one path the app currently abandons.
+
+**4. A published-vs-committed check in CI.** Both bugs found during this validation were of exactly this shape: the repository looked right and what the app downloads did not match it. Nothing compares them. A step that diffs the live URL against `data/` on every run, and fails loudly, would have caught both on the day.
+
+**5. A model for the filing chart that fits how it behaves.** It backtests at 56% coverage against the 80% it claims, which is why it sits under the headline rather than in it (§10.1). The cause is that it is set administratively to manage filing inflow — it jumps to a round date and then sits — rather than rationing numbers month by month. A first-passage simulation over resampled monthly steps is the wrong shape for that process, and a jump-and-hold model might fit it properly. Doing this would let filing lead the headline, which is what the design wanted.
+
+Deliberately not listed: the EB-2/EB-3 downgrade comparison, which already exists as `SwitchSuggestion` in the compare screen.
+
 ## 10. Validation
 
 - **Backtest 1, short-range movement:** for every month from October 2021 to now, run the model using only data published before that month and predict FAD 6 and 12 months ahead. Report mean absolute error in months against a persistence baseline (assume no movement) and a naive trend baseline.

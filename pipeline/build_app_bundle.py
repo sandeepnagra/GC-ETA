@@ -87,6 +87,15 @@ def main() -> int:
     issuance_path = DATA_DIR / "issuance.json"
     issuance = json.loads(issuance_path.read_text()) if issuance_path.exists() else None
 
+    # Which chart USCIS designated for adjustment filings, by bulletin month.
+    # The bulletin does not say; USCIS decides monthly on its own page. Without
+    # it the app can only hedge about whether a reached filing date may
+    # actually be used. See build_chart_determination.py.
+    chart_path = DATA_DIR / "chart-determination.json"
+    chart_determination = (
+        json.loads(chart_path.read_text()) if chart_path.exists() else None
+    )
+
     limits = json.loads((DATA_DIR / "limits.json").read_text())
     historical = json.loads((DATA_DIR / "limits-historical.json").read_text())
     payload = {
@@ -101,6 +110,10 @@ def main() -> int:
         "density": (density or {}).get("density", {}),
         "issuance": (issuance or {}).get("issuance", {}),
         "issuance_years": sorted((issuance or {}).get("issuance", {}).keys()),
+        # Keyed by bulletin month. A month that is absent was not observed,
+        # which is NOT the same as final action having applied -- the record
+        # only accumulates forward from when collection started.
+        "chart_in_use": (chart_determination or {}).get("months", {}),
         "density_coverage": {
             "decision_years": sorted((density or {}).get("years", {}).keys()),
             "missing_years": (density or {}).get("years_missing", []),

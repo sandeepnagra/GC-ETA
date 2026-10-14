@@ -1,0 +1,13 @@
+{
+ "schema_version": 1,
+ "source": "https://www.uscis.gov/green-card/green-card-processes-and-procedures/visa-availability-priority-dates/adjustment-of-status-filing-charts-from-the-visa-bulletin",
+ "note": "Which chart USCIS designated for adjustment of status filings, by the month of the Visa Bulletin it applies to. USCIS decides this monthly and publishes only the current month, so this record accumulates forward from when it was first collected and cannot be backfilled. An absent month means not observed, never 'final action applied'.",
+ "months": {
+  "2026-10": {
+   "employment": "dates_for_filing",
+   "observed_on": "2026-10-14",
+   "family": "dates_for_filing"
+  }
+ },
+ "last_checked": "2026-10-14"
+}

@@ -16,6 +16,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { assessCase, nextMilestone } from "../src/assess.js";
+import { chartInUse } from "../src/bundle.js";
 import type { CaseInput, Column, Estimate } from "../src/types.js";
 import { bundle, events, TODAY } from "./fixtures.js";
 
@@ -51,6 +52,41 @@ test("once filed, the filing date is behind them and final action leads", () => 
   // above, one flag different, and the headline must change -- predicting a
   // filing date for someone who has already filed is predicting the past.
   assert.equal(nextMilestone(stub("not_current", "current"), true), "final_action");
+});
+
+test("a reached filing date in a final-action month is not an invitation", () => {
+  // The distinction the determination exists for. The date is reached and
+  // the door is shut: USCIS names the chart monthly, and in a final-action
+  // month the filing chart is not the one being accepted however current it
+  // reads. Telling this person to file would send them to be rejected.
+  assert.equal(
+    nextMilestone(stub("not_current", "current"), false, "final_action"),
+    "file_blocked",
+  );
+});
+
+test("an unobserved month hedges rather than refusing", () => {
+  // null is "not collected", not "final action applied". The record only
+  // accumulates forward, so most months have no entry, and inventing a
+  // refusal nobody issued is worse than the hedge it would replace.
+  assert.equal(nextMilestone(stub("not_current", "current"), false, null), "file_now");
+  assert.equal(
+    nextMilestone(stub("not_current", "current"), false, "dates_for_filing"),
+    "file_now",
+  );
+});
+
+test("the determination cannot resurrect a filing date for someone who filed", () => {
+  for (const chart of ["dates_for_filing", "final_action", null] as const) {
+    assert.equal(nextMilestone(stub("not_current", "current"), true, chart), "final_action");
+  }
+});
+
+test("chartInUse reads the live record, and absence is null not a guess", () => {
+  // Present for the bundle's own month, because that is what was collected.
+  assert.ok(["dates_for_filing", "final_action", null].includes(chartInUse(bundle)));
+  // A month nobody observed must answer null rather than defaulting.
+  assert.equal(chartInUse(bundle, "1999-01"), null);
 });
 
 test("with neither date arrived, the calibrated chart leads", () => {

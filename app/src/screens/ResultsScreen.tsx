@@ -5,7 +5,7 @@ import { ActivityIndicator, Pressable, ScrollView, View } from "react-native";
 import { Text } from "../components/Text";
 import { useContentWidth } from "../layout";
 import type { CaseAssessment, NextMilestone } from "@gc-eta/model";
-import { dayToIso, historyPoints, nextMilestone, seasonalPattern, supplyPicture, whatWouldChange } from "@gc-eta/model";
+import { chartInUse, dayToIso, historyPoints, nextMilestone, seasonalPattern, supplyPicture, whatWouldChange } from "@gc-eta/model";
 import { categoryLabel, columnLabel, prettyDate, shortDate } from "../data";
 import { HistoryChart } from "../components/HistoryChart";
 import { CardCarousel, type CarouselItem } from "../components/CardCarousel";
@@ -238,7 +238,12 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
     [bundle, events, draft],
   );
   const heroWidth = Math.max(240, screenWidth - 20 * 2 - 16 * 2);
-  const step = nextMilestone(assessment, Boolean(draft.filedI485));
+  // USCIS names the chart it will accept filings on each month, and the
+  // bulletin does not carry it, so it is collected separately. null means
+  // the month was never observed and the copy below hedges instead of
+  // promising -- absent is not a refusal.
+  const designation = chartInUse(bundle);
+  const step = nextMilestone(assessment, Boolean(draft.filedI485), designation);
   const blockers = assessment.events.filter((e) => e.relevance === "blocks");
   const context = assessment.events.filter((e) => e.relevance === "context");
 
@@ -461,12 +466,19 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
           {heroEyebrow(step)}
         </Text>
         <Text display style={{ fontSize: 28, lineHeight: 34, color: theme.heroText, letterSpacing: -0.5 }}>
-          {step === "file_now" ? "You can file your I-485" : headline(assessment)}
+          {step === "file_now"
+            ? "You can file your I-485"
+            : step === "file_blocked"
+              ? "Filing is shut this month"
+              : headline(assessment)}
         </Text>
-        {step === "file_now" ? (
+        {step === "file_now" || step === "file_blocked" ? (
           <Text style={{ fontSize: 14, color: theme.heroText, opacity: 0.9 }}>
-            The filing chart has reached your date. Check that U.S. Citizenship and Immigration
-            Services is accepting on it this month, which it decides monthly.
+            {step === "file_blocked"
+              ? `Your date has been reached on the filing chart, but for ${prettyMonth(assessment.asOfMonth)} USCIS is accepting only on Final Action Dates. It decides monthly, so this can open again.`
+              : designation === "dates_for_filing"
+                ? `Your date has been reached and USCIS is accepting on the Dates for Filing chart for ${prettyMonth(assessment.asOfMonth)}.`
+                : "The filing chart has reached your date. Check that U.S. Citizenship and Immigration Services is accepting on it this month, which it decides monthly."}
           </Text>
         ) : heroSubtitle(finalAction) ? (
           <Text style={{ fontSize: 14, color: theme.heroText, opacity: 0.9 }}>
@@ -579,6 +591,7 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
 function heroEyebrow(step: NextMilestone): string {
   if (step === "current") return "Your date is current";
   if (step === "file_now") return "Next step · available now";
+  if (step === "file_blocked") return "Next step · shut this month";
   return "Next · your green card";
 }
 

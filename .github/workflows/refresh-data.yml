@@ -23,6 +23,23 @@ on:
     # this lands after a morning release rather than just before one.
     - cron: "0 15 * * *"
   workflow_dispatch:
+  # A hand edit to the event registry has to reach people, and until now it
+  # did not. This workflow is the only thing that deploys Pages, and it ran
+  # on the clock alone, so an entry added at 22:04 sat invisible until the
+  # next afternoon while the repository looked up to date and nothing
+  # reported a problem. That is the opposite of what the registry is for:
+  # watch-feeds deliberately leaves the judgement to a person, and a person's
+  # judgement was then held for a day by a cron.
+  #
+  # Scoped to the files a person actually edits by hand. This job commits
+  # data/ on most runs, so a broad data/** filter would retrigger it in a
+  # loop; it never writes events.json or anything under web/, so these two
+  # cannot feed back into it.
+  push:
+    branches: [main]
+    paths:
+      - "data/events.json"
+      - "web/**"
 
 permissions:
   contents: write

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_reviewed": "2026-10-12",
+  "last_reviewed": "2026-10-13",
   "note": "Hand-curated. Detection is automated (Federal Register, agency and White House announcements, court dockets) but assigning a modelling effect is a judgement call, so entries arrive as pull requests with an empty effect for a maintainer to fill. See PLAN.md 8.1. Every entry carries verified_against and confidence; the app must not display an entry whose last_checked is stale.",
   "country_lists": {
     "travel_ban_full": {
@@ -146,17 +146,21 @@
       "id": "h1b-100k-fee-proclamation",
       "type": "future_demand",
       "title": "H-1B $100,000 fee proclamation",
-      "summary": "A fee on H-1B petitions for beneficiaries abroad. Vacated at district court with the government's appeal pending. Affects the multi-year pipeline feeding future priority dates, not any current queue position.",
+      "summary": "Proclamation 10973 of 19 September 2025 required an additional $100,000 payment with certain H-1B petitions. The District of Massachusetts vacated the implementing guidance on 8 June 2026 and the First Circuit denied the government a stay on 24 July 2026, so it has not been enforceable since. A further proclamation signed 18 September 2026, effective 21 September, purported to extend the payment through 21 September 2027; the Northern District of California enjoined that renewal in part on 30 September 2026. Twice blocked, never in force for a full cycle. Affects the multi-year pipeline feeding future priority dates, not any current queue position.",
       "countries": "all",
       "affects": [],
       "categories": "all",
       "start": "2025-09-19",
       "end": null,
       "status": "vacated_on_appeal",
-      "modeling": {"future_demand_multiplier": 0.8, "lag_years": 4},
-      "confidence": "secondary",
-      "verified_against": null,
-      "last_checked": "2026-09-17"
+      "modeling": {
+        "future_demand_multiplier": 0.8,
+        "lag_years": 4,
+        "note": "The multiplier is conditional and currently dormant: the payment has been enjoined or vacated for all but a few weeks since first issued, so it has not yet suppressed a full filing cycle. Status keeps it out of isLive(), which is correct -- an unenforceable fee is not a live lever. Revisit if an appeal reinstates it, and note the renewal runs only to 21 September 2027 even if it does."
+      },
+      "confidence": "verified",
+      "verified_against": "https://www.whitehouse.gov/presidential-actions/2026/09/restriction-on-entry-of-certain-nonimmigrant-workers-faad/",
+      "last_checked": "2026-10-13"
     },
     {
       "id": "h1b-weighted-selection-rule",
@@ -173,6 +177,27 @@
       "confidence": "secondary",
       "verified_against": null,
       "last_checked": "2026-09-17"
+    },
+    {
+      "id": "eo-14431-h1b-program-integrity-2026",
+      "type": "future_demand",
+      "title": "Executive Order 14431, H-1B program integrity",
+      "summary": "Signed 18 September 2026. Directs State, Labor and Homeland Security to weigh whether an H-1B sponsor has made layoffs in the previous year or plans them, to consult Commerce, Education and the Small Business Administration on wage and employment data when processing petitions and labour condition applications, and gives the Wage and Hour Division 30 days to begin reviewing past labour condition applications for action under INA 212(n)(2)(G).",
+      "countries": "all",
+      "affects": [],
+      "categories": "all",
+      "start": "2026-09-18",
+      "end": null,
+      "status": "in_force",
+      "modeling": {
+        "future_demand_multiplier": null,
+        "lag_years": 4,
+        "note": "Direction is adverse for H-1B inflow, magnitude unknown, so no multiplier. Nothing published says how many petitions the added scrutiny will stop, and that count is the entire effect size. Reaches a current queue position nowhere: it is about petitions and labour condition applications for workers entering, so like the other H-1B entries it touches the pipeline feeding priority dates years out.",
+        "not_the_perm_authority": "Section 3(b) directs review of LABOUR CONDITION APPLICATIONS under INA 212(n)(2)(G), which is H-1B wage-and-hour enforcement. The suspension of eight employers from PERM is 20 CFR 656.31(b), a different programme under a different authority, so this order is NOT the primary source for dol-perm-suspension-eight-employers-2026 and must not be cited as one. The 30-day deadline here fell on 18 October and that suspension came on 8 October, which places them in the same enforcement wave, but nothing published states a causal link and this entry does not assert one."
+      },
+      "confidence": "verified",
+      "verified_against": "https://www.federalregister.gov/documents/2026/09/23/2026-19555/enhancing-program-integrity-and-interagency-coordination-in-the-administration-of-the-h-1b",
+      "last_checked": "2026-10-13"
     },
     {
       "id": "gold-card-eb1-eb2",

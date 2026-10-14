@@ -37,6 +37,40 @@ function addMonths(month: string, delta: number): string {
 }
 
 /**
+ * The earliest priority date the density can speak to at all.
+ *
+ * The disclosure files are published per DECISION year, and each counts the
+ * cases decided in it by the date they were received. So a priority-date
+ * month is only countable once we hold the decision years that actually
+ * decided those cases. We hold 2015 onward, which means a PERM received in
+ * 2009 and decided in 2010 was never ingested, and the handful of 2009
+ * receipts that do appear are the stragglers decided five years late.
+ *
+ * Left unguarded this was not a small error. India's 2009 priority dates read
+ * as ELEVEN people against about 50,000 a year later in the queue, so every
+ * historical step taken while the cutoff sat down there was multiplied by
+ * ~0.000 and effectively deleted. The India EB-2 filing series begins in
+ * October 2015 with the cutoff at July 2009, so most of its steps were in
+ * that region: the simulated cutoff stopped moving and NOTHING crossed inside
+ * twenty-five years, for a case that plain arithmetic on the same archive
+ * puts around 2032. The model was most confident exactly where it knew least,
+ * because `densityAt` asked whether the months were PRESENT and they were --
+ * present, and nearly empty.
+ *
+ * A fiscal year starts in October, so holding decision year Y means receipts
+ * from October Y-1 are the earliest whose decisions fall inside what we have.
+ * The real repair is ingesting the earlier years; this is the floor that keeps
+ * an unknown cohort from passing as an empty one in the meantime.
+ */
+export function densityFloor(bundle: Bundle): string | null {
+  const years = (bundle.density_coverage?.decision_years ?? [])
+    .map(Number)
+    .filter((y) => Number.isFinite(y) && y > 0);
+  if (years.length === 0) return null;
+  return `${Math.min(...years) - 1}-10`;
+}
+
+/**
  * Average certified cases per day of priority date in a window around `day`.
  *
  * A window rather than a single month, because one month is noisy and the
@@ -66,8 +100,16 @@ export function densityAt(
       found += 1;
     }
   }
-  // Require most of the window to be present before trusting the number.
-  const covered = found >= Math.ceil(months.length * 0.6);
+  // Require most of the window to be present AND the month to sit inside the
+  // span the source data can support. Presence alone was the bug: months
+  // below the floor are present and almost empty, and months above the
+  // horizon are present and still being decided. Both read as a thin cohort,
+  // which inflates or annihilates the step instead of leaving it alone.
+  const floor = densityFloor(bundle);
+  const horizon = densityHorizon(bundle, column);
+  const measurable =
+    (floor === null || centre >= floor) && (horizon === null || centre <= horizon);
+  const covered = measurable && found >= Math.ceil(months.length * 0.6);
   const days = Math.max(1, found * 30.44);
   return { perDay: covered ? total / days : 0, covered };
 }

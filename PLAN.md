@@ -1476,34 +1476,52 @@ when they will draw something.
 - **Sanity anchors:** Cato's long-run estimates (a new India EB-2 applicant faces a multi-decade or lifetime wait) and the observed 2026 India cohort behavior (2013 PDs cleared, 2015 entering) should fall inside the model's range.
 - **Unit tests:** fiscal-year math, per-country cap computation from limits, fall-down arithmetic, chart selection logic, event applicability by country and path.
 
-### 10.1 Tested and rejected: folding unquantifiable policy factors into the estimate
+### 10.1 Folding unquantifiable policy factors into the estimate: rejected, then shipped
 
 The question, asked in October 2026: several things plainly move this queue and cannot be counted — labour certification suspended at eight named employers, holders of approved I-140s who have left the country or changed jobs and have no current petition, EB-1 adjudication tightening and so reducing what falls down to EB-2, spillover shifting because unrelated family categories stalled. Can they enter the model as a factor?
 
-**Not as a multiplier.** Each is a single instance with no measurable affected population, so there is nothing to fit a coefficient against, and the historical steps already contain every past shock of this kind — a hand-set multiplier would count that twice. Choosing a number would move every reader's headline date on a guess.
+**Not as a multiplier.** Each is a single instance with no measurable affected population, so there is nothing to fit a coefficient against, and the historical steps already contain every past shock of this kind — a hand-set multiplier would count that twice.
 
-**The testable version was built, measured, and not shipped.** Instead of moving the median, widen the interval when the recent record diverges from the regime the resampler draws its library from — a signal computed from the bundle alone (recent 24-month dispersion of deseasonalised steps against its own 120-month baseline), so it exists at every month of the backtest and is falsifiable. An event-registry flag could not be tested at all: the backtest runs 2016–2023 and the registry starts in 2025.
+**The testable version: widen the interval, never move the median.** The trigger is computed from the bundle alone — recent 24-month dispersion of deseasonalised steps against its own 120-month baseline — so it exists at every month of the backtest and is falsifiable. An event-registry flag could not be tested at all: the backtest runs 2016–2023 and the registry starts in 2025. Two readings were measured: `excess` (only unusually volatile recent months count) and `divergence` (either direction, because a frozen stretch is as much a different regime as a wild one).
 
-Measured on quarterly origins 2016-10 to 2023-09, 393 scored cases, 4000 iterations (converged — identical at 12000):
+**It was measured twice and the answers disagreed. The second one is right.**
+
+The first sweep said no setting helped, against a baseline of 78.9% coverage with 3.50-year bands. That baseline was an artefact of the density coverage bug (§10.2): annihilated steps made the simulated cutoff crawl, the bands inflated until they caught the truth by width alone, and coverage looked on target from a model that could not answer the question at all. Nothing can improve a metric that is already saturated for the wrong reason.
+
+Re-measured after the floor landed — quarterly origins 2016-10 to 2023-09, 403 scored cases, 4000 iterations, converged at 12000:
 
 | setting | coverage | median band | P50 error | paired flips in/out |
 |---|---|---|---|---|
-| baseline | 78.9% | 3.50 yr | 0.83 yr | — |
-| divergence 0.25 | 78.4% | 3.75 yr | 0.92 yr | +9 / −11 |
-| divergence 0.50 | 79.0% | 3.92 yr | 0.92 yr | +13 / −13 |
-| divergence 1.00 | 80.9% | 4.17 yr | 0.92 yr | +23 / −15 |
-| excess 0.50 | 77.0% | 3.42 yr | 0.92 yr | +5 / −13 |
+| baseline | 74.7% | 2.92 yr | 0.92 yr | — |
+| divergence 0.25 | 77.7% | 3.00 yr | 0.92 yr | +16 / −4 |
+| divergence 0.35 | 78.4% | 3.17 yr | 0.92 yr | +19 / −4 |
+| **divergence 0.50** | **79.4%** | **3.25 yr** | **0.92 yr** | **+22 / −3** |
+| divergence 1.00 | 79.2% | 3.33 yr | 1.00 yr | +25 / −7 |
+| excess 0.50 | 76.2% | 2.92 yr | 0.92 yr | +6 / −0 |
 
-Coverage and band width are each computed over that setting's own scored cases (393–398, since widening changes which cases resolve inside the horizon), so the band figures are directionally unambiguous but not a paired comparison; the flip counts are, being intersected on identical case keys. Beyond-horizon calls were 0 at both 500 and 4000 iterations with an identical 393 samples, so the corrected baseline is a change in the coverage metric alone and not in which cases were scorable.
+Coverage and band width are each over that setting's own scored cases; the flip counts are paired on identical case keys, which is what makes them readable at all — ±2pp of standard error is most of the effect being argued about.
 
-Four findings:
+**Shipped at `divergence 0.50`.** It reaches the target on 25 paired flips split 22/3, about 1e-4 against the 0.128 the broken baseline produced, for an eleventh more band width and no change in P50 error. `excess` stays rejected for the reason its own documentation gives: a frozen cutoff has almost no variance, so "recent months are unusually volatile" cannot fire during a freeze, which is most of this archive. In October 2026 every column reads 0.44–0.73 of its own decade baseline under that reading — the bulletin looks the calmest it has in ten years while the policy environment is the most disturbed it has been. Volatility of the published cutoff is not a proxy for turbulence in the world that sets it; resemblance to its own history is the measurable thing.
 
-1. **There was nothing to fix.** Baseline coverage is 78.9% against a target of 80 — half a standard error on 393 samples. The 77% that prompted the exercise was an artefact of the backtest report running 500 iterations where the app runs 4000. Fixed; the report now runs 4000 and prints median band width beside coverage, because coverage is cheap if the band is wide.
-2. **The one setting that reaches 80.9% is not distinguishable from chance.** 38 paired flips split 23/15 is p ≈ 0.12. Every weaker setting flips evenly, which is what noise looks like, while the band grows monotonically regardless. Comparing paired flips rather than two aggregate percentages is what made this visible: ±2.1pp of standard error is most of the effect being argued about.
-3. **The cost is certain where the gain is not.** A fifth wider band is eight more months of "don't know" for every reader, and P50 moves *earlier* rather than staying put — first passage to a receding target is absorbing, so raising dispersion at fixed drift shortens the median crossing. Mean-preserving in step space is not median-preserving in passage space. A feature sold as "less certain" that quietly reads "sooner" is worse than no feature.
-4. **Volatility of the published cutoff is not a proxy for turbulence in the world that sets it.** This is the finding worth keeping. In October 2026 every column reads 0.44–0.73 of its own decade baseline, because largely frozen dates have almost no variance. The bulletin looks the calmest it has in ten years while the policy environment is the most disturbed it has been, so the obvious one-sided reading ("recent months unusually volatile") is inert in exactly the situation that motivated it — and measured worse historically besides.
+The widening is dispersion-only and mean-preserving per fiscal month, so the seasonal profile is untouched and the drift that sets where the estimate lands is unchanged. Raising dispersion at fixed drift does shorten the median crossing — first passage to a receding target is absorbing — but at 0.50 that is one month, inside the quantisation of a monthly estimate. At 1.00 it costs a month of P50 accuracy for no further coverage, which is why 1.00 is not the default.
 
-The machinery ships behind `regimeWidening`, defaulting to 0, with the measurements pinned in `model/test/widening.test.ts` so switching it on is a deliberate act with a number attached. The honest answer to the original question is that these factors belong in the "what would change this" card, which names them without pricing them, and not in the arithmetic.
+**What this episode is actually about.** The decision rule — ship only if coverage moves toward 80% without ballooning the band or degrading P50 — was correct both times. The first time it was fed a number produced by a bug and correctly refused to ship. Having the rule written down in advance is what made the reversal a measurement rather than an argument.
+
+### 10.2 The density coverage bug: a confident number where there was no data
+
+Priority-date density comes from DOL labour certification disclosure files, which are published **per decision year**, each counting the cases decided in it by the date they were received. We hold decision years 2015–2024. A PERM received in 2009 and decided in 2010 was therefore never ingested, and the few 2009 receipts that do appear are stragglers decided five years late.
+
+India's 2009 priority dates consequently read as **eleven people**, against roughly 50,000 a year later in the queue. `densityAt` asked whether those months were *present* in the table. They were — present, and nearly empty — so it answered `covered: true`, and `scaleStepsToDensity` multiplied every historical step taken while the cutoff sat down there by about 0.000.
+
+The India EB-2 **Dates for Filing** series begins in October 2015 with the cutoff at July 2009, so most of its steps were deleted. The simulated cutoff stopped moving, and for a priority date of August 2018 **nothing crossed inside twenty-five years** — no date, no range, nothing — for a case where the measured advance rate on the same archive (6.9 PD-months/year over ten years, 6.1 over five) gives roughly 2032. The model was most confident exactly where it knew least.
+
+It also flattered the validation, which is why it survived so long. Deleted steps inflated the bands to 3.50 years, and a band that wide contains the truth by width alone: 78.9% coverage, apparently on target. The backtest never probed the failing regime because its target offsets are only +1/+2/+3 years and `beyondHorizonTotal` was 0 across all cases.
+
+**Fixed** with `densityFloor()`: density is trusted only for priority-date months at or after the October preceding the earliest ingested decision year, and — the mirror-image error, which `densityHorizon` already knew about but `densityAt` was not asking — not for months still being decided, which are undercounted and would inflate a step rather than delete it. An unmeasured cohort now reports `covered: false` and its step is left at full weight, which is what the surrounding code always claimed to do.
+
+Coverage fell from 78.9% to 74.7% and the bands narrowed from 3.50 to 2.92 years. That is the honest number, and it is what made the widening measurable.
+
+**Still outstanding:** ingest DOL decision years before FY2015, which is the actual repair rather than a guard; and add 5- and 7-year target offsets to the backtest, so the long-gap regime where this broke is scored at all.
 
 ---
 

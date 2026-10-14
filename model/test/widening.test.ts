@@ -1,39 +1,41 @@
 /**
- * The regime-instability widening, and why it ships switched off.
+ * The regime-instability widening, and the measurement that reversed itself.
  *
  * It exists to answer a real question -- can the things that move this queue
  * but cannot be counted (labour certification suspended at named employers,
  * approved petitions abandoned, adjudication tightening, spillover moving for
  * unrelated reasons) be folded into the estimate? -- with something
- * falsifiable instead of a hand-set multiplier. The measurement said no, and
- * these tests pin both the machinery and that answer, so neither is quietly
- * reversed later by argument rather than by evidence.
+ * falsifiable instead of a hand-set multiplier.
  *
- * Measured on the frozen fixture archive, quarterly origins 2016-10 to
- * 2023-09, 393 scored cases, 4000 iterations (converged: identical at 12000):
+ * The first answer was no, and it was wrong for an instructive reason. The
+ * sweep ran against a baseline of 78.9% coverage with 3.50-year bands, which
+ * is already on target, so no setting could improve it and every setting paid
+ * width for nothing. That baseline was an artefact: the density coverage bug
+ * (see densityFloor in src/density.ts) annihilated historical steps, the
+ * simulated cutoff crawled, and the bands inflated until they caught the
+ * truth by sheer width. Coverage had been bought with uselessness.
+ *
+ * With the floor in place, measured the same way -- quarterly origins 2016-10
+ * to 2023-09, 403 scored cases, 4000 iterations, converged at 12000:
  *
  *   setting            coverage   median band   P50 err   paired flips
- *   baseline             78.9%       3.50 yr    0.83 yr        -
- *   divergence 0.25      78.4%       3.75 yr    0.92 yr    +9 / -11
- *   divergence 0.50      79.0%       3.92 yr    0.92 yr   +13 / -13
- *   divergence 1.00      80.9%       4.17 yr    0.92 yr   +23 / -15
- *   excess 0.50          77.0%       3.42 yr    0.92 yr    +5 / -13
+ *   baseline             74.7%       2.92 yr    0.92 yr        -
+ *   divergence 0.25      77.7%       3.00 yr    0.92 yr    +16 / -4
+ *   divergence 0.35      78.4%       3.17 yr    0.92 yr    +19 / -4
+ *   divergence 0.50      79.4%       3.25 yr    0.92 yr    +22 / -3
+ *   divergence 1.00      79.2%       3.33 yr    1.00 yr    +25 / -7
+ *   excess 0.50          76.2%       2.92 yr    0.92 yr     +6 / -0
  *
- * Three findings, in order of how much they matter:
+ * 0.50 ships. It reaches the target on 25 paired flips split 22/3 -- about
+ * 1e-4 against the 0.128 the broken baseline gave -- for an eleventh more
+ * band width and no change in P50 error. The earlier concern that widening
+ * would pull the median earlier holds in principle, first passage to a
+ * receding target being absorbing, but at this strength it is one month and
+ * within the quantisation of a monthly estimate.
  *
- * 1. There was nothing to fix. Baseline coverage is 78.9% against a target of
- *    80, which is half a standard error on 393 samples. The 77% that prompted
- *    this came from the report running 500 iterations instead of 4000.
- * 2. The one setting that reaches 80.9% does so on 38 paired flips split
- *    23/15, which is p of about 0.12 -- indistinguishable from chance. Every
- *    weaker setting flips evenly, which is what noise looks like, while the
- *    band grows monotonically regardless.
- * 3. The cost is certain where the gain is not: a fifth wider band, meaning
- *    eight more months of "don't know" for every reader, and P50 moving
- *    EARLIER rather than staying put. First passage to a receding target is
- *    absorbing, so raising dispersion at fixed drift shortens the median
- *    crossing. A feature sold as "less certain" that quietly reads "sooner"
- *    is worse than no feature.
+ * The lesson worth keeping is not about widening. The decision rule was
+ * right both times; the first time it was fed a number produced by a bug.
+ * A rule is what makes that recoverable instead of permanent.
  */
 
 import assert from "node:assert/strict";
@@ -160,21 +162,38 @@ test("the live archive reads calmer than its own history, not more volatile", ()
   }
 });
 
-test("widening is off by default, so the shipped estimate is unchanged", () => {
-  // The calibration did not justify switching it on. This test is what makes
-  // turning it on a deliberate act with a number attached, rather than a
-  // default that drifted.
+test("the shipped default is the calibrated strength, not off and not 1", () => {
+  // Pinned because it is the one number in here that moves every reader's
+  // range. 0.5 of the measured divergence is what reached 79.4% coverage on
+  // 22-of-25 favourable flips; 0 was the broken baseline's answer and 1.0
+  // costs a month of P50 accuracy for no further coverage.
   const input = {
     column: "IN" as Column,
     category: "EB2",
     priorityDate: "2023-01-01",
     seed: 7,
-    iterations: 400,
+    iterations: 600,
   };
   const shipped = estimate(bundle, input);
-  const explicitlyOff = estimate(bundle, { ...input, regimeWidening: 0 });
-  assert.deepEqual(shipped, explicitlyOff);
-  assert.ok(!shipped.drivers.some((d) => d.includes("widened")));
+  assert.deepEqual(shipped, estimate(bundle, { ...input, regimeWidening: 0.5 }));
+  assert.notDeepEqual(shipped, estimate(bundle, { ...input, regimeWidening: 0 }));
+});
+
+test("the shipped default reads divergence, which is what was calibrated", () => {
+  // "excess" cannot fire during a freeze and only reached 76.2%. If the mode
+  // default ever flips back, the widening silently stops doing the thing it
+  // was measured doing.
+  const input = {
+    column: "IN" as Column,
+    category: "EB2",
+    priorityDate: "2023-01-01",
+    seed: 7,
+    iterations: 600,
+  };
+  assert.deepEqual(
+    estimate(bundle, input),
+    estimate(bundle, { ...input, instabilityMode: "divergence" }),
+  );
 });
 
 test("every fiscal month on the live archive has enough steps to centre on", () => {

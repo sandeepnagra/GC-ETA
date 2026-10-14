@@ -10,7 +10,7 @@ export type { CaseAssessment } from "./assess.js";
 export { caseTimeline } from "./news.js";
 export type { NewsItem } from "./news.js";
 export { bundleAsOf, forecastCutoff, backtestCutoff, backtestFirstPassage, backtestQueue, backtestHeadToHead } from "./backtest.js";
-export { densityAt, densityRatio, densityHorizon } from "./density.js";
+export { densityAt, densityRatio, densityHorizon, densityFloor } from "./density.js";
 export type { DensityLookup } from "./density.js";
 export { estimateQueue, peopleBetween, annualSupply } from "./levelB.js";
 export type { QueueEstimate, QueueBounds } from "./levelB.js";

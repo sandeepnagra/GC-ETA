@@ -47,19 +47,41 @@ const MIN_PER_MONTH_OBS = 3;
 /** Nothing measured here justifies more than doubling the scatter. */
 const MAX_WIDENING = 2;
 /**
- * Off until the backtest says otherwise. A knob that widens every reader's
- * range is not shipped on the strength of the argument for it.
+ * Calibrated, not argued. 0.5 of the measured divergence.
+ *
+ * This shipped at 0 for one day, on a measurement that said widening bought
+ * nothing. That measurement was taken against a baseline the density
+ * coverage bug produced: annihilated steps made the simulated cutoff crawl,
+ * which inflated the bands to 3.50 years and bought coverage of 78.9% --
+ * already on target, so nothing could improve it. With the floor in
+ * densityFloor() the bands fall to 2.92 and real coverage is 74.7%, six
+ * points under, and widening closes almost all of it:
+ *
+ *   baseline          74.7%   2.92 yr band   0.92 yr P50 error
+ *   divergence 0.35   78.4%   3.17 yr        0.92 yr     +19 / -4
+ *   divergence 0.50   79.4%   3.25 yr        0.92 yr     +22 / -3
+ *   divergence 1.00   79.2%   3.33 yr        1.00 yr     +25 / -7
+ *
+ * 0.50 reaches the target on 25 paired flips split 22/3, p about 1e-4,
+ * for an eleventh more band width and no change in P50 error at all. The
+ * decision rule was never wrong; the number fed into it was. Which is the
+ * argument for having had a rule.
  */
-const DEFAULT_REGIME_WIDENING = 0;
+const DEFAULT_REGIME_WIDENING = 0.5;
 /**
- * The conservative reading, deliberately. "divergence" is the one that fires
- * on this archive today and the one the calibration declined to ship (38
- * paired flips split 23/15, p about 0.12, for a fifth more band width), so it
- * must be named explicitly to be used. Defaulting to it would mean switching
- * the strength off zero silently selected the rejected mode, which is the
- * opposite of a knob that takes a deliberate act to turn on.
+ * "divergence", now that it has earned it.
+ *
+ * This was set to "excess" when the strength was 0, so that turning the knob
+ * on could not silently select a reading the calibration had rejected. On the
+ * corrected baseline it is no longer rejected: "excess" moves coverage from
+ * 74.7% only to 76.2%, while "divergence" reaches 79.4%. The reason is the
+ * one the type's own doc gives -- a frozen cutoff has almost no variance, so
+ * "recent months are unusually volatile" cannot fire during a freeze, which
+ * is most of this archive. Asking instead whether the recent record resembles
+ * its own history catches both the wild stretches and the frozen ones, and
+ * both are regimes the resampler's library is a poor guide to.
  */
-const DEFAULT_INSTABILITY_MODE: InstabilityMode = "excess";
+const DEFAULT_INSTABILITY_MODE: InstabilityMode = "divergence";
 
 /** Deterministic PRNG, so the same case always produces the same range. */
 function mulberry32(seed: number): () => number {

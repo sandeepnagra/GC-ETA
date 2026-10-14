@@ -27,6 +27,7 @@ import { fileURLToPath } from "node:url";
 
 import { staleEvents } from "../src/events.js";
 import { estimate } from "../src/levelA.js";
+import { adjudicationOutlook } from "../src/processing.js";
 import { expectedLatestMonth, freshness } from "../src/freshness.js";
 import type { Bundle, Column, EventsFile } from "../src/types.js";
 
@@ -152,4 +153,29 @@ test("the model still answers for a realistic gap on every live pair", () => {
       );
     }
   }
+});
+
+test("the live bundle can still answer what happens after filing", () => {
+  // The figures come from a USCIS factsheet PDF whose URL carries the fiscal
+  // years in it, so a new edition appears at a new address and the old one
+  // keeps answering 200 with stale content. This notices the series going
+  // missing; it cannot notice it going stale, which is why the collector
+  // records last_checked.
+  const outlook = adjudicationOutlook(bundle);
+  assert.ok(outlook, "no adjudication figures in the bundle");
+  assert.ok(
+    outlook.typicalMonths > 1 && outlook.typicalMonths < 60,
+    `typical adjudication of ${outlook.typicalMonths} months is not credible`,
+  );
+  // The whole justification for using this data is that retrogressed cases
+  // are excluded, so it measures deciding rather than queueing. A figure
+  // that drifted into years would mean that stopped being true and the
+  // number had quietly become the visa wait again, which the model already
+  // predicts and must not count twice.
+  assert.ok(
+    outlook.highMonths < 36,
+    `${outlook.highMonths} months looks like a queue wait, not an adjudication`,
+  );
+  assert.ok(outlook.lowMonths <= outlook.typicalMonths);
+  assert.ok(outlook.typicalMonths <= outlook.highMonths);
 });

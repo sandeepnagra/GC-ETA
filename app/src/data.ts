@@ -83,3 +83,16 @@ export function shortDate(iso: string): string {
   if (!y || !m || !d) return iso;
   return `${d} ${names[m - 1]} ${y}`;
 }
+
+/**
+ * Whole months since an ISO date, or null if the date is unreadable.
+ *
+ * Shared because two places need it: the stage card, which shows how long a
+ * filed case has been pending, and the estimate hero, which compares that
+ * against how long USCIS typically takes.
+ */
+export function monthsSince(iso: string): number | null {
+  const then = new Date(`${iso}T00:00:00Z`).getTime();
+  if (Number.isNaN(then)) return null;
+  return Math.max(0, Math.round((Date.now() - then) / (1000 * 60 * 60 * 24 * 30.44)));
+}

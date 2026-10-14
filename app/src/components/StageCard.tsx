@@ -20,7 +20,7 @@ import type { CaseAssessment } from "@gc-eta/model";
 import { Text } from "./Text";
 import { CARD_MIN_HEIGHT } from "./Card";
 import { CheckIcon } from "./Icons";
-import { prettyDate, prettyMonth } from "../data";
+import { monthsSince, prettyDate, prettyMonth } from "../data";
 import type { Theme } from "../theme";
 import type { CaseDraft } from "../types";
 
@@ -30,12 +30,6 @@ interface Stage {
   label: string;
   when: string;
   state: State;
-}
-
-function monthsSince(iso: string): number | null {
-  const then = new Date(`${iso}T00:00:00Z`).getTime();
-  if (Number.isNaN(then)) return null;
-  return Math.max(0, Math.round((Date.now() - then) / (1000 * 60 * 60 * 24 * 30.44)));
 }
 
 export function StageCard({

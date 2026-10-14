@@ -1,0 +1,22 @@
+{
+ "schema_version": 1,
+ "source": "https://www.uscis.gov/sites/default/files/document/fact-sheets/historical_pt_factsheet_fy16_to_fy24.pdf",
+ "note": "Median months from receipt to completion for employment-based I-485s, one figure per fiscal year. These are ANNUAL MEDIANS: the spread between years is movement in the median, not the spread between individual cases, which is wider. Must not be presented as percentiles for one applicant.",
+ "why_this_is_not_the_visa_wait": "Retrogressed cases are excluded from the figures, so what is measured is time to decide a case that could be decided rather than time spent waiting for a visa number. The queue wait is modelled separately, from the bulletin.",
+ "exclusion_note": "Processing times are defined as the number of months it took for an application, petition, or request to be processed from receipt to completion in a given time period. Visa regressed I-485s and revoked petitions or applications are excluded.",
+ "partial_years": {
+  "2024": "October 1, 2023 to January 31, 2024"
+ },
+ "i485_employment_median_months": {
+  "2016": 5.5,
+  "2017": 7.0,
+  "2018": 10.6,
+  "2019": 10.0,
+  "2020": 8.8,
+  "2021": 9.9,
+  "2022": 11.0,
+  "2023": 8.6,
+  "2024": 7.2
+ },
+ "last_checked": "2026-10-14"
+}

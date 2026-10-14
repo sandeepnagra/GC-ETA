@@ -4,9 +4,9 @@ import React, { useMemo, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, View } from "react-native";
 import { Text } from "../components/Text";
 import { useContentWidth } from "../layout";
-import type { CaseAssessment, NextMilestone } from "@gc-eta/model";
-import { chartInUse, dayToIso, historyPoints, nextMilestone, seasonalPattern, supplyPicture, whatWouldChange } from "@gc-eta/model";
-import { categoryLabel, columnLabel, prettyDate, shortDate } from "../data";
+import type { AdjudicationOutlook, CaseAssessment, NextMilestone } from "@gc-eta/model";
+import { adjudicationOutlook, chartInUse, dayToIso, historyPoints, nextMilestone, seasonalPattern, supplyPicture, whatWouldChange } from "@gc-eta/model";
+import { categoryLabel, columnLabel, monthsSince, prettyDate, shortDate } from "../data";
 import { HistoryChart } from "../components/HistoryChart";
 import { CardCarousel, type CarouselItem } from "../components/CardCarousel";
 import { DetailSheet, type CardDetail } from "../components/DetailSheet";
@@ -244,6 +244,16 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
   // promising -- absent is not a refusal.
   const designation = chartInUse(bundle);
   const step = nextMilestone(assessment, Boolean(draft.filedI485), designation);
+
+  // Only reached when the bulletin has nothing left to say. Everyone else is
+  // waiting on a visa number, which the estimate above already covers, and
+  // adding adjudication months to that would double count a wait the queue
+  // already contains.
+  const pendingMonths = draft.filedOn ? monthsSince(draft.filedOn) : null;
+  const adjudication = useMemo(
+    () => adjudicationOutlook(bundle, pendingMonths ?? undefined),
+    [bundle, pendingMonths],
+  );
   const blockers = assessment.events.filter((e) => e.relevance === "blocks");
   const context = assessment.events.filter((e) => e.relevance === "context");
 
@@ -472,7 +482,13 @@ export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onN
               ? "Filing is shut this month"
               : headline(assessment)}
         </Text>
-        {step === "file_now" || step === "file_blocked" ? (
+        {step === "current" && adjudication ? (
+          <AdjudicationLine
+            theme={theme}
+            outlook={adjudication}
+            filed={Boolean(draft.filedI485)}
+          />
+        ) : step === "file_now" || step === "file_blocked" ? (
           <Text style={{ fontSize: 14, color: theme.heroText, opacity: 0.9 }}>
             {step === "file_blocked"
               ? `Your date has been reached on the filing chart, but for ${prettyMonth(assessment.asOfMonth)} USCIS is accepting only on Final Action Dates. It decides monthly, so this can open again.`
@@ -695,6 +711,53 @@ function FilingAside({
       <Text style={{ fontSize: 12, color: theme.heroText }}>
         Low confidence: filing dates are set to manage how many people file, so this
         one is a weaker guess than the date above.
+      </Text>
+    </View>
+  );
+}
+
+/**
+ * What is left once the bulletin is done with you.
+ *
+ * This is the one state the app used to abandon. With a current final action
+ * date there is no queue left to predict, so the screen said "a government
+ * decision on your application rather than the bulletin" and stopped --
+ * accurate, and the exact moment the reader still had a question.
+ *
+ * The figures are USCIS's own annual medians with retrogressed cases
+ * excluded, so they measure deciding a case rather than waiting for a visa
+ * number, and they are quoted as medians rather than dressed up as a range
+ * for one person: see processing.ts. "Half" is doing real work in this copy
+ * and is not hedging.
+ *
+ * Being past the typical month is deliberately not framed as late. Half of
+ * all cases are past the median by definition, and a card that tells half
+ * its readers something has gone wrong is worse than one that says nothing.
+ */
+function AdjudicationLine({
+  theme,
+  outlook,
+  filed,
+}: {
+  theme: Theme;
+  outlook: AdjudicationOutlook;
+  filed: boolean;
+}) {
+  const typical = `${outlook.typicalMonths} months`;
+  const spread = `${outlook.lowMonths} to ${outlook.highMonths} months`;
+  return (
+    <View style={{ gap: 4 }}>
+      <Text style={{ fontSize: 14, color: theme.heroText, opacity: 0.92 }}>
+        {filed
+          ? outlook.pendingMonths !== undefined
+            ? `Filed ${outlook.pendingMonths} ${outlook.pendingMonths === 1 ? "month" : "months"} ago. USCIS decided half of employment-based applications within ${typical} in FY${outlook.fiscalYear}.`
+            : `USCIS decided half of employment-based applications within ${typical} in FY${outlook.fiscalYear}.`
+          : `Nothing in the bulletin is holding you now. Once filed, USCIS decided half of employment-based applications within ${typical} in FY${outlook.fiscalYear}.`}
+      </Text>
+      <Text style={{ fontSize: 12, color: theme.heroText, opacity: 0.8 }}>
+        {outlook.pastTypical
+          ? `You are past that point, as half of applicants are. Across ${outlook.years} years that figure has run ${spread}.`
+          : `Across ${outlook.years} years that figure has run ${spread}.`}
       </Text>
     </View>
   );

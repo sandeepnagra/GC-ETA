@@ -96,6 +96,15 @@ def main() -> int:
         json.loads(chart_path.read_text()) if chart_path.exists() else None
     )
 
+    # How long USCIS takes to decide an employment-based I-485 once it can.
+    # Retrogressed cases are excluded from these figures, so this is
+    # adjudication time and not the visa wait, which the bulletin model
+    # already covers. See build_processing_times.py.
+    processing_path = DATA_DIR / "processing-times.json"
+    processing = (
+        json.loads(processing_path.read_text()) if processing_path.exists() else None
+    )
+
     limits = json.loads((DATA_DIR / "limits.json").read_text())
     historical = json.loads((DATA_DIR / "limits-historical.json").read_text())
     payload = {
@@ -114,6 +123,14 @@ def main() -> int:
         # which is NOT the same as final action having applied -- the record
         # only accumulates forward from when collection started.
         "chart_in_use": (chart_determination or {}).get("months", {}),
+        # Annual medians, one per fiscal year, with the partial ones flagged
+        # so the model can leave them out of a "typical" figure.
+        "processing_times": {
+            "i485_employment_median_months": (processing or {}).get(
+                "i485_employment_median_months", {}
+            ),
+            "partial_years": sorted((processing or {}).get("partial_years", {}).keys()),
+        },
         "density_coverage": {
             "decision_years": sorted((density or {}).get("years", {}).keys()),
             "missing_years": (density or {}).get("years_missing", []),

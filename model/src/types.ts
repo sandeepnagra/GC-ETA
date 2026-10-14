@@ -51,6 +51,15 @@ export interface Bundle {
    * having applied -- the record only accumulates forward from when
    * collection started. See pipeline/build_chart_determination.py.
    */
+  /**
+   * Median months to decide an employment-based I-485, one per fiscal year,
+   * with the partial ones named. Retrogressed cases are excluded upstream,
+   * so this is adjudication time and not the visa wait. See processing.ts.
+   */
+  processing_times?: {
+    i485_employment_median_months: Record<string, number>;
+    partial_years: string[];
+  };
   chart_in_use?: Record<
     string,
     { employment: string; family?: string; observed_on?: string }

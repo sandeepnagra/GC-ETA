@@ -1521,7 +1521,15 @@ It also flattered the validation, which is why it survived so long. Deleted step
 
 Coverage fell from 78.9% to 74.7% and the bands narrowed from 3.50 to 2.92 years. That is the honest number, and it is what made the widening measurable.
 
-**Still outstanding:** ingest DOL decision years before FY2015, which is the actual repair rather than a guard; and add 5- and 7-year target offsets to the backtest, so the long-gap regime where this broke is scored at all.
+**The consequence, stated plainly: the density correction is now inert.** Measured per series after the floor landed, the share of steps that still scale is 0% for eleven of the twelve category/column/chart combinations we score, and 3 of 119 for India EB-2 Dates for Filing. The reason is not the floor being too strict in isolation — it is that these cutoffs sit *below* it. India EB-2 final action launches from November 2013, so the TARGET end of every ratio is unmeasurable, and an unmeasurable end means factor 1 by design.
+
+So the shipped model is regime-scaled historical steps plus the §10.1 widening, with no density adjustment in effect. That is the honest state, and the 79.4% coverage was measured on exactly that model, so the number is valid for what ships — but the density code path is no longer exercised by any outcome, and §6's claim that density is "the correction the backtest demanded" is currently aspirational rather than active.
+
+**This makes ingesting the earlier DOL years the top priority, not a tidy-up.** Decision years FY2008–FY2014 are what cover the 2009–2014 priority dates where the India queue actually sits. Without them there is no density signal for the cohorts that matter, and the correction cannot do the job it was built for. The guard is only what stops its absence being mistaken for a measurement.
+
+**Also outstanding:** add 5- and 7-year target offsets to the backtest. `beyondHorizonTotal` was 0 before this bug and is 0 after it, so the metric that should have caught a model answering "never" has never fired. Until those offsets land, nothing in the suite distinguishes a model that answers correctly from one that answers at all, and the long-gap regime where this broke is unscored.
+
+The superseded first measurement, which concluded the widening should not ship, is preserved in the history at `06d119c` and `10bb43c`.
 
 ---
 

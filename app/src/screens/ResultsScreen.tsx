@@ -208,7 +208,7 @@ const CONFIDENCE_NOTE: CardDetail = {
       caveat:
         "Every simulation draws on the past ten years. A change in the law, or an unusually large spillover year, is outside anything it has seen.",
       sources:
-        "Department of State Visa Bulletin archive. Backtest of 393 cases from quarterly origins between October 2016 and September 2023.",
+        "Department of State Visa Bulletin archive. Backtest of 663 cases from quarterly origins between October 2016 and September 2023, at gaps of one to seven years.",
     };
 
 export function ResultsScreen({ theme, draft, assessment, onBack, onExplain, onNews, comparison, suggestion, events, bundle, stale, onRefresh, refreshState, newsCount, initialSheet, initialFlipped }: Props) {

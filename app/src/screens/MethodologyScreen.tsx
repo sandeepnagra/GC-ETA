@@ -56,7 +56,7 @@ const LIMITATIONS = [
   {
     title: "Measured accuracy, including where it fails",
     body:
-      "Tested against 393 historical cases. The range contained the true answer 78% of the time, against a target of 80%, so the bands are slightly too narrow. The midpoint was out by about 0.8 years on average.",
+      "Tested against 663 historical cases, at gaps of one to seven years between the published cutoff and the target date. The range contained the true answer 79% of the time, against a target of 80%, and ran about 4.4 years wide. The midpoint was out by about 1.1 years. Accuracy falls off with distance, as it should: at a one-year gap the midpoint is out by 0.7 years, at seven years by 2.4.",
   },
   {
     title: "The short-term outlook has no proven edge",

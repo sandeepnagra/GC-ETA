@@ -1505,6 +1505,8 @@ Coverage and band width are each over that setting's own scored cases; the flip 
 
 The widening is dispersion-only and mean-preserving per fiscal month, so the seasonal profile is untouched and the drift that sets where the estimate lands is unchanged. Raising dispersion at fixed drift does shorten the median crossing — first passage to a receding target is absorbing — but at 0.50 that is one month, inside the quantisation of a monthly estimate. At 1.00 it costs a month of P50 accuracy for no further coverage, which is why 1.00 is not the default.
 
+**Re-validated on the wider population.** Once the backtest gained 5- and 7-year gaps (§10.3) the sweep was run again on all 663 samples, since the setting had been chosen on 403 at gaps of 1 to 3. It holds, and more strongly: baseline 73.9%, `divergence 0.50` at **79.5%** on 44 paired flips split **41/3**, around 1e-9 against chance, for 15% more band width and no change in P50 error. Stronger settings buy no further coverage and cost more median shift (−0.17 years at 0.75, −0.25 at 1.00), so 0.50 remains the default on a second independent population.
+
 **What this episode is actually about.** The decision rule — ship only if coverage moves toward 80% without ballooning the band or degrading P50 — was correct both times. The first time it was fed a number produced by a bug and correctly refused to ship. Having the rule written down in advance is what made the reversal a measurement rather than an argument.
 
 ### 10.2 The density coverage bug: a confident number where there was no data

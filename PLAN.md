@@ -1529,7 +1529,22 @@ So the shipped model is regime-scaled historical steps plus the §10.1 widening,
 
 So the density correction cannot be extended backwards with this source, and the floor is not a placeholder — it is the permanent edge of what the data can support. Density works forward from roughly 2013 priority dates and will become active for a column as its cutoff climbs past that; India EB-2 final action sits at November 2013, just under the line, which is why it is inert today and will switch itself on as the cutoff advances. Nothing needs doing for that to happen.
 
-Anyone wanting density for older cohorts needs a different source, not more of this one — a count of who held each pre-2013 priority date, which the USCIS I-485 inventory cannot supply either, since it counts cases still pending and old cohorts have largely been approved out of it.
+Imputing the receipt date from the decision date was then considered properly rather than waved away, because "inventing a distribution" is only an objection if the distribution cannot be measured — and it can, since both dates exist from FY2015. It was measured, and it settles the question against imputation: the receipt-to-decision lag runs a median of **6.3 months with a p90 of 18.0 in FY2015**, and a median of **2.5 with a p90 of 6.7 in FY2019**. The median moved two and a half times in four years. Extrapolating it back across the 2008–2014 backlog, when audit rates were higher again, would mean guessing the single parameter the whole imputation rests on, over exactly the years the estimate is most sensitive to.
+
+**The earlier years were ingested anyway, for what they can support,** and the result is what justifies the floor. `pipeline/build_perm_decisions.py` records certified volume by DECISION year, country and class of admission into `data/perm-decisions.json`. Setting India's density counts against the DOL decisions in the years those cases were actually decided:
+
+| priority-date year | our density holds | India certifications decided, FY y + y+1 | undercount |
+|---|---|---|---|
+| 2009 | 11 | ~40,300 | ~3,700× |
+| 2010 | 19 | ~60,200 | ~3,200× |
+| 2011 | 68 | ~61,600 | ~900× |
+| 2012 | 699 | ~51,200 | ~73× |
+| 2013 | 7,581 | ~56,000 | ~7× |
+| 2014 | 32,719 | ~35,100 | ~1× |
+
+The right-hand column is decision volume across two fiscal years, so it is an order-of-magnitude check rather than a cohort count — but the shape is unmistakable, and the convergence to parity at 2014 is exactly where `densityFloor` sits. The floor is therefore measured rather than argued, and the scale of what it prevents is now on record: believing the old numbers meant scaling a historical step by 11 against 50,000.
+
+This data is not consumed by the model and must not be: it is decision-year volume, not a priority-date cohort, and using it as one would be the same error in the other direction. It exists so the next question about pre-2015 demand has data instead of speculation. Anyone wanting genuine density for older cohorts needs a different source — the USCIS I-485 inventory is not it either, since it counts cases still pending and old cohorts have largely been approved out of it, which is the same survivorship trap in a new file.
 
 **Also outstanding:** add 5- and 7-year target offsets to the backtest. `beyondHorizonTotal` was 0 before this bug and is 0 after it, so the metric that should have caught a model answering "never" has never fired. Until those offsets land, nothing in the suite distinguishes a model that answers correctly from one that answers at all, and the long-gap regime where this broke is unscored.
 

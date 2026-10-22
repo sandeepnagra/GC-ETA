@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "generated_at": "2026-10-21T19:07:42.798900+00:00",
+ "generated_at": "2026-10-22T19:03:38.755614+00:00",
  "source": "Stated in the Department of State Visa Bulletin, read from the archive",
  "note": "Figures are provisional under INA 203(g) until USCIS supplies immediate-relative and parolee counts mid-year. revised_mid_year flags a fiscal year where the stated numbers changed.",
  "limits": [
@@ -458,7 +458,7 @@
    "determined": null,
    "has_determined_figure": false,
    "revised_mid_year": false,
-   "months_stating_limits": 1
+   "months_stating_limits": 2
   }
  ]
 }

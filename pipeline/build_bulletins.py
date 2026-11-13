@@ -20,6 +20,8 @@ from collections import Counter
 from datetime import date, datetime, timezone
 from pathlib import Path
 
+import requests
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from gceta.bulletin import bulletin_url, parse_bulletin  # noqa: E402
@@ -66,7 +68,8 @@ def main() -> int:
     # and fetched nothing new for weeks. The model already assumes this:
     # expectedLatestMonth() rolls forward on the 25th and marks the bundle
     # stale until the pipeline delivers the month the app is asking for.
-    # A month that is not out yet 404s, which is expected and handled below.
+    # A month that is not out yet 404s (or, since Nov 2026, redirects to a
+    # bot-walled 404 page that answers 403), which is expected and handled below.
     current = (today.year, today.month)
     end = parse_month_arg(args.end) if args.end else next_month(current)
 
@@ -74,12 +77,27 @@ def main() -> int:
     bulletins: list[dict] = []
     missing: list[str] = []
     not_yet: list[str] = []
+    not_yet_errors: dict[str, str] = {}
     warning_counts: Counter[str] = Counter()
     fetched_live = 0
 
     for year, month in month_range(start, end):
         url = bulletin_url(month, year)
-        doc = fetcher.get(url, allow_404=True)
+        try:
+            doc = fetcher.get(url, allow_404=True)
+        except requests.RequestException as exc:
+            # Only the look-ahead month gets this leniency. Since Nov 2026 an
+            # unpublished bulletin no longer 404s: adoption.state.gov 302s it to
+            # travel.state.gov's 404 page, which sits behind a Cloudflare bot
+            # check and answers 403. That broke every daily run on a month that
+            # simply is not out yet. A current or past month failing is a real
+            # problem with the source and must still stop the run.
+            if (year, month) > current:
+                ym = f"{year:04d}-{month:02d}"
+                not_yet.append(ym)
+                not_yet_errors[ym] = str(exc)
+                continue
+            raise
         if doc is None:
             # A future month that is not published yet is not a gap in the
             # archive, it is just the future. Recording it as missing would
@@ -124,8 +142,13 @@ def main() -> int:
     months_with_sections = sum(1 for b in bulletins if b.get("sections"))
     print(f"months parsed : {len(bulletins)}")
     print(f"months missing: {len(missing)}  {missing[:6]}{' ...' if len(missing) > 6 else ''}")
-    if not_yet:
-        print(f"not out yet   : {', '.join(not_yet)} (looked ahead, 404 -- normal)")
+    for ym in not_yet:
+        if ym in not_yet_errors:
+            # Said plainly so a green run cannot hide a source that has stopped
+            # answering: this is an error we chose to tolerate, not a 404.
+            print(f"not out yet   : {ym} (looked ahead, fetch failed -- {not_yet_errors[ym]})")
+        else:
+            print(f"not out yet   : {ym} (looked ahead, 404 -- normal)")
     if bulletins:
         print(f"latest month  : {bulletins[-1]['month']}")
     print(f"rows total    : {total_rows:,}")

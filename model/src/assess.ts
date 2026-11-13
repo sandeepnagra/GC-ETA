@@ -189,5 +189,7 @@ export function assessCase(
     );
   }
 
-  return { asOfMonth: bundle.end_month, finalAction, filing, outlook, standing, queue, events: applicable, warnings };
+  // The month the user's own series was last published, which is older than
+  // bundle.end_month when the newest month did not carry their column.
+  return { asOfMonth: finalAction.asOfMonth, finalAction, filing, outlook, standing, queue, events: applicable, warnings };
 }

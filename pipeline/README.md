@@ -36,8 +36,22 @@ URL, past ones included, to `travel.state.gov`'s 404 page, which answers 403.
 "Attention Required"). Every bulletin we have is committed in
 `data/bulletin-pages/` (`archive_cached_pages.py`, which Refresh data runs on
 every run, copies anything from the fetch cache that is not there yet), so the
-repository is the archive of record. Each new bulletin now comes in by hand,
-about once a month:
+repository is the archive of record.
+
+New bulletins arrive automatically from
+[visa-bulletin-cn](https://github.com/xjokerabab/visa-bulletin-cn) (CC BY 4.0),
+a JSON dataset a person enters and checks against the official page, usually a
+day after publication. `sync_visa_bulletin_cn.py` pulls new months into
+`data/visa-bulletin-cn/` on every Refresh data run, validates them, and
+compares them with any official page we hold (all 3,807 overlapping cells
+matched when it was added). `build_bulletins.py` uses a dataset month only when
+no official page for it is committed, cached or fetchable. It carries Rest of
+World, China and India only, so those months are marked in the bundle's
+`partial_months`, and Mexico and Philippines estimates say they are using the
+previous bulletin. See `gceta/vbcn.py`.
+
+To bring in an official page by hand (for Mexico and Philippines, or if the
+dataset stops):
 
 ```bash
 # Save the bulletin from travel.state.gov in your browser (Web Page, HTML Only), then:

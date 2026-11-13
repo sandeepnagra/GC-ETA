@@ -31,6 +31,11 @@ export interface Bundle {
   end_month: string;
   months: number;
   missing_months: string[];
+  /**
+   * Months built from a source that carries only some columns, keyed by month.
+   * A column not listed has no value that month; its latest value is older.
+   */
+  partial_months?: Record<string, { columns: string[]; source: string }>;
   series: Record<string, RawCell[]>;
   /** Employment-based worldwide limit per fiscal year, where known. */
   employment_limit_by_fy: Record<string, number>;

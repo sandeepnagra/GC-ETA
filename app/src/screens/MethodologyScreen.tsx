@@ -108,8 +108,16 @@ export function MethodologyScreen({ theme, onBack, bundle, events }: Props) {
 
       <Card theme={theme} title="Sources">
         <Text style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
-          Department of State Visa Bulletin, monthly, December 2009 to the present.
+          Department of State Visa Bulletin, monthly, October 2009 to the present.
         </Text>
+        {Object.keys(bundle.partial_months ?? {}).length > 0 && (
+          <Text style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
+            Recent bulletins for Rest of World, China and India: visa-bulletin-cn
+            (github.com/xjokerabab/visa-bulletin-cn, yiminshuju.com), checked by hand
+            against the official bulletin, CC BY 4.0. It does not carry Mexico or the
+            Philippines, so those can trail by a month.
+          </Text>
+        )}
         <Text style={{ fontSize: 14, lineHeight: 20, color: theme.text }}>
           USCIS employment-based adjustment of status guidance, for annual limits.
         </Text>
@@ -117,7 +125,7 @@ export function MethodologyScreen({ theme, onBack, bundle, events }: Props) {
           Federal Register and agency notices, for the events list.
         </Text>
         <Text style={{ fontSize: 12, lineHeight: 17, color: theme.secondary }}>
-          All public government sources. Nothing about your case is sent anywhere; the app
+          All public sources. Nothing about your case is sent anywhere; the app
           downloads the same file as every other reader.
         </Text>
       </Card>

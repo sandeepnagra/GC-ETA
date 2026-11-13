@@ -33,7 +33,7 @@ const MONTH_NAMES = [
 ];
 
 /** "2026-09" to "September 2026". A month code is a database key, not a date. */
-function monthName(month: string): string {
+export function monthName(month: string): string {
   const [y, m] = month.split("-").map(Number) as [number, number];
   return m >= 1 && m <= 12 ? `${MONTH_NAMES[m - 1]} ${y}` : month;
 }

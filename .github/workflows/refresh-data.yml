@@ -89,6 +89,13 @@ jobs:
       - name: Keep the current bundle for comparison
         run: cp data/app-bundle.json /tmp/previous-bundle.json
 
+      # How a new bulletin arrives now. No State Department channel serves it
+      # to a program any more; this dataset is entered by a person from the
+      # official page, so a bot block does not stop it (pipeline/gceta/vbcn.py).
+      # Never fails the run; check_freshness.py notices if it stops updating.
+      - name: Pull new months from the visa-bulletin-cn dataset
+        run: python pipeline/sync_visa_bulletin_cn.py
+
       - name: Fetch the bulletin archive
         run: python pipeline/build_bulletins.py
 

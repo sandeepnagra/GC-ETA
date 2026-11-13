@@ -27,6 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from gceta.bulletin import bulletin_url, parse_bulletin  # noqa: E402
 from gceta.fetch import Fetcher  # noqa: E402
 from gceta.pages import read_page  # noqa: E402
+from gceta import vbcn  # noqa: E402
 from gceta.sections import parse_sections  # noqa: E402
 
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
@@ -91,6 +92,19 @@ def main() -> int:
     from_pages: list[str] = []
     warning_counts: Counter[str] = Counter()
     fetched_live = 0
+    dataset_months: list[str] = []
+
+    def from_dataset(ym: str) -> bool:
+        # Last resort, after a committed page, the fetch cache and the network:
+        # the visa-bulletin-cn dataset (gceta/vbcn.py), which is how a new
+        # bulletin arrives now that the State Department serves none to a
+        # program. Partial by design: no Mexico or Philippines columns.
+        record = vbcn.bulletin_from(ym)
+        if record is None:
+            return False
+        bulletins.append(record)
+        dataset_months.append(ym)
+        return True
 
     for year, month in month_range(start, end):
         url = bulletin_url(month, year)
@@ -124,10 +138,14 @@ def main() -> int:
             # simply is not out yet. A current or past month failing is a real
             # problem with the source and must still stop the run.
             if (year, month) > current:
+                if from_dataset(ym):
+                    continue
                 not_yet.append(ym)
                 not_yet_errors[ym] = str(exc)
                 continue
             raise
+        if doc is None and from_dataset(ym):
+            continue
         if doc is None:
             # A future month that is not published yet is not a gap in the
             # archive, it is just the future. Recording it as missing would
@@ -176,8 +194,9 @@ def main() -> int:
         "schema_version": SCHEMA_VERSION,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "source": (
-            "Department of State Visa Bulletin: the adoption.state.gov mirror "
-            "(fetch cache) plus pages committed in data/bulletin-pages/"
+            "Department of State Visa Bulletin: pages committed in "
+            "data/bulletin-pages/, the adoption.state.gov mirror (fetch cache), "
+            f"and for months not otherwise available {vbcn.ATTRIBUTION}"
         ),
         "months_covered": len(bulletins),
         "months_missing": missing,
@@ -203,8 +222,14 @@ def main() -> int:
         print(f"latest month  : {bulletins[-1]['month']}")
     print(f"rows total    : {total_rows:,}")
     print(f"sections      : {total_sections:,} across {months_with_sections} months")
+    if dataset_months:
+        print(
+            f"from dataset  : {', '.join(dataset_months)} "
+            f"(visa-bulletin-cn; columns {', '.join(vbcn.COVERED_COLUMNS)} only)"
+        )
     if from_pages:
-        print(f"committed     : {len(from_pages)} from data/bulletin-pages/  {', '.join(from_pages)}")
+        shown = ", ".join(from_pages) if len(from_pages) <= 6 else f"{from_pages[0]} .. {from_pages[-1]}"
+        print(f"committed     : {len(from_pages)} from data/bulletin-pages/  {shown}")
     print(f"fetched live  : {fetched_live} (rest from cache)")
     print(f"written       : {out} ({out.stat().st_size/1_048_576:.1f} MB)")
     if warning_counts:

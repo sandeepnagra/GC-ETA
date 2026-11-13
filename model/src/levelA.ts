@@ -25,9 +25,11 @@ import {
   getSeries,
   isoToDay,
   lastKnownIndex,
+  monthAt,
   monthToAbsolute,
 } from "./bundle.js";
 import { densityRatio } from "./density.js";
+import { monthName } from "./news.js";
 import type { Bundle, Cell, Chart, Column, Estimate, EstimateInput } from "./types.js";
 
 /** 25 years. Past this we stop pretending to know. */
@@ -415,13 +417,11 @@ export function estimate(
   const iterations = input.iterations ?? DEFAULT_ITERATIONS;
   const seed = input.seed ?? 0x5eed;
   const cells = getSeries(bundle, chart, "employment", input.category, input.column);
-  const asOfMonth = bundle.end_month;
-
   if (!cells) {
     return {
       status: "insufficient_data",
       currentCutoff: { kind: "missing" },
-      asOfMonth,
+      asOfMonth: bundle.end_month,
       confidence: "low",
       drivers: [`No published series for ${input.category} in this column.`],
     };
@@ -433,13 +433,25 @@ export function estimate(
   const targetDay = isoToDay(input.priorityDate);
   const drivers: string[] = [];
 
+  // "As of" is the month this series was last published, not the bundle's
+  // newest month. They differ when the newest month came from a source that
+  // does not carry this column (bundle.partial_months): labelling last month's
+  // cutoff with this month's bulletin, and projecting from a month too late,
+  // would both be quietly wrong.
+  const asOfMonth = latestIndex >= 0 ? monthAt(bundle, latestIndex) : bundle.end_month;
+  if (asOfMonth < bundle.end_month) {
+    drivers.push(
+      `The ${monthName(bundle.end_month)} bulletin's dates for this country are not in yet, so this uses ${monthName(asOfMonth)}.`,
+    );
+  }
+
   if (latest.kind === "current") {
     return {
       status: "current",
       currentCutoff: latest,
       asOfMonth,
       confidence: "high",
-      drivers: ["This category and country is Current, so every priority date is eligible."],
+      drivers: [...drivers, "This category and country is Current, so every priority date is eligible."],
     };
   }
   if (latest.kind === "date" && latest.day! >= targetDay) {
@@ -448,7 +460,7 @@ export function estimate(
       currentCutoff: latest,
       asOfMonth,
       confidence: "high",
-      drivers: [`The cutoff is ${dayToIso(latest.day!)}, which is at or past your date.`],
+      drivers: [...drivers, `The cutoff is ${dayToIso(latest.day!)}, which is at or past your date.`],
     };
   }
 

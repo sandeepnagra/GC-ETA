@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Say loudly when the published bulletin month has fallen behind.
 
-Since Nov 2026 no new bulletin reaches the pipeline on its own (see
-gceta/pages.py), so the daily refresh can run green for weeks while the app
-shows an old month. This is what turns that into a signal.
+Since Nov 2026 a new bulletin reaches the pipeline only through the
+visa-bulletin-cn dataset (gceta/vbcn.py), which a person maintains. If it stops,
+the daily refresh would run green for weeks while the app shows an old month.
+This is what turns that into a signal.
 
 Two thresholds, both on the bundle's end_month (the newest bulletin month):
 
@@ -55,8 +56,10 @@ def main() -> int:
     current = ym(today.year, today.month)
     annotate = bool(os.environ.get("GITHUB_ACTIONS"))
     how = (
-        "No automated source serves new bulletins any more: save it from "
-        "travel.state.gov and run pipeline/import_bulletin.py."
+        "New bulletins arrive through the visa-bulletin-cn dataset "
+        "(github.com/xjokerabab/visa-bulletin-cn); check whether it has the month. "
+        "If it has stopped, save the bulletin from travel.state.gov and run "
+        "pipeline/import_bulletin.py."
     )
 
     print(f"latest bulletin : {end_month}")

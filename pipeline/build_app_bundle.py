@@ -114,6 +114,15 @@ def main() -> int:
         "end_month": end,
         "months": span,
         "missing_months": archive["months_missing"],
+        # Months built from a dataset that carries only some columns (see
+        # pipeline/gceta/vbcn.py). For a column not listed, the newest value is
+        # from an earlier month, and the model says so rather than presenting
+        # it as this month's.
+        "partial_months": {
+            b["month"]: {"columns": b["partial"]["columns"], "source": b["partial"]["source"]}
+            for b in bulletins
+            if b.get("partial")
+        },
         "series": series,
         "sections": sections,
         "density": (density or {}).get("density", {}),

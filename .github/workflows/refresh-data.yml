@@ -40,6 +40,9 @@ on:
     paths:
       - "data/events.json"
       - "web/**"
+      # A bulletin imported by hand (pipeline/import_bulletin.py). The build
+      # reads these but never writes them, so this cannot loop either.
+      - "data/bulletin-pages/**"
 
 permissions:
   contents: write
@@ -128,6 +131,21 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: public
+
+  # Separate from build so a stale bulletin turns the run red without holding
+  # back the Pages deploy, which also carries hand edits to the event registry.
+  # Since Nov 2026 no new bulletin arrives on its own (pipeline/gceta/pages.py),
+  # so this is the only thing that notices when one is due. Warns from the 25th,
+  # fails from the 1st of the month whose bulletin is missing.
+  freshness:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Check the bulletin is current
+        run: python3 pipeline/check_freshness.py
 
   deploy:
     needs: build

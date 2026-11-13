@@ -26,17 +26,20 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from gceta.bulletin import bulletin_url, parse_bulletin  # noqa: E402
 from gceta.fetch import Fetcher  # noqa: E402
+from gceta.pages import read_page  # noqa: E402
 from gceta.sections import parse_sections  # noqa: E402
 
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 SCHEMA_VERSION = 1
 
-# Months the source has never had. Anything else turning up missing means the
-# source or the fetch cache has lost a bulletin we used to have, and that must
-# stop the run rather than ship a thinner archive. Since Nov 2026 the mirror
-# redirects every bulletin URL to a 404 page, so the fetch cache is the only
-# copy of the archive the daily job can reach; this is what notices if it goes.
-KNOWN_GAPS = {"2009-10", "2009-11", "2012-10"}
+# Months confirmed to have had no Visa Bulletin at all. These are never
+# fetched, so a run does not spend a request every day re-learning that they
+# do not exist. Empty, and meant to stay that way unless the State
+# Department's own archive index shows a month was skipped: the three months
+# that used to look like gaps (2009-10, 2009-11, 2012-10) were published and
+# were only missing from the mirror. They are recovered from the Wayback
+# Machine into data/bulletin-pages/.
+NEVER_PUBLISHED: set[str] = set()
 
 
 def month_range(start: tuple[int, int], end: tuple[int, int]):
@@ -85,11 +88,30 @@ def main() -> int:
     missing: list[str] = []
     not_yet: list[str] = []
     not_yet_errors: dict[str, str] = {}
+    from_pages: list[str] = []
     warning_counts: Counter[str] = Counter()
     fetched_live = 0
 
     for year, month in month_range(start, end):
         url = bulletin_url(month, year)
+        ym = f"{year:04d}-{month:02d}"
+        if ym in NEVER_PUBLISHED:
+            missing.append(ym)
+            continue
+        committed = read_page(ym)
+        if committed is not None:
+            html, meta = committed
+            parsed = parse_bulletin(html, month, year, source_url=meta.get("source", url))
+            parsed["sections"] = parse_sections(html)
+            parsed["content_sha256"] = meta["sha256"]
+            parsed["fetched_at"] = meta.get("imported_at")
+            from_pages.append(ym)
+            for warning in parsed["warnings"]:
+                warning_counts[warning] += 1
+            if not parsed["rows"]:
+                warning_counts[f"NO ROWS PARSED for {ym}"] += 1
+            bulletins.append(parsed)
+            continue
         try:
             doc = fetcher.get(url, allow_404=True)
         except requests.RequestException as exc:
@@ -100,7 +122,6 @@ def main() -> int:
             # simply is not out yet. A current or past month failing is a real
             # problem with the source and must still stop the run.
             if (year, month) > current:
-                ym = f"{year:04d}-{month:02d}"
                 not_yet.append(ym)
                 not_yet_errors[ym] = str(exc)
                 continue
@@ -109,12 +130,16 @@ def main() -> int:
             # A future month that is not published yet is not a gap in the
             # archive, it is just the future. Recording it as missing would
             # put a permanent, self-healing entry in months_missing every
-            # single run and bury the three real holes (2009-10, 2009-11,
-            # 2012-10) that are worth noticing.
-            if (year, month) > current:
-                not_yet.append(f"{year:04d}-{month:02d}")
+            # single run and bury a real hole worth noticing.
+            #
+            # The current month is not counted as a hole either: its bulletin
+            # can only be late, not lost, and saying so is check_freshness.py's
+            # job. Failing here would also stop the Pages deploy, which carries
+            # the event registry too.
+            if (year, month) >= current:
+                not_yet.append(ym)
             else:
-                missing.append(f"{year:04d}-{month:02d}")
+                missing.append(ym)
             continue
         if not doc.from_cache:
             fetched_live += 1
@@ -132,11 +157,15 @@ def main() -> int:
             warning_counts[f"NO ROWS PARSED for {parsed['month']}"] += 1
         bulletins.append(parsed)
 
-    unexpected = [m for m in missing if m not in KNOWN_GAPS]
+    # A past month going missing means a bulletin we used to have is gone:
+    # the source no longer serves it and it is not in the fetch cache or in
+    # data/bulletin-pages/. Stop rather than ship a thinner archive.
+    unexpected = [m for m in missing if m not in NEVER_PUBLISHED]
     if unexpected:
         print(
-            f"ERROR: bulletins missing that are not known gaps: {', '.join(unexpected)}\n"
-            "The source no longer serves them and they are not in the fetch cache.",
+            f"ERROR: past bulletins missing: {', '.join(unexpected)}\n"
+            "Not served by the source, not in the fetch cache, not committed in "
+            "data/bulletin-pages/. Import them with pipeline/import_bulletin.py.",
             file=sys.stderr,
         )
         return 1
@@ -144,7 +173,10 @@ def main() -> int:
     payload = {
         "schema_version": SCHEMA_VERSION,
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "source": "adoption.state.gov mirror of the Department of State Visa Bulletin",
+        "source": (
+            "Department of State Visa Bulletin: the adoption.state.gov mirror "
+            "(fetch cache) plus pages committed in data/bulletin-pages/"
+        ),
         "months_covered": len(bulletins),
         "months_missing": missing,
         "bulletins": bulletins,
@@ -169,6 +201,8 @@ def main() -> int:
         print(f"latest month  : {bulletins[-1]['month']}")
     print(f"rows total    : {total_rows:,}")
     print(f"sections      : {total_sections:,} across {months_with_sections} months")
+    if from_pages:
+        print(f"committed     : {len(from_pages)} from data/bulletin-pages/  {', '.join(from_pages)}")
     print(f"fetched live  : {fetched_live} (rest from cache)")
     print(f"written       : {out} ({out.stat().st_size/1_048_576:.1f} MB)")
     if warning_counts:

@@ -77,12 +77,14 @@ test("the archive has not lost months it used to have", () => {
   );
 });
 
-test("the only gaps in the archive are the three known ones", () => {
-  // These three are genuinely absent upstream. Anything else appearing here
-  // is a fetch or parse failure being carried silently into the bundle --
-  // and a future month that is not published yet must not land in this list,
-  // which is why build_bulletins.py reports those separately.
-  assert.deepEqual([...bundle.missing_months].sort(), ["2009-10", "2009-11", "2012-10"]);
+test("the archive has no gaps", () => {
+  // 2009-10, 2009-11 and 2012-10 used to sit here as "known gaps". They were
+  // published; only the mirror lacked them, and they are now recovered from the
+  // Wayback Machine into data/bulletin-pages/. Anything appearing here is a
+  // fetch or parse failure being carried silently into the bundle -- and a
+  // future month that is not published yet must not land in this list, which
+  // is why build_bulletins.py reports those separately.
+  assert.deepEqual([...bundle.missing_months].sort(), []);
 });
 
 test("every event carries a last_checked date the staleness rule can read", () => {

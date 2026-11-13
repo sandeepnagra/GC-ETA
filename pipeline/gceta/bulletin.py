@@ -2,8 +2,10 @@
 
 Two things here are load-bearing and were wrong in earlier drafts of the plan.
 
-1. The archive lives on adoption.state.gov, which serves the same content tree
-   as travel.state.gov without the bot filter. See PLAN.md section 8.
+1. The archive lived on adoption.state.gov, which served the same content tree
+   as travel.state.gov without the bot filter. See PLAN.md section 8. Since
+   Nov 2026 it redirects every bulletin to a 404 page; new bulletins come in
+   by hand through import_bulletin.py (see gceta/pages.py).
 2. The path segment is the FISCAL year, while the filename carries the calendar
    month and year. October 2015 lives under /2016/. Getting this backwards
    silently yields 404s for every October through December.
@@ -109,9 +111,11 @@ def _code_for(label: str, table: list[tuple[str, str]]) -> str | None:
     space-stripped form as well catches those without loosening the match.
     """
     low = _clean(label).lower()
-    squashed = low.replace(" ", "")
+    # Hyphens too: early FY2010 bulletins break words across narrow columns
+    # with them ("Charge-ability", "PHILIP-PINES", "Employ-ment").
+    squashed = low.replace(" ", "").replace("-", "")
     for needle, code in table:
-        if needle in low or needle.replace(" ", "") in squashed:
+        if needle in low or needle.replace(" ", "").replace("-", "") in squashed:
             return code
     return None
 
@@ -208,7 +212,9 @@ def _chart_kind(table) -> str | None:
 
 
 def _track(header_label: str) -> str | None:
-    low = header_label.lower()
+    # Early FY2010 bulletins hyphenate headers to fit narrow columns
+    # ("Fam-ily", "Employ-ment -Based"), so drop hyphens before matching.
+    low = header_label.lower().replace("-", "")
     if "employment" in low:
         return "employment"
     if "family" in low:
@@ -237,6 +243,14 @@ def parse_bulletin(html: str, month: int, year: int, *, source_url: str) -> dict
         if len(header_cells) < 2:
             continue
         track = _track(header_cells[0])
+        body = tr_list[1:]
+        if track is None and not header_cells[0] and len(tr_list) > 2:
+            # Early FY2010 layout: a blank corner cell over the country columns,
+            # with the track label ("Employ-ment -Based") alone in the next row.
+            second = tr_list[1].find_all(["td", "th"])
+            if second:
+                track = _track(_clean(second[0].get_text(" ", strip=True)))
+                body = tr_list[2:]
         if track is None:
             continue
         chart = _chart_kind(table)
@@ -247,7 +261,7 @@ def parse_bulletin(html: str, month: int, year: int, *, source_url: str) -> dict
         columns = header_cells[1:]
         code_table = _CATEGORY_CODES if track == "employment" else _FAMILY_CODES
 
-        for tr in tr_list[1:]:
+        for tr in body:
             cells = [
                 _clean(c.get_text(" ", strip=True))
                 for c in tr.find_all(["td", "th"])

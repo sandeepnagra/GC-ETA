@@ -30,6 +30,28 @@ possibly a firewall misconfiguration that could close without notice: the
 fetcher is rate limited to roughly one request per second with a descriptive
 user agent, and the manual fallback in PLAN.md section 8 stays the backup.
 
+**That closed in Nov 2026.** `adoption.state.gov` now redirects every bulletin
+URL, past ones included, to `travel.state.gov`'s 404 page, which answers 403.
+`travel.state.gov` also blocks a browser user agent from scripts (Cloudflare
+"Attention Required"). The archive up to 2026-11 survives in the CI fetch cache;
+each new bulletin now comes in by hand, about once a month:
+
+```bash
+# Save the bulletin from travel.state.gov in your browser (Web Page, HTML Only), then:
+.venv/bin/python pipeline/import_bulletin.py ~/Downloads/<saved page>.html
+git add data/bulletin-pages && git commit -m "Import the <Month YYYY> visa bulletin" && git push
+```
+
+The page is checked (month from its title, both tables must parse) and stored
+in `data/bulletin-pages/` with its provenance in `sources.json`. A committed
+page wins over the fetch cache and the network. The push triggers Refresh data.
+`check_freshness.py` warns from the 25th when the next month's bulletin is due
+and fails the run from the 1st if it is still missing.
+
+October and November 2009 and October 2012 were never missing upstream, only
+from the mirror. They are recovered from the Wayback Machine into
+`data/bulletin-pages/`, so the archive has no gaps.
+
 Two URL details that are easy to get wrong:
 
 - The path segment is the **fiscal** year while the filename carries the

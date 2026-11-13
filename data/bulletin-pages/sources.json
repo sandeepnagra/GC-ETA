@@ -1,0 +1,20 @@
+{
+ "2009-10": {
+  "source": "https://web.archive.org/web/20100603092416/http://www.travel.state.gov/visa/bulletin/bulletin_4575.html",
+  "imported_at": "2026-11-13T21:16:11+00:00",
+  "sha256": "885e0760bb421e2bc1455aa2dc1e8d014b8ed67bad3d599fc6ea11b2c7b887f1",
+  "note": "Missing from the adoption.state.gov mirror; recovered from the Wayback Machine. Listed in the State Department archive index (bulletin_1770.html)."
+ },
+ "2009-11": {
+  "source": "https://web.archive.org/web/20100603092405/http://www.travel.state.gov/visa/bulletin/bulletin_4576.html",
+  "imported_at": "2026-11-13T21:16:11+00:00",
+  "sha256": "be55c77d2eb251ec916db4c050b58ba50195ea974c62869c0c2efa1395204394",
+  "note": "Missing from the adoption.state.gov mirror; recovered from the Wayback Machine. Listed in the State Department archive index (bulletin_1770.html)."
+ },
+ "2012-10": {
+  "source": "https://web.archive.org/web/20120915141036/http://travel.state.gov/visa/bulletin/bulletin_5770.html",
+  "imported_at": "2026-11-13T21:16:11+00:00",
+  "sha256": "b89bee4306eff56b78993b32fcdf66aae9bf4a65a96f87e88bc69540aa8bc554",
+  "note": "Missing from the adoption.state.gov mirror; recovered from the Wayback Machine. Listed in the State Department archive index (bulletin_1770.html)."
+ }
+}

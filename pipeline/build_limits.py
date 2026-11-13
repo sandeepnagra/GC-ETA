@@ -26,6 +26,7 @@ from bs4 import BeautifulSoup  # noqa: E402
 
 from gceta.bulletin import bulletin_url  # noqa: E402
 from gceta.fetch import Fetcher  # noqa: E402
+from gceta.pages import read_page  # noqa: E402
 
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 
@@ -69,10 +70,17 @@ def main() -> int:
 
     for bulletin in sorted(archive["bulletins"], key=lambda b: b["month"]):
         year, month = (int(p) for p in bulletin["month"].split("-"))
-        doc = fetcher.get(bulletin_url(month, year), allow_404=True)
-        if doc is None:
-            continue
-        body = text_of(doc.text)
+        # A committed page first, as build_bulletins.py does: those months
+        # (data/bulletin-pages/) are not served by the source at all.
+        committed = read_page(bulletin["month"])
+        if committed is not None:
+            html = committed[0]
+        else:
+            doc = fetcher.get(bulletin_url(month, year), allow_404=True)
+            if doc is None:
+                continue
+            html = doc.text
+        body = text_of(html)
         found = {}
         for field, pattern in PATTERNS.items():
             match = pattern.search(body)

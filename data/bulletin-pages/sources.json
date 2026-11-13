@@ -11,10 +11,1424 @@
   "sha256": "be55c77d2eb251ec916db4c050b58ba50195ea974c62869c0c2efa1395204394",
   "note": "Missing from the adoption.state.gov mirror; recovered from the Wayback Machine. Listed in the State Department archive index (bulletin_1770.html)."
  },
+ "2009-12": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2010/visa-bulletin-for-december-2009.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "e5069a55842e8bfcf8f49b737181292423eec9fa5cd20fa862d411239c31d731",
+  "fetched_at": "2026-09-18T03:04:34+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2010-01": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2010/visa-bulletin-for-january-2010.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "f4738221f8065e26615228785797f6a5e5a77ab7dc1517e32531a93c2806ffd2",
+  "fetched_at": "2026-09-18T03:04:35+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2010-02": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2010/visa-bulletin-for-february-2010.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "8e1735a4b8f14f4e6b970ae06a3e90327891948e0a79a71e601abe4fa7953776",
+  "fetched_at": "2026-09-18T03:04:35+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2010-03": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2010/visa-bulletin-for-march-2010.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "2f9c398e45155b910367c1421ec5eb0164255051c99d676be62bd5c95dfbca53",
+  "fetched_at": "2026-09-18T03:04:36+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2010-04": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2010/visa-bulletin-for-april-2010.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "900b53219b8d87382af0ba262ac1366ba9d166690ddee6da04025b1db1312db6",
+  "fetched_at": "2026-09-18T03:04:37+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2010-05": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2010/visa-bulletin-for-may-2010.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "4075f2428c9781189870106e3ba6abe144e2b1e5a06698521ee4f5832d708ae5",
+  "fetched_at": "2026-09-18T03:04:38+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2010-06": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2010/visa-bulletin-for-june-2010.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "69c6ac61a7f179d21ee9b03136a0988b63e012440daab61c0464a0608558ba06",
+  "fetched_at": "2026-09-18T03:04:38+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2010-07": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2010/visa-bulletin-for-july-2010.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "3a25d87e4a6585f3a3d02bcc346e947e8016c00c03bc5bbbe495b0b36e725ce8",
+  "fetched_at": "2026-09-18T03:04:38+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2010-08": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2010/visa-bulletin-for-august-2010.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "89b696eac7794991ec16f70d3712d4f02038e1a2b7525f8b7a79747089e8192f",
+  "fetched_at": "2026-09-18T03:04:39+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2010-09": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2010/visa-bulletin-for-september-2010.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "e6a61765c625ab28c628c055e01da1e93140267efca8b5e773fcecaef7f19d11",
+  "fetched_at": "2026-09-18T03:04:40+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2010-10": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2011/visa-bulletin-for-october-2010.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "c0794e0545b56a2f4d452116658cd2af4e5ccf8d0953318e33ab558299cdd371",
+  "fetched_at": "2026-09-18T03:04:40+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2010-11": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2011/visa-bulletin-for-november-2010.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "c8dc0d1953726f25789e7160c76f992ac99a46072b2029b7368d044e6bd3293e",
+  "fetched_at": "2026-09-18T03:04:41+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2010-12": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2011/visa-bulletin-for-december-2010.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "a5f3dc0a544690f6d5c3d7f739f9ed8427778596b8ea08aa607359258517ecdb",
+  "fetched_at": "2026-09-18T03:04:41+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2011-01": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2011/visa-bulletin-for-january-2011.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "2bb157749a92e11027b85adce059eddfe281d6376c152652c950278dbe220268",
+  "fetched_at": "2026-09-18T03:04:42+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2011-02": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2011/visa-bulletin-for-february-2011.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "5f7499878fc29f3d0d78195c2edeced1699244d63ef17dd5f9b532982b536809",
+  "fetched_at": "2026-09-18T03:04:43+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2011-03": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2011/visa-bulletin-for-march-2011.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "6f0b805c6efe84ded5bf17c66c250bfc8d8e3ef3361fb9a4264b9c9fcfe8f5c8",
+  "fetched_at": "2026-09-18T03:04:44+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2011-04": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2011/visa-bulletin-for-april-2011.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "04652d260a72beb2812a4f457dae33046e763c4705a57c468733d779b563a47e",
+  "fetched_at": "2026-09-18T03:04:44+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2011-05": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2011/visa-bulletin-for-may-2011.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "820e875f5da9981f8a1eb44723669ce3670a8071a340cbda4a9282ce03cda196",
+  "fetched_at": "2026-09-18T03:04:44+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2011-06": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2011/visa-bulletin-for-june-2011.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "89e756cc3671a15bbac0fd380731ef821d7aecdc7897012a6c015bd614b92cf7",
+  "fetched_at": "2026-09-18T03:04:45+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2011-07": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2011/visa-bulletin-for-july-2011.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "8c3f103a1b1eab8ef4eba18996e5d870db78d141725ca69e3544d0191f8ccc57",
+  "fetched_at": "2026-09-18T03:04:46+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2011-08": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2011/visa-bulletin-for-august-2011.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "12575eebdea8f32b66c8647d3258be74b06d3ebc011840be04c653e57a676335",
+  "fetched_at": "2026-09-18T03:04:46+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2011-09": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2011/visa-bulletin-for-september-2011.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "cf1b57ae0771132e3416ddf2e34e7d6a4e8831b99589169183572c32251424dd",
+  "fetched_at": "2026-09-18T03:04:47+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2011-10": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2012/visa-bulletin-for-october-2011.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "212cca1f7af844784be2551d61c685d5e2f8403bc1f040f79babaf48594a9533",
+  "fetched_at": "2026-09-18T03:04:47+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2011-11": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2012/visa-bulletin-for-november-2011.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "9853d405f75c1725faff745e6e04ce170cdb0b98a4c022ea70165b011f8fa53c",
+  "fetched_at": "2026-09-18T03:04:48+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2011-12": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2012/visa-bulletin-for-december-2011.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "c0ff873c12487596547e6d9d2c07410addfa93bc8c553287ca79bb9ad37956b3",
+  "fetched_at": "2026-09-18T03:04:49+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2012-01": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2012/visa-bulletin-for-january-2012.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "ce14ddcdc074af7212bc2b738c955548976cdcfa2fbd4bbfc440439a943867a6",
+  "fetched_at": "2026-09-18T03:04:49+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2012-02": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2012/visa-bulletin-for-february-2012.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "5b7dfece0ffdaf51eb7eff83dde1c73bea38c893fd954e93399173d26f0f5f86",
+  "fetched_at": "2026-09-18T03:04:50+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2012-03": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2012/visa-bulletin-for-march-2012.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "50d10da8cebd2c189d82d873af47b7347d64c8cf171fe11ca02fc1a962e5281e",
+  "fetched_at": "2026-09-18T03:04:51+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2012-04": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2012/visa-bulletin-for-april-2012.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "cb5c6f096a01b802019985af7b214cff2e39f77c67584f327e49980ad1180ef9",
+  "fetched_at": "2026-09-18T03:04:51+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2012-05": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2012/visa-bulletin-for-may-2012.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "0d2b219de6fe32667a39836837b029e082a5c7f081c7d23bbd2baaddeb0bfc3b",
+  "fetched_at": "2026-09-18T03:04:52+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2012-06": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2012/visa-bulletin-for-june-2012.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "031eed5f9af77eaf08a6807a0d1116a5a268064a827a2a32865c60cd45a02af5",
+  "fetched_at": "2026-09-18T03:04:52+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2012-07": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2012/visa-bulletin-for-july-2012.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "a81bf2c502733b30885a334f162e979a3a56487e9a4ead95ad1a75dbae68def6",
+  "fetched_at": "2026-09-18T03:04:53+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2012-08": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2012/visa-bulletin-for-august-2012.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "529279e94b1cf53e91ac8288cde92c427d1e28b467572c6afd4ae5bd28105bd7",
+  "fetched_at": "2026-09-18T03:04:53+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2012-09": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2012/visa-bulletin-for-september-2012.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "fdd27d9676919aa5be206fbbc0f01e4037308c29815bb12758c2f5cc665c315f",
+  "fetched_at": "2026-09-18T03:04:54+00:00",
+  "note": "From the pipeline fetch cache."
+ },
  "2012-10": {
   "source": "https://web.archive.org/web/20120915141036/http://travel.state.gov/visa/bulletin/bulletin_5770.html",
   "imported_at": "2026-11-13T21:16:11+00:00",
   "sha256": "b89bee4306eff56b78993b32fcdf66aae9bf4a65a96f87e88bc69540aa8bc554",
   "note": "Missing from the adoption.state.gov mirror; recovered from the Wayback Machine. Listed in the State Department archive index (bulletin_1770.html)."
+ },
+ "2012-11": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2013/visa-bulletin-for-november-2012.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "447fb3a55041845b7b0fef920ddab272c0fc0dd2527942b0828e1029c7b1c8e2",
+  "fetched_at": "2026-09-18T03:04:55+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2012-12": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2013/visa-bulletin-for-december-2012.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "59246c817d65e4549d9bac21e21c0bbac780f9dc535708d98cd5c3ebae7a5d60",
+  "fetched_at": "2026-09-18T03:04:56+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2013-01": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2013/visa-bulletin-for-january-2013.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "d8632e9511b72d5f952108e06fef270104d21665cc81e8b80596be70474af3c1",
+  "fetched_at": "2026-09-18T03:04:57+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2013-02": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2013/visa-bulletin-for-february-2013.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "3e62a814eed393508262aff3c87c355be832ca89f4d7321cb59170b203c4a390",
+  "fetched_at": "2026-09-18T03:04:57+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2013-03": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2013/visa-bulletin-for-march-2013.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "3db90ad40d4225617c825d0b4a14ec5b7f54ebeec241f48532bc582d705f43ca",
+  "fetched_at": "2026-09-18T03:04:58+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2013-04": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2013/visa-bulletin-for-april-2013.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "7bcc0681890d21e2f31d0571405b548f7a02aa60e7339862f97bde1ff08f9908",
+  "fetched_at": "2026-09-18T03:04:58+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2013-05": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2013/visa-bulletin-for-may-2013.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "35dc8e101ffa669b1ad25c9fe2d0f3cd34222d334edf402b224c2476c940b7a7",
+  "fetched_at": "2026-09-18T03:04:59+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2013-06": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2013/visa-bulletin-for-june-2013.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "e20c6e6f7597dd2ede74b21fa877a238b0fb7f565b54dc0f5659e21a2dfcff4e",
+  "fetched_at": "2026-09-18T03:05:00+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2013-07": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2013/visa-bulletin-for-july-2013.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "998c5aa72184c7a0f4cd5dccaae241201d16caea7eff56d7f421a7d37fee3bec",
+  "fetched_at": "2026-09-18T03:05:00+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2013-08": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2013/visa-bulletin-for-august-2013.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "42aaeb14f33b48c10fb249f81abc2e577805eeee88e76535daf818d02c9f523a",
+  "fetched_at": "2026-09-18T03:05:01+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2013-09": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2013/visa-bulletin-for-september-2013.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "b43acbf2ee20e11bdb670ab820d0047c8bdebfcf5ba51d3377b17565aeec716f",
+  "fetched_at": "2026-09-18T03:05:01+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2013-10": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2014/visa-bulletin-for-october-2013.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "9b18acc6328c6ee8653b5f382ef51d30fda0f5fe3021169b67b6ef4b9b72e084",
+  "fetched_at": "2026-09-18T03:05:02+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2013-11": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2014/visa-bulletin-for-november-2013.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "0d2eeaed63cc03405698e075ca7640a69cf0c14a7b91710e8e9024a1a1a41434",
+  "fetched_at": "2026-09-18T03:05:03+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2013-12": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2014/visa-bulletin-for-december-2013.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "68c45cf9539bd0a3e50f5074a1d6c829bd7173c0c26e1983de2fdc978b0f84ba",
+  "fetched_at": "2026-09-18T03:05:03+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2014-01": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2014/visa-bulletin-for-january-2014.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "da54050d2ecc0164f1def78c63facde6e4b0969508d1a96feb6d4d9dea36bd8d",
+  "fetched_at": "2026-09-18T03:05:04+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2014-02": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2014/visa-bulletin-for-february-2014.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "423d6f35ab196b628cd74d827c8bddecf47f8d7403c8b037d4d686c8839caae2",
+  "fetched_at": "2026-09-18T03:05:04+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2014-03": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2014/visa-bulletin-for-march-2014.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "c9080ff7a8fc22b43274f67fb95e4ffc42a3e308a24a455c4622dda145cf7430",
+  "fetched_at": "2026-09-18T03:05:05+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2014-04": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2014/visa-bulletin-for-april-2014.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "0ae7fc8ea95c725d27cb2d53766254ea29250f9306f91318590ddf18e8ccc46f",
+  "fetched_at": "2026-09-18T03:05:06+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2014-05": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2014/visa-bulletin-for-may-2014.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "bbc8e70dad64ca3d31da7d33dc3e158939fe054385983cdb9c1d8ada8b45eeeb",
+  "fetched_at": "2026-09-18T03:05:06+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2014-06": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2014/visa-bulletin-for-june-2014.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "fc584e405c19714a2b720eff0ddda1a20f751aa4c36fdec17665dafebefc355b",
+  "fetched_at": "2026-09-18T03:05:07+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2014-07": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2014/visa-bulletin-for-july-2014.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "991e4f03d284193b2624c4be8e542cd7f313136b669998033a77b187bf846cd4",
+  "fetched_at": "2026-09-18T03:05:07+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2014-08": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2014/visa-bulletin-for-august-2014.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "eb41bea64290fcf5f276323102aa0187c4e66facc39e57429d285d35a289433b",
+  "fetched_at": "2026-09-18T03:05:08+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2014-09": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2014/visa-bulletin-for-september-2014.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "809c99a94c3686ff8390ca12ef269c77945fc416c25b3c8da99c9bb18cd697ba",
+  "fetched_at": "2026-09-18T03:05:09+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2014-10": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2015/visa-bulletin-for-october-2014.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "8b696df73611241678981424cb6e403b7736431d1f3b0d5ec2a02129a2f1da7a",
+  "fetched_at": "2026-09-18T03:05:09+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2014-11": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2015/visa-bulletin-for-november-2014.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "a9b9d80f3b38dc3a155e72dfc98e6060703285d818494e170d9758cc4f517e90",
+  "fetched_at": "2026-09-18T03:05:10+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2014-12": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2015/visa-bulletin-for-december-2014.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "5fe0637f84f19c5acdafb8cceb80464f429afc149123093452bbc655ef08c7ed",
+  "fetched_at": "2026-09-18T03:05:10+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2015-01": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2015/visa-bulletin-for-january-2015.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "c5632a71708b51acf28c48177c737be709233636b97909cc5eb2530ce650e3f6",
+  "fetched_at": "2026-09-18T03:05:11+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2015-02": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2015/visa-bulletin-for-february-2015.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "335a7fd0b669821ca01a75b4bd50e428da57d16c80f15203ef75489c032094d4",
+  "fetched_at": "2026-09-18T03:05:12+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2015-03": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2015/visa-bulletin-for-march-2015.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "dbb3e512186720daeb52d017415623d1cad8c12e96a1ee959ce156109dd48723",
+  "fetched_at": "2026-09-18T03:05:12+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2015-04": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2015/visa-bulletin-for-april-2015.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "88cce72f0f345079ffa484ab7bbfb8dba1ef15ffb6ff3015124ee3296c6d2b49",
+  "fetched_at": "2026-09-18T03:05:13+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2015-05": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2015/visa-bulletin-for-may-2015.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "a69dcf3c5a28a4686006b25164705ca1026365e24f0002ffd1c430dd8d724cb5",
+  "fetched_at": "2026-09-18T03:05:13+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2015-06": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2015/visa-bulletin-for-june-2015.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "fd980bcd9b750b28ef061006d43df74612a65dcbee0543b92c20857017d05e4d",
+  "fetched_at": "2026-09-18T03:05:14+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2015-07": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2015/visa-bulletin-for-july-2015.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "8b78df009297f72bb7c6cf8484c4af054f130a1fd64461d3f348b8190e9d7e79",
+  "fetched_at": "2026-09-18T03:05:15+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2015-08": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2015/visa-bulletin-for-august-2015.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "b6519d868ac2c027c7be60a93fe2fc2ee15aa352fffbf64ba0d197adab1b762a",
+  "fetched_at": "2026-09-18T03:05:15+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2015-09": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2015/visa-bulletin-for-september-2015.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "327e713275c3fdac79daa24db66a180cd01c297fb58b03d1259665bf1a0e10e3",
+  "fetched_at": "2026-09-18T03:05:16+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2015-10": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2016/visa-bulletin-for-october-2015.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "9bdb1fb15beccd28f68777f3cbe35ed1fd417cfde309ea760f52a4c192d9c6c2",
+  "fetched_at": "2026-09-18T03:05:17+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2015-11": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2016/visa-bulletin-for-november-2015.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "8a514809575c675b65e202404a73aa694ae5461fbdc0537a6540b3b489586206",
+  "fetched_at": "2026-09-18T03:05:17+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2015-12": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2016/visa-bulletin-for-december-2015.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "df2dd3f18a9e9b8026bc441679407598c533ac0138becfeb3b789e2338423d5c",
+  "fetched_at": "2026-09-18T03:05:18+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2016-01": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2016/visa-bulletin-for-january-2016.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "ed76d18c437733b5285e9d43ba35705cc450e622b0b4dce03bfccd0ffd82a1f5",
+  "fetched_at": "2026-09-18T03:05:18+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2016-02": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2016/visa-bulletin-for-february-2016.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "189d8b1ecb467832700640c18cf126991bc4c370ea15c5c44637e6a15f44fa9f",
+  "fetched_at": "2026-09-18T03:05:19+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2016-03": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2016/visa-bulletin-for-march-2016.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "6df6acc7db81186706a982c249dcf452b34b15363c18ced6bd215e330fafe4ca",
+  "fetched_at": "2026-09-18T03:05:20+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2016-04": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2016/visa-bulletin-for-april-2016.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "428693b1080ebafc5a6376e05c3cf74bd21450be4a3134d8d04cae2ca36f1d66",
+  "fetched_at": "2026-09-18T03:05:20+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2016-05": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2016/visa-bulletin-for-may-2016.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "2456333e08bed84b981e10fbc600e2399008dcbddaac3ddd1002cf9a2d249731",
+  "fetched_at": "2026-09-18T03:05:21+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2016-06": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2016/visa-bulletin-for-june-2016.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "0ebee6dd9ad8e16d8ee1dd8071f7685771fb2719cfd366f5b1962b0e4fde651f",
+  "fetched_at": "2026-09-18T03:05:22+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2016-07": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2016/visa-bulletin-for-july-2016.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "d5defabbf7189162cd83f4cfeaf8fdbcc5cc5996fa92c322f43206c615455196",
+  "fetched_at": "2026-09-18T03:05:22+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2016-08": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2016/visa-bulletin-for-august-2016.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "024f70771df2a99f1e6de2929e90e6b449360f9255f8292d1d0a9e5c9dbc00e8",
+  "fetched_at": "2026-09-18T03:05:22+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2016-09": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2016/visa-bulletin-for-september-2016.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "f64f5eae0d47920176eb9f98697fd50badc12dcce498ea52fdec130a424afee7",
+  "fetched_at": "2026-09-18T03:05:23+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2016-10": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2017/visa-bulletin-for-october-2016.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "fc5c31de3b5868be9392f18aab421994bf60d4e91fdebeaa6e69c2b835addb8d",
+  "fetched_at": "2026-09-18T03:05:24+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2016-11": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2017/visa-bulletin-for-november-2016.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "8b9398d522ee46e59be83bcd09c27f1d1eae520f740bf530b9245aefcee80323",
+  "fetched_at": "2026-09-18T03:05:24+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2016-12": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2017/visa-bulletin-for-december-2016.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "ec7fc0b83480048c317fa1cc0dfac0d6b791b0480cff8660bc6d151d17bc0372",
+  "fetched_at": "2026-09-18T03:05:25+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2017-01": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2017/visa-bulletin-for-january-2017.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "bcde4a9869cefb9bf0c738e877b6d94d675e1d38f1fac5f3c3e958e74113f45b",
+  "fetched_at": "2026-09-18T03:05:25+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2017-02": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2017/visa-bulletin-for-february-2017.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "28c8276e2c37318541a4095f6f53205895b768de869d4d815c4d1259036cdb32",
+  "fetched_at": "2026-09-18T03:05:26+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2017-03": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2017/visa-bulletin-for-march-2017.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "7cf30b06ee32386b86e141aab0f375f1ead0def4e4bd9919c4359bb14b4dcd10",
+  "fetched_at": "2026-09-18T03:05:27+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2017-04": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2017/visa-bulletin-for-april-2017.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "fc3c6bf3f91daf0e4fc762ab5cb930c2a6314e659795449280f5fad2fb94b3cb",
+  "fetched_at": "2026-09-18T03:05:27+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2017-05": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2017/visa-bulletin-for-may-2017.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "bcec56a0a5ecd2b785a9d914b3ed51f238538ca01c941565e6b4a3ae8b415302",
+  "fetched_at": "2026-09-18T03:05:28+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2017-06": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2017/visa-bulletin-for-june-2017.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "84bbdfc770f2a5285024e057e49e86ef5d5531d55ffc187b0e495506f733c2e4",
+  "fetched_at": "2026-09-18T03:05:29+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2017-07": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2017/visa-bulletin-for-july-2017.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "687dfe9afce8a6ce85d75f737945172bf99887dd376fc513129a0b5bad7591c9",
+  "fetched_at": "2026-09-18T03:05:29+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2017-08": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2017/visa-bulletin-for-august-2017.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "239d6c68ec1e549bd20441af86594d601cb1758c88672049421a5368bef6e8b0",
+  "fetched_at": "2026-09-18T03:05:30+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2017-09": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2017/visa-bulletin-for-september-2017.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "a3d76c7ca15bf136c7630b15566beb795bda58c8e1e7547408647fe6e786fa50",
+  "fetched_at": "2026-09-18T03:05:30+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2017-10": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2018/visa-bulletin-for-october-2017.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "77a11e10b8caf291e2c1395a0a4c437bbb28f561976ea01e4a8b7a7eab42a591",
+  "fetched_at": "2026-09-18T03:05:31+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2017-11": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2018/visa-bulletin-for-november-2017.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "18246a7e01533d824b110e6c48821bd73c401875e0abebf7e01faa93eeb775e8",
+  "fetched_at": "2026-09-18T03:05:32+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2017-12": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2018/visa-bulletin-for-december-2017.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "285c0bc3b070f6b38ad83685d887e9cd35268d7e912d2d4ab79eaa7e644b58f7",
+  "fetched_at": "2026-09-18T03:05:32+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2018-01": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2018/visa-bulletin-for-january-2018.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "c68919f81fad1edec2313f8031016c76ece968d49c67d30a7301a1c6da221fce",
+  "fetched_at": "2026-09-18T03:05:33+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2018-02": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2018/visa-bulletin-for-february-2018.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "1e289438817b32b1dac8e52faea77c33b3a61872ff149d7bc7f6e7c729f15289",
+  "fetched_at": "2026-09-18T03:05:34+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2018-03": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2018/visa-bulletin-for-march-2018.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "23bb97384b38fe3b4e4b83a3555cf96f332926c4c0dfd538e4963788634d9482",
+  "fetched_at": "2026-09-18T03:05:34+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2018-04": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2018/visa-bulletin-for-april-2018.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "9465cad02a79511b64c573c4d206dad5eb8f95ef3a9ac451bf8add81f39b58f6",
+  "fetched_at": "2026-09-18T03:05:35+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2018-05": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2018/visa-bulletin-for-may-2018.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "e38f1e93f4dd843019d8991e80a35e367a5f7c6d20738bdac4b551b781beeebe",
+  "fetched_at": "2026-09-18T03:05:35+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2018-06": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2018/visa-bulletin-for-june-2018.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "9d4ea52faa08e745b0b09f9ff98da44682ab8afd9169984cd62314a559fd56f6",
+  "fetched_at": "2026-09-18T03:05:36+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2018-07": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2018/visa-bulletin-for-july-2018.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "20befd5bef14ad986e056d7c1b5bf86d03d9b8a05880d5dc4966bffae05984aa",
+  "fetched_at": "2026-09-18T03:05:37+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2018-08": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2018/visa-bulletin-for-august-2018.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "2a4ff7dde3bd2e3e0983dadfba7192e5d10a22857d0901c550390a236493f20d",
+  "fetched_at": "2026-09-18T03:05:37+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2018-09": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2018/visa-bulletin-for-september-2018.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "cf333bf9d6ec574c61ff0a898f357adb04cb8919ff176c7fa49464dbf86ad9c1",
+  "fetched_at": "2026-09-18T03:05:38+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2018-10": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2019/visa-bulletin-for-october-2018.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "36cd1fa226548b0cd41c66f9f0954a647116364e0ebdb715d1997136abc4da55",
+  "fetched_at": "2026-09-18T03:05:38+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2018-11": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2019/visa-bulletin-for-november-2018.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "b99a3929ee27fc1e656c9f6b24d3bee4f7af227dadc0b881a0386b9c2cda50af",
+  "fetched_at": "2026-09-18T03:05:39+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2018-12": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2019/visa-bulletin-for-december-2018.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "1e250b036a736bb683d7680626ad813d1e5dded74f9bcebb8deb0b53986cc51b",
+  "fetched_at": "2026-09-18T03:05:39+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2019-01": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2019/visa-bulletin-for-january-2019.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "19d9d2bac6a7a441292a747ba64a3631e994309239b5b5b177ab8f46f93965f5",
+  "fetched_at": "2026-09-18T03:05:40+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2019-02": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2019/visa-bulletin-for-february-2019.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "dc03a52aca171cce87d7d8d102826d0540db41c71767372cca8e23d3e665c559",
+  "fetched_at": "2026-09-18T03:05:41+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2019-03": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2019/visa-bulletin-for-march-2019.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "df67ea8d8ad089e187d07c460f0640f9da683cc52ed90a0991a1ddd8f44ba5fc",
+  "fetched_at": "2026-09-18T03:05:42+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2019-04": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2019/visa-bulletin-for-april-2019.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "0c7b9f5da4245b2b8077bb8c1e397c6f6ac6750166279986761cf1c7ba5e6d4d",
+  "fetched_at": "2026-09-18T03:05:42+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2019-05": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2019/visa-bulletin-for-may-2019.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "3bb2f2b295b117c7e81e517e9d5d44c86004124498b0f671a00a9c215dccbb30",
+  "fetched_at": "2026-09-18T03:05:43+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2019-06": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2019/visa-bulletin-for-june-2019.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "28e397a45308465ef799349c09e5d4c4b9775161be3c4b5e661634fbe9acf0b4",
+  "fetched_at": "2026-09-18T03:05:43+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2019-07": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2019/visa-bulletin-for-july-2019.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "2e91a181594e5afb888298d4ed2ffea54c4037790f4c9cb548ce47b865f50c61",
+  "fetched_at": "2026-09-18T03:05:44+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2019-08": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2019/visa-bulletin-for-august-2019.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "df9bc322d8814e3c75b714624f5e8af23de4f93600621bcc1882c699f8b13be3",
+  "fetched_at": "2026-09-18T03:05:44+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2019-09": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2019/visa-bulletin-for-september-2019.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "b7c34af207a7c45593c5847cb57ae0debdc7e8e91895656bed06e1a9874de29c",
+  "fetched_at": "2026-09-18T03:05:45+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2019-10": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2020/visa-bulletin-for-october-2019.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "0d444fd67834409d1f813fa1bdf1df8f897f1ad676cfc01dfc7898c6a25b11d9",
+  "fetched_at": "2026-09-18T03:05:46+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2019-11": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2020/visa-bulletin-for-november-2019.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "eda86bdc3543e3fbc63f321de75414e3c1464e58f7d8f034a89fe40338469240",
+  "fetched_at": "2026-09-18T03:05:46+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2019-12": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2020/visa-bulletin-for-december-2019.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "5feb5cb7ea28c5f674debf73f146cc7f031f7b0f149d9b3915062c340bd68af0",
+  "fetched_at": "2026-09-18T03:05:47+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2020-01": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2020/visa-bulletin-for-january-2020.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "db5c833d5289d9714ea1b16b9b5929a9f702d7e30c4debf9e9648d2e5f4b416c",
+  "fetched_at": "2026-09-18T03:05:48+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2020-02": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2020/visa-bulletin-for-february-2020.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "17b13b0c4f873e14501d893234c32eae94762afe3a2a29b0dfaa595de0071314",
+  "fetched_at": "2026-09-18T03:05:48+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2020-03": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2020/visa-bulletin-for-march-2020.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "4babf9801adac72da9604a587af5cbf6edc5ea8380b654cec7d11e5d85dff42d",
+  "fetched_at": "2026-09-18T03:05:49+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2020-04": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2020/visa-bulletin-for-april-2020.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "bcf40df3625a32c81f88f948a59a94c40b27a97c56bc94d27e3e8a8c0c2289ed",
+  "fetched_at": "2026-09-18T03:05:49+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2020-05": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2020/visa-bulletin-for-may-2020.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "69d0c46590c99ca8d9aa8bd19d7dea178eb04faaa69fbd82fe2d433b4f8e2bca",
+  "fetched_at": "2026-09-18T03:05:50+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2020-06": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2020/visa-bulletin-for-june-2020.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "1924be5304212d7f26a47ba43142b0b18a7dacdd1374ce68ce47818a201e0219",
+  "fetched_at": "2026-09-18T03:05:51+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2020-07": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2020/visa-bulletin-for-july-2020.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "36c8e4e41c360042f42bcef4b8baa5b27b998387625b111ff8834e3ec2ca43c7",
+  "fetched_at": "2026-09-18T03:05:51+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2020-08": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2020/visa-bulletin-for-august-2020.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "c53c3f0c8f9a23aa424fbfd5b4a31235af320b9f5b9f3f4ebd52fc340a7ab245",
+  "fetched_at": "2026-09-18T03:05:52+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2020-09": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2020/visa-bulletin-for-september-2020.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "8c5332d24f2184ed8eda1f38d51e3f2011ee92501d92cc066db38d141b7941b0",
+  "fetched_at": "2026-09-18T03:05:52+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2020-10": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2021/visa-bulletin-for-october-2020.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "efb59bcce8faf891191a311f47145c62c97f638381160c4b30157bc3be9d5dea",
+  "fetched_at": "2026-09-18T03:05:53+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2020-11": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2021/visa-bulletin-for-november-2020.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "ff121a6196a45ecc1cdb9fb7f9b3f5591c1ea9fbc43bba65ac56e25a780b4d47",
+  "fetched_at": "2026-09-18T03:05:54+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2020-12": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2021/visa-bulletin-for-december-2020.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "7551e54aecc09536753fc3eb1b7561a444b476163a0e45d25cba55c8166e4a7e",
+  "fetched_at": "2026-09-18T03:05:54+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2021-01": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2021/visa-bulletin-for-january-2021.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "052feb09f1f2f22779055093bb279c7ad1e5b1d6b193e2b3eb409df67c4fa33e",
+  "fetched_at": "2026-09-18T03:05:55+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2021-02": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2021/visa-bulletin-for-february-2021.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "5a7273d168f70f3d1bd7ff11c6bd1876851b247c6fdfcc11c65860392f2d5678",
+  "fetched_at": "2026-09-18T03:05:55+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2021-03": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2021/visa-bulletin-for-march-2021.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "55be97764684543a32dc17ab749deff71af27afff603f02dc44723192345547e",
+  "fetched_at": "2026-09-18T03:05:56+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2021-04": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2021/visa-bulletin-for-april-2021.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "e10b1d5309def0a20518f0455a33308cb05742e7f0c9c3a6894c76fdc37481c9",
+  "fetched_at": "2026-09-18T03:05:57+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2021-05": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2021/visa-bulletin-for-may-2021.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "2b0e506423460ccac55a470258cfaaa39db41c3f49c903cb3b543bb502ec0cfe",
+  "fetched_at": "2026-09-18T03:05:57+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2021-06": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2021/visa-bulletin-for-june-2021.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "ccfb35dc5ada41880220359d6700d95f5b601ec484c411a1231dd6081c5e59da",
+  "fetched_at": "2026-09-18T03:05:58+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2021-07": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2021/visa-bulletin-for-july-2021.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "474a9287c4f71f7572ff2804159738e2bb79988546c70c803b9aa61fac2af752",
+  "fetched_at": "2026-09-18T03:05:59+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2021-08": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2021/visa-bulletin-for-august-2021.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "ff6911c0c5c2320341cfa4230876222470ab76036b5892a9d306eb7d5f61d640",
+  "fetched_at": "2026-09-18T03:05:59+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2021-09": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2021/visa-bulletin-for-september-2021.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "3d271a77625711be2e7856033c3f0bc60640b15d5251ec3c5b465d1cbfc985a7",
+  "fetched_at": "2026-09-18T03:06:00+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2021-10": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2022/visa-bulletin-for-october-2021.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "91a8228936077ae73e56230693bbf110120539280e30a87bc8ab8a714d9c4b2f",
+  "fetched_at": "2026-09-18T03:06:00+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2021-11": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2022/visa-bulletin-for-november-2021.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "9e9c242dbc8a17a710d02f36bba28c16004a09390aaf16669a28c75fdf7027ed",
+  "fetched_at": "2026-09-18T03:06:01+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2021-12": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2022/visa-bulletin-for-december-2021.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "4637bb4a99361202e96706c32b8074a6521cf73c53606b92b87bcc538cfe059a",
+  "fetched_at": "2026-09-18T03:06:01+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2022-01": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2022/visa-bulletin-for-january-2022.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "bae4802ce8439fdc3fa90335bc02513b7424cd07a806479a53cd8f37be5dc742",
+  "fetched_at": "2026-09-18T03:06:02+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2022-02": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2022/visa-bulletin-for-february-2022.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "a1c72b55494f5cea5bc9eb86bc3e1d1d017e417d8f0aa36fa17489a6a5254c0a",
+  "fetched_at": "2026-09-18T03:06:03+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2022-03": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2022/visa-bulletin-for-march-2022.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "c8cc8d09398af617dfe92c2df00e53935a9e5f598440ff29297a68f608c280bb",
+  "fetched_at": "2026-09-18T03:06:03+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2022-04": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2022/visa-bulletin-for-april-2022.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "3cb203733fb2a86490bf023e0aec27a119b21a6cce91ef9f8e72e31e9aef6a67",
+  "fetched_at": "2026-09-18T03:06:04+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2022-05": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2022/visa-bulletin-for-may-2022.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "0f658e6dfb3042ea7bbea59984813e3311441f6c21549a8bb002a6e604385206",
+  "fetched_at": "2026-09-18T03:06:04+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2022-06": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2022/visa-bulletin-for-june-2022.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "564b745e83166efa401ae7fc49fdc40813fab2612d49f0f95423a17d4b5022b1",
+  "fetched_at": "2026-09-18T03:06:05+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2022-07": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2022/visa-bulletin-for-july-2022.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "9a4d3d3286137ad844678ed2ae48ec04f2fb6c51d1d65203889177ad231a7496",
+  "fetched_at": "2026-09-18T03:06:06+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2022-08": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2022/visa-bulletin-for-august-2022.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "30bb41f4ce0c124b809803ea6a84067ee1e78fdcd43f7a4f9edd8b89869cb389",
+  "fetched_at": "2026-09-18T03:06:06+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2022-09": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2022/visa-bulletin-for-september-2022.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "866e0ed0c710c657f9994548191c8a34e942fb2498d358b8761df828e4215a63",
+  "fetched_at": "2026-09-18T03:06:07+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2022-10": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2023/visa-bulletin-for-october-2022.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "382e7d22d968993320c8cfdd457142555abbbf1c98951db3a126b4a6a5d05858",
+  "fetched_at": "2026-09-18T03:06:08+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2022-11": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2023/visa-bulletin-for-november-2022.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "20cd08bcbe6fba251fedcc8d9ca46a4f6f0f4b742f37695bd8916fa36bc19177",
+  "fetched_at": "2026-09-18T03:06:08+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2022-12": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2023/visa-bulletin-for-december-2022.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "81567e5851f20b94aad3eeef7dd148d4aa0c236ab500e9ec4623e2cafdbd5a51",
+  "fetched_at": "2026-09-18T03:06:09+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2023-01": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2023/visa-bulletin-for-january-2023.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "b9780a70f7ac8ba06b0239f2a5d8bb3e1324a3be48ad5ff7873724a254f3876e",
+  "fetched_at": "2026-09-18T03:06:10+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2023-02": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2023/visa-bulletin-for-february-2023.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "ad3bcac67a5d94aadfa5fe4c196719c0e84df3110f129b749e256747d04f3ae8",
+  "fetched_at": "2026-09-18T03:06:11+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2023-03": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2023/visa-bulletin-for-march-2023.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "dd02ba08171c17688f3d726439061b91a8d576e84bd5c7035d42a2c03cf99e81",
+  "fetched_at": "2026-09-18T03:06:11+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2023-04": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2023/visa-bulletin-for-april-2023.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "4964d01ae5f53a688545ceced39c66095f35789a0642ce9c485b4203e35a8509",
+  "fetched_at": "2026-09-18T03:06:11+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2023-05": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2023/visa-bulletin-for-may-2023.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "197c2d60dcf34694e9e75bbef6ee4860fffe060f9b1b190952d60a043d769252",
+  "fetched_at": "2026-09-18T03:06:12+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2023-06": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2023/visa-bulletin-for-june-2023.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "a77a4e08ee72d8f3709a271adbcaa71ee0ddd7abcd21885af9ee25ae62e0dfb7",
+  "fetched_at": "2026-09-18T03:06:13+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2023-07": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2023/visa-bulletin-for-july-2023.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "2fd5504f960298e1c145b82daca9e2223b4d03ebd9190421b7c1f667116d75b8",
+  "fetched_at": "2026-09-18T03:06:13+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2023-08": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2023/visa-bulletin-for-august-2023.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "bd6f5233842bd1584591ad0b8b7dfd51b4f704e85391d95c1da5e7b6ab58d4a0",
+  "fetched_at": "2026-09-18T03:06:14+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2023-09": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2023/visa-bulletin-for-september-2023.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "b15aa9ba99ae0dea83ef3d4bf538956e3855324378f0b7b2f4446d87b7fdc402",
+  "fetched_at": "2026-09-18T03:06:15+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2023-10": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2024/visa-bulletin-for-october-2023.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "070064d1182cf6dea19871cabc05b9a969bd4269b1ea1565a7676241da45e78e",
+  "fetched_at": "2026-09-18T03:06:15+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2023-11": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2024/visa-bulletin-for-november-2023.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "34668f900f20a75985202122cc234c112fb19cb081d5966d612f5829c6eafeaa",
+  "fetched_at": "2026-09-18T03:06:16+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2023-12": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2024/visa-bulletin-for-december-2023.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "f88ab2ec36ff5c43c6835f2999624397665c5cc928b782445e99cbcd9ca17974",
+  "fetched_at": "2026-09-18T03:06:17+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2024-01": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2024/visa-bulletin-for-january-2024.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "b93ebe12f2c8aa280957d113f325f08f5151466b723eb4460cda68f69e23725c",
+  "fetched_at": "2026-09-18T03:06:17+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2024-02": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2024/visa-bulletin-for-february-2024.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "7d35fd79cc9941d4694e6f28124ffaf92769ecb9010e1f7bab9868c627b0e4a2",
+  "fetched_at": "2026-09-18T03:06:17+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2024-03": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2024/visa-bulletin-for-march-2024.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "89ae62eb5df1588f832c6106a37a2fb71a528dd49a8a4543264b77aebe41b2c2",
+  "fetched_at": "2026-09-18T03:06:18+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2024-04": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2024/visa-bulletin-for-april-2024.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "0fac530a69ebe8c0af6e32a42461b225a1d976e82d02204f7d58ab16d550932d",
+  "fetched_at": "2026-09-18T03:06:19+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2024-05": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2024/visa-bulletin-for-may-2024.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "b039e30cd6cf72e19ea3bec9f0350f333dccc2f41e567f5805ac5fccead8cee1",
+  "fetched_at": "2026-09-18T03:06:19+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2024-06": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2024/visa-bulletin-for-june-2024.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "fa51fc2ba804dc339d9c7c3ec0298d6701ec3bcd63c6d361496ba4d0ea429aff",
+  "fetched_at": "2026-09-18T03:06:20+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2024-07": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2024/visa-bulletin-for-july-2024.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "a4663369020ef6a3cc4cb072320f5dc8745777191de53f62e24ed1531dc04701",
+  "fetched_at": "2026-09-18T03:06:20+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2024-08": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2024/visa-bulletin-for-august-2024.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "470f10d2abb002ffea7d41d271cb6ca42371c820bc9b4359452acebb55e99c6c",
+  "fetched_at": "2026-09-18T03:06:21+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2024-09": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2024/visa-bulletin-for-september-2024.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "c6c2fb63001e3ed220f2ddae23bdfeecdb1749e17acc9cfdfb9e6b23c47820a8",
+  "fetched_at": "2026-09-18T03:06:22+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2024-10": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2025/visa-bulletin-for-october-2024.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "d689816ec7fc70442657c6163db10d202dc4799eabc2fcdac11d8ebfd4ebb940",
+  "fetched_at": "2026-09-18T03:06:22+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2024-11": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2025/visa-bulletin-for-november-2024.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "b7e1fd800b87b2c395f0858323e30129cad654d17d85057e4a8e39382db48fe9",
+  "fetched_at": "2026-09-18T03:06:23+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2024-12": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2025/visa-bulletin-for-december-2024.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "b146ebada632a6f0a38e5a51f64ff997234d26203d7a7380a0b16be55781091b",
+  "fetched_at": "2026-09-18T03:06:23+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2025-01": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2025/visa-bulletin-for-january-2025.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "9a4c59f5ff20197d8ee9e3054a71929081c642664fd737ac8121d8b2702ffb5b",
+  "fetched_at": "2026-09-18T03:06:24+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2025-02": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2025/visa-bulletin-for-february-2025.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "d3832286036ed0a0ecbb968f854f6acc1d7c02bab763cfadf5ff904d28f270a6",
+  "fetched_at": "2026-09-18T03:06:25+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2025-03": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2025/visa-bulletin-for-march-2025.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "dbca7e6a9f3dc0ebf13b5fdb4c411531588ef0f998c006c3d74510afdc8dfbdd",
+  "fetched_at": "2026-09-18T03:06:25+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2025-04": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2025/visa-bulletin-for-april-2025.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "245a15696b7d48a7682f5e4eaa8c41ed3f0b7ad37a2ae6ce7b2b552e9ad72e93",
+  "fetched_at": "2026-09-18T03:06:26+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2025-05": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2025/visa-bulletin-for-may-2025.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "80eb87f857ad957d16a9fb2c1e6326d47074370279cddfb12cdc986cbd3cc028",
+  "fetched_at": "2026-09-18T03:06:27+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2025-06": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2025/visa-bulletin-for-june-2025.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "8f9a8dc48469316ed5ab1cd7d6ca18d8dac5b1c2d8ee7950b5ba5241b63d82dd",
+  "fetched_at": "2026-09-18T03:06:27+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2025-07": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2025/visa-bulletin-for-july-2025.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "cb2bdd11f6cac80a74679a4f192969a8c446472d27ed159cd3b5cad06b5f8a44",
+  "fetched_at": "2026-09-18T03:06:28+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2025-08": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2025/visa-bulletin-for-august-2025.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "bdb23d834fc4c8a488d26df2bb6a0f653208985ac12e7f28871cca0c129d9f2b",
+  "fetched_at": "2026-09-18T03:06:28+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2025-09": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2025/visa-bulletin-for-september-2025.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "59d9da967fc4cd9568b0f9b24c63164cce8e5e09a432b74c1d57766b3a96521a",
+  "fetched_at": "2026-09-18T03:06:29+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2025-10": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2026/visa-bulletin-for-october-2025.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "769181302ab9c26429087f3a3fffdc02139a84f41ba46e09d7c835350a826bc2",
+  "fetched_at": "2026-09-18T03:06:30+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2025-11": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2026/visa-bulletin-for-november-2025.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "3bb4072e36f1b8608fad5fac71811265a1183d0a580a57152ebedba7533f0795",
+  "fetched_at": "2026-09-18T03:06:30+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2025-12": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2026/visa-bulletin-for-december-2025.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "bcf4e6b0a7882a6a1b424c74f14bce92066d354cf44e2801f304b1a9630a6c22",
+  "fetched_at": "2026-09-18T03:06:31+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2026-01": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2026/visa-bulletin-for-january-2026.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "3257824a7c55b46cf5989190e435231e0bc260d12150380e206cb4983c4be06c",
+  "fetched_at": "2026-09-18T03:06:31+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2026-02": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2026/visa-bulletin-for-february-2026.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "9f34f4b81384b78ac69b9475207280465fb107139e760fb355ac94125fa4bc2f",
+  "fetched_at": "2026-09-18T03:06:32+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2026-03": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2026/visa-bulletin-for-march-2026.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "67da1cb2664b5a98e00a28420a3bde73881e40b0304aa4f78fe809878f983733",
+  "fetched_at": "2026-09-18T03:06:33+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2026-04": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2026/visa-bulletin-for-april-2026.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "a637a5c4582a16d529328a18f621a8082396e44c51c062b7ee28ddf456d222c4",
+  "fetched_at": "2026-09-18T03:06:33+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2026-05": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2026/visa-bulletin-for-may-2026.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "280004dba868e158ec79a155f034470127c99526bfb6ba3bc0e3028fad71de34",
+  "fetched_at": "2026-09-18T03:06:34+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2026-06": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2026/visa-bulletin-for-june-2026.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "efe8aadf519f41582a8f36f2a35c80d1743d6a6cd35127aa866059ba0d280162",
+  "fetched_at": "2026-09-18T03:06:35+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2026-07": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2026/visa-bulletin-for-july-2026.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "081f816559dde8a48849feba122e0dfdb6eec743d47e957aadf3acd85fe1758d",
+  "fetched_at": "2026-09-18T03:06:35+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2026-08": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2026/visa-bulletin-for-august-2026.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "65119b29a977369f39915b980d769a4fd733536a1a3a3005e9b1cd0cc4da6171",
+  "fetched_at": "2026-09-18T03:06:36+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2026-09": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2026/visa-bulletin-for-september-2026.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "1b20402ef62d2abff98599d86f35a29301004e58a1a9cb490a262c028d946e23",
+  "fetched_at": "2026-09-18T03:03:59+00:00",
+  "note": "From the pipeline fetch cache."
+ },
+ "2026-10": {
+  "source": "https://adoption.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2027/visa-bulletin-for-october-2026.html",
+  "imported_at": "2026-11-13T21:42:24+00:00",
+  "sha256": "3f62263be7a81660f39f32538cc97bd088752069b27a732f7932890720a11bc4",
+  "fetched_at": "2026-09-29T16:55:30+00:00",
+  "note": "From the pipeline fetch cache."
  }
 }

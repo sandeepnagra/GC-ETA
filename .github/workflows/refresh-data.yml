@@ -92,6 +92,12 @@ jobs:
       - name: Fetch the bulletin archive
         run: python pipeline/build_bulletins.py
 
+      # The source no longer serves any bulletin, so the fetch cache was the
+      # only copy of the archive; this copies anything in it that is not yet
+      # committed into data/bulletin-pages/, which the commit step below keeps.
+      - name: Keep cached bulletins in the repository
+        run: python pipeline/archive_cached_pages.py
+
       - name: Re-read the annual limits from the archive
         run: python pipeline/build_limits.py
 

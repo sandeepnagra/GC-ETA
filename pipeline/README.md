@@ -33,8 +33,11 @@ user agent, and the manual fallback in PLAN.md section 8 stays the backup.
 **That closed in Nov 2026.** `adoption.state.gov` now redirects every bulletin
 URL, past ones included, to `travel.state.gov`'s 404 page, which answers 403.
 `travel.state.gov` also blocks a browser user agent from scripts (Cloudflare
-"Attention Required"). The archive up to 2026-11 survives in the CI fetch cache;
-each new bulletin now comes in by hand, about once a month:
+"Attention Required"). Every bulletin we have is committed in
+`data/bulletin-pages/` (`archive_cached_pages.py`, which Refresh data runs on
+every run, copies anything from the fetch cache that is not there yet), so the
+repository is the archive of record. Each new bulletin now comes in by hand,
+about once a month:
 
 ```bash
 # Save the bulletin from travel.state.gov in your browser (Web Page, HTML Only), then:

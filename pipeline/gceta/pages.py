@@ -45,7 +45,9 @@ def read_page(ym: str) -> tuple[str, dict] | None:
     return body.decode("utf-8", errors="replace"), meta
 
 
-def save_page(ym: str, body: bytes, *, source: str, note: str = "") -> Path:
+def save_page(
+    ym: str, body: bytes, *, source: str, note: str = "", fetched_at: str | None = None
+) -> Path:
     PAGES_DIR.mkdir(parents=True, exist_ok=True)
     path = page_path(ym)
     path.write_bytes(body)
@@ -54,6 +56,7 @@ def save_page(ym: str, body: bytes, *, source: str, note: str = "") -> Path:
         "source": source,
         "imported_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "sha256": hashlib.sha256(body).hexdigest(),
+        **({"fetched_at": fetched_at} if fetched_at else {}),
         **({"note": note} if note else {}),
     }
     SOURCES.write_text(json.dumps(dict(sorted(sources.items())), indent=1) + "\n")

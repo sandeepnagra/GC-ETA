@@ -104,7 +104,9 @@ def main() -> int:
             parsed = parse_bulletin(html, month, year, source_url=meta.get("source", url))
             parsed["sections"] = parse_sections(html)
             parsed["content_sha256"] = meta["sha256"]
-            parsed["fetched_at"] = meta.get("imported_at")
+            # When it was retrieved from the publisher, if known; a page saved
+            # by hand only knows when it was imported.
+            parsed["fetched_at"] = meta.get("fetched_at") or meta.get("imported_at")
             from_pages.append(ym)
             for warning in parsed["warnings"]:
                 warning_counts[warning] += 1

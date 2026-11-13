@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "generated_at": "2026-11-13T21:18:31.991824+00:00",
+ "generated_at": "2026-11-13T21:20:11.482621+00:00",
  "source": "Stated in the Department of State Visa Bulletin, read from the archive",
  "note": "Figures are provisional under INA 203(g) until USCIS supplies immediate-relative and parolee counts mid-year. revised_mid_year flags a fiscal year where the stated numbers changed.",
  "limits": [
@@ -12,7 +12,7 @@
      "employment_is_floor_only": true,
      "per_country": 25620,
      "dependent_area": 7320,
-     "stated_in": "2009-12"
+     "stated_in": "2009-10"
     }
    ],
    "final": {
@@ -20,12 +20,12 @@
     "employment_is_floor_only": true,
     "per_country": 25620,
     "dependent_area": 7320,
-    "stated_in": "2009-12"
+    "stated_in": "2009-10"
    },
    "determined": null,
    "has_determined_figure": false,
    "revised_mid_year": false,
-   "months_stating_limits": 8
+   "months_stating_limits": 10
   },
   {
    "fiscal_year": 2011,
@@ -81,7 +81,7 @@
      "employment_is_floor_only": true,
      "per_country": 25620,
      "dependent_area": 7320,
-     "stated_in": "2012-11"
+     "stated_in": "2012-10"
     }
    ],
    "final": {
@@ -89,12 +89,12 @@
     "employment_is_floor_only": true,
     "per_country": 25620,
     "dependent_area": 7320,
-    "stated_in": "2012-11"
+    "stated_in": "2012-10"
    },
    "determined": null,
    "has_determined_figure": false,
    "revised_mid_year": false,
-   "months_stating_limits": 11
+   "months_stating_limits": 12
   },
   {
    "fiscal_year": 2014,

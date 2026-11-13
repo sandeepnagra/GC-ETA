@@ -31,6 +31,13 @@ from gceta.sections import parse_sections  # noqa: E402
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 SCHEMA_VERSION = 1
 
+# Months the source has never had. Anything else turning up missing means the
+# source or the fetch cache has lost a bulletin we used to have, and that must
+# stop the run rather than ship a thinner archive. Since Nov 2026 the mirror
+# redirects every bulletin URL to a 404 page, so the fetch cache is the only
+# copy of the archive the daily job can reach; this is what notices if it goes.
+KNOWN_GAPS = {"2009-10", "2009-11", "2012-10"}
+
 
 def month_range(start: tuple[int, int], end: tuple[int, int]):
     year, month = start
@@ -124,6 +131,15 @@ def main() -> int:
         if not parsed["rows"]:
             warning_counts[f"NO ROWS PARSED for {parsed['month']}"] += 1
         bulletins.append(parsed)
+
+    unexpected = [m for m in missing if m not in KNOWN_GAPS]
+    if unexpected:
+        print(
+            f"ERROR: bulletins missing that are not known gaps: {', '.join(unexpected)}\n"
+            "The source no longer serves them and they are not in the fetch cache.",
+            file=sys.stderr,
+        )
+        return 1
 
     payload = {
         "schema_version": SCHEMA_VERSION,

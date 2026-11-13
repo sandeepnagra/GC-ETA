@@ -11,10 +11,12 @@ serves no robots.txt, and absence of a directive is not permission.
 from __future__ import annotations
 
 import hashlib
+import sys
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import urlparse
 
 import requests
 
@@ -89,6 +91,18 @@ class Fetcher:
 
         response = self._session.get(url, timeout=30)
         if response.status_code == 404 and allow_404:
+            return None
+        # Since Nov 2026 adoption.state.gov no longer 404s a page it does not
+        # have. It 302s to travel.state.gov's 404 page, which sits behind a
+        # Cloudflare bot check and answers 403. Being sent to the 404 page is
+        # the site saying "not found", so treat it as a 404. Keyed on the
+        # redirect target, not on the 403, so a 403 on a real page still raises.
+        if (
+            allow_404
+            and response.history
+            and urlparse(response.url).path.endswith("/404.html")
+        ):
+            print(f"  (redirected to a 404 page, treating as not found: {url})", file=sys.stderr)
             return None
         response.raise_for_status()
 
